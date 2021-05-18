@@ -234,6 +234,7 @@ class Dialogs {
         updateAudioIcon();
     }
 
+    //Decides whether to show the "enable audio" or "disable audio" icon
     void updateAudioIcon() {
         int spr = config.audioEnabled ? SPR_DIALOG_AUDIO_ON : SPR_DIALOG_AUDIO_OFF;
         int type = ctx.stack[ctx.stackSize - 1].type;
@@ -291,13 +292,18 @@ class Dialogs {
                         break;
 
                     case 2:
+                        difficulty = DIFFICULTY_SUPER;
+                        open(DLG_LEVEL);
+                        break;
+
+                    case 3:
                         close();
                         break;
                 }
                 break;
 
             case DLG_LEVEL:
-                if (item == 5) {
+                if (item == ctx.numItems - 1) {
                     close();
                 } else {
                     ctx.levelSelected = true;
@@ -401,42 +407,52 @@ class Dialogs {
 
     //Opens a specific dialog
     void open(int dialogType) {
-        int size = ctx.stackSize;
+        int sel = useCursor ? 0 : NONE;
 
-        ctx.stack[size].type = dialogType;
-        ctx.stack[size].selectedItem = useCursor ? 0 : NONE;
-
-        waitInputUp = true;
-
-        loadItemsAndText(dialogType);
+        ctx.stack[ctx.stackSize].type = dialogType;
         ctx.stackSize++;
 
-        if (dialogType == DLG_JUKEBOX) {
-            audio.unloadBgm();
-        } else if (dialogType == DLG_LEVEL) {
-            //By default, select the last unlocked level of the selected
-            //difficulty
-            if (useCursor) {
-                int sel = config.progressLevel - 1;
+        loadItemsAndText(dialogType);
+
+        switch (dialogType) {
+            case DLG_JUKEBOX:
+                audio.unloadBgm();
+                break;
+
+            case DLG_PAUSE:
+                ctx.showFrame = true;
+                break;
+
+            case DLG_ERROR:
+                audio.stopBgm();
+                audio.playSfx(SFX_ERROR);
+                break;
+        }
+
+        //By default, select the highest unlocked difficulty or the last level
+        //within the selected difficulty
+        if (useCursor) {
+            if (dialogType == DLG_DIFFICULTY) {
+                sel = config.progressDifficulty;
+            } else if (dialogType == DLG_LEVEL) {
+                sel = config.progressLevel - 1;
 
                 if (difficulty < config.progressDifficulty) {
-                    sel = 4;
+                    sel = ctx.numItems - 2;
                 }
-
                 if (config.progressCheat) {
-                    sel = 4;
+                    sel = ctx.numItems - 2;
                 }
-
-                ctx.stack[ctx.stackSize - 1].selectedItem = sel;
+                if (config.progressLevel > ctx.numItems - 2) {
+                    sel = ctx.numItems - 2;
+                }
             }
-        } else if (dialogType == DLG_PAUSE) {
-            ctx.showFrame = true;
-        } else if (dialogType == DLG_ERROR) {
-            audio.stopBgm();
-            audio.playSfx(SFX_ERROR);
         }
 
         updateAudioIcon();
+        waitInputUp = true;
+
+        ctx.stack[ctx.stackSize - 1].selectedItem = sel;
     }
 
     //Closes the current dialog and returns to the previous one
@@ -556,20 +572,29 @@ class Dialogs {
                 break;
 
             case DLG_DIFFICULTY:
-                di(0, CT, -8, 0, 11, 5, 2, 2, 2, 1, SPR_DIALOG_NORMAL);
-                di(1, CT,  8, 0, 11, 5, 2, 2, 0, 2, SPR_DIALOG_HARD);
-                di(2, TL,  1, 1, 5, 5, 0, 0, 1, 0, SPR_DIALOG_RETURN);
-                ctx.numItems = 3;
+                di(0, CT, -12, 0, 10, 5, 3, 3, 3, 1, SPR_DIALOG_NORMAL);
+                di(1, CT,   0, 0, 10, 5, 3, 3, 0, 2, SPR_DIALOG_HARD);
+                di(2, CT,  12, 0, 10, 5, 3, 3, 1, 3, SPR_DIALOG_SUPER);
+                di(3, TL,   1, 1, 5, 5, 0, 0, 2, 0, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
                 break;
 
             case DLG_LEVEL:
-                di(0, CT, -16, 0, 6, 6, 5, 5, 5, 1, SPR_DIALOG_1);
-                di(1, CT, -8, 0, 6, 6, 5, 5, 0, 2, SPR_DIALOG_2);
-                di(2, CT,  0, 0, 6, 6, 5, 5, 1, 3, SPR_DIALOG_3);
-                di(3, CT,  8, 0, 6, 6, 5, 5, 2, 4, SPR_DIALOG_4);
-                di(4, CT,  16, 0, 6, 6, 5, 5, 3, 5, SPR_DIALOG_5);
-                di(5, TL,  1, 1, 5, 5, 0, 0, 4, 0, SPR_DIALOG_RETURN);
-                ctx.numItems = 6;
+                if (difficulty == DIFFICULTY_SUPER) { //3 levels
+                    di(0, CT, -8, 0, 6, 6, 3, 3, 3, 1, SPR_DIALOG_1);
+                    di(1, CT,  0, 0, 6, 6, 3, 3, 0, 2, SPR_DIALOG_2);
+                    di(2, CT,  8, 0, 6, 6, 3, 3, 1, 3, SPR_DIALOG_3);
+                    di(3, TL,  1, 1, 5, 5, 0, 0, 2, 0, SPR_DIALOG_RETURN);
+                    ctx.numItems = 4;
+                } else { //5 levels
+                    di(0, CT, -16, 0, 6, 6, 5, 5, 5, 1, SPR_DIALOG_1);
+                    di(1, CT, -8, 0, 6, 6, 5, 5, 0, 2, SPR_DIALOG_2);
+                    di(2, CT,  0, 0, 6, 6, 5, 5, 1, 3, SPR_DIALOG_3);
+                    di(3, CT,  8, 0, 6, 6, 5, 5, 2, 4, SPR_DIALOG_4);
+                    di(4, CT,  16, 0, 6, 6, 5, 5, 3, 5, SPR_DIALOG_5);
+                    di(5, TL,  1, 1, 5, 5, 0, 0, 4, 0, SPR_DIALOG_RETURN);
+                    ctx.numItems = 6;
+                }
                 break;
 
             case DLG_JUKEBOX:
@@ -612,17 +637,24 @@ class Dialogs {
         }
 
         if (dialogType == DLG_DIFFICULTY) {
-            if (config.progressDifficulty < DIFFICULTY_HARD &&
-                                                    !config.progressCheat) {
-
-                //Disable "hard" if it has not been unlocked
-                ctx.items[1].disabled = true;
-                ctx.items[1].iconSprite = SPR_DIALOG_HARD_DISABLED;
+            if (!config.progressCheat) {
+                if (config.progressDifficulty < DIFFICULTY_HARD) {
+                    //Disable "hard" if it has not been unlocked
+                    ctx.items[1].disabled = true;
+                    ctx.items[1].iconSprite = SPR_DIALOG_HARD_DISABLED;
+                }
+                if (config.progressDifficulty < DIFFICULTY_SUPER) {
+                    //Disable "super" if it has not been unlocked
+                    ctx.items[2].disabled = true;
+                    ctx.items[2].iconSprite = SPR_DIALOG_SUPER_DISABLED;
+                }
             }
         } else if (dialogType == DLG_LEVEL) {
             if (difficulty == config.progressDifficulty && !config.progressCheat) {
+                int numLevels = difficultyNumLevels[difficulty];
+
                 //Disable selection of locked levels
-                for (int i = config.progressLevel; i <= NUM_LEVELS - 1; i++) {
+                for (int i = config.progressLevel; i <= numLevels - 1; i++) {
                     ctx.items[i].iconSprite = SPR_DIALOG_LOCKED;
                     ctx.items[i].disabled = true;
                 }

@@ -266,6 +266,7 @@ public class Defs {
         boolean canPause;
         int difficulty;
         int levelNum;
+        boolean lastLevel;
         int levelSize;
         int bgColor;
         int bgOffsetX;
@@ -340,7 +341,7 @@ public class Defs {
     //
 
     //Version and repository
-    public static final String VERSION = "pre1";
+    public static final String VERSION = "pre2";
     public static final String REPOSITORY = "https://github.com/M374LX/alexvsbus-java";
 
     //Maximum delta time
@@ -349,10 +350,8 @@ public class Defs {
     //Difficulty
     public static final int DIFFICULTY_NORMAL = 0;
     public static final int DIFFICULTY_HARD = 1;
-    public static final int DIFFICULTY_MAX = DIFFICULTY_HARD;
-
-    //Number of levels per difficulty
-    public static final int NUM_LEVELS = 5;
+    public static final int DIFFICULTY_SUPER = 2;
+    public static final int DIFFICULTY_MAX = DIFFICULTY_SUPER;
 
     //Level load errors
     static final int LVLERR_NONE = 0;
@@ -574,26 +573,29 @@ public class Defs {
     static final int SPR_DIALOG_HARD = 97;
     static final int SPR_DIALOG_HARD_SELECTED = 98;
     static final int SPR_DIALOG_HARD_DISABLED = 99;
-    static final int SPR_DIALOG_1 = 100;
-    static final int SPR_DIALOG_1_SELECTED = 101;
-    static final int SPR_DIALOG_2 = 102;
-    static final int SPR_DIALOG_2_SELECTED = 103;
-    static final int SPR_DIALOG_3 = 104;
-    static final int SPR_DIALOG_3_SELECTED = 105;
-    static final int SPR_DIALOG_4 = 106;
-    static final int SPR_DIALOG_4_SELECTED = 107;
-    static final int SPR_DIALOG_5 = 108;
-    static final int SPR_DIALOG_5_SELECTED = 109;
-    static final int SPR_DIALOG_LOCKED = 110;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 111;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 112;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 113;
-    static final int SPR_DIALOG_BORDER_TOP = 114;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 115;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 116;
-    static final int SPR_DIALOG_BORDER_LEFT = 117;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 118;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 119;
+    static final int SPR_DIALOG_SUPER = 100;
+    static final int SPR_DIALOG_SUPER_SELECTED = 101;
+    static final int SPR_DIALOG_SUPER_DISABLED = 102;
+    static final int SPR_DIALOG_1 = 103;
+    static final int SPR_DIALOG_1_SELECTED = 104;
+    static final int SPR_DIALOG_2 = 105;
+    static final int SPR_DIALOG_2_SELECTED = 106;
+    static final int SPR_DIALOG_3 = 107;
+    static final int SPR_DIALOG_3_SELECTED = 108;
+    static final int SPR_DIALOG_4 = 109;
+    static final int SPR_DIALOG_4_SELECTED = 110;
+    static final int SPR_DIALOG_5 = 111;
+    static final int SPR_DIALOG_5_SELECTED = 112;
+    static final int SPR_DIALOG_LOCKED = 113;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 114;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 115;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 116;
+    static final int SPR_DIALOG_BORDER_TOP = 117;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 118;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 119;
+    static final int SPR_DIALOG_BORDER_LEFT = 120;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 121;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 122;
 
     static final int LOGO_WIDTH = 296;
 
@@ -764,6 +766,13 @@ public class Defs {
     // Read-only data
     //
 
+    //Number of levels per difficulty
+    public static final int[] difficultyNumLevels = new int[]{
+        5, //DIFFICULTY_NORMAL
+        5, //DIFFICULTY_HARD
+        3, //DIFFICULTY_SUPER
+    };
+
     static final int[] cheatSequence = new int[]{
         3, 0, 2, 1, 3, 0, 1, 2, 1, 3, 0, 2, -1
     };
@@ -869,7 +878,10 @@ public class Defs {
         296,  632,  48,  24,  //SPR_DIALOG_NORMAL_SELECTED
         64,   632,  48,  24,  //SPR_DIALOG_HARD
         352,  632,  48,  24,  //SPR_DIALOG_HARD_SELECTED
-        120,  632,  48,  24,  //SPR_DIALOG_HARD_DISABLED
+        64,   664,  48,  24,  //SPR_DIALOG_HARD_DISABLED
+        120,  632,  48,  24,  //SPR_DIALOG_SUPER
+        408,  632,  48,  24,  //SPR_DIALOG_SUPER_SELECTED
+        120,  664,  48,  24,  //SPR_DIALOG_SUPER_DISABLED
         8,    592,  32,  32,  //SPR_DIALOG_1
         296,  592,  32,  32,  //SPR_DIALOG_1_SELECTED
         48,   592,  32,  32,  //SPR_DIALOG_2
@@ -881,15 +893,15 @@ public class Defs {
         168,  592,  32,  32,  //SPR_DIALOG_5
         456,  592,  32,  32,  //SPR_DIALOG_5_SELECTED
         232,  552,  32,  32,  //SPR_DIALOG_LOCKED
-        144,  672,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT
-        192,  672,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_SELECTED
-        240,  672,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_DISABLED
-        160,  672,  8,   8,   //SPR_DIALOG_BORDER_TOP
-        208,  672,  8,   8,   //SPR_DIALOG_BORDER_TOP_SELECTED
-        256,  672,  8,   8,   //SPR_DIALOG_BORDER_TOP_DISABLED
-        176,  672,  8,   8,   //SPR_DIALOG_BORDER_LEFT
-        224,  672,  8,   8,   //SPR_DIALOG_BORDER_LEFT_SELECTED
-        272,  672,  8,   8,   //SPR_DIALOG_BORDER_LEFT_DISABLED
+        8,    696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT
+        56,   696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_SELECTED
+        104,  696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_DISABLED
+        24,   696,  8,   8,   //SPR_DIALOG_BORDER_TOP
+        72,   696,  8,   8,   //SPR_DIALOG_BORDER_TOP_SELECTED
+        120,  696,  8,   8,   //SPR_DIALOG_BORDER_TOP_DISABLED
+        40,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT
+        88,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_SELECTED
+        136,  696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_DISABLED
     };
 
     //Sprite corresponding to each player character animation type

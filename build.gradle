@@ -18,7 +18,7 @@ buildscript {
 allprojects {
     apply plugin: "eclipse"
 
-    version = 'pre1'
+    version = 'pre2'
     ext {
         appName = "Alex vs Bus"
         gdxVersion = '1.10.0'

@@ -387,8 +387,10 @@ class Play {
             ctx.bus.frontDoorAnimFrame = 3;
             ctx.bus.frontDoorAnimDelta = 0;
 
-            //Next bus route sign (if it is not the finish sign)
-            if (ctx.bus.routeSign < 4) {
+            //Next bus route sign
+            if (ctx.lastLevel) {
+                ctx.bus.routeSign = 4; //Finish (checkered flag) sign
+            } else {
                 ctx.bus.routeSign++;
             }
         }

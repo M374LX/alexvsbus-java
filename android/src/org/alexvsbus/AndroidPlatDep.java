@@ -28,9 +28,10 @@ import org.alexvsbus.Defs.PlatDep;
 import static org.alexvsbus.Defs.NONE;
 import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
 import static org.alexvsbus.Defs.DIFFICULTY_HARD;
+import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
 import static org.alexvsbus.Defs.DIFFICULTY_MAX;
-import static org.alexvsbus.Defs.NUM_LEVELS;
 import static org.alexvsbus.Defs.WM_UNSUPPORTED;
+import static org.alexvsbus.Defs.difficultyNumLevels;
 
 class AndroidPlatDep implements PlatDep {
     Config config;
@@ -68,17 +69,6 @@ class AndroidPlatDep implements PlatDep {
         }
 
         try {
-            int val = prefs.getInt("progress-level", 1);
-            if (val < 1 || val > NUM_LEVELS) {
-                val = 1;
-            }
-
-            config.progressLevel = val;
-        } catch (Exception e) {
-            config.progressLevel = 1;
-        }
-
-        try {
             int val = prefs.getInt("progress-difficulty", DIFFICULTY_NORMAL);
             if (val < DIFFICULTY_NORMAL || val > DIFFICULTY_MAX) {
                 val = DIFFICULTY_NORMAL;
@@ -88,6 +78,23 @@ class AndroidPlatDep implements PlatDep {
         } catch (Exception e) {
             config.progressDifficulty = DIFFICULTY_NORMAL;
         }
+
+        try {
+            int val = prefs.getInt("progress-level", 1);
+            if (val < 1 || val > 9) {
+                val = 1;
+            }
+
+            config.progressLevel = val;
+        } catch (Exception e) {
+            config.progressLevel = 1;
+        }
+
+        if (config.progressLevel >
+                            difficultyNumLevels[config.progressDifficulty]) {
+
+            config.progressLevel = 1;
+        }
     }
 
     @Override
@@ -95,7 +102,7 @@ class AndroidPlatDep implements PlatDep {
         editor = prefs.edit();
         editor.putBoolean("audio-enabled", config.audioEnabled);
         editor.putInt("progress-level", config.progressLevel);
-        editor.putInt("progress-difficulty", config.progressLevel);
+        editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();
         editor = null;
     }

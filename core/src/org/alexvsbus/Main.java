@@ -221,13 +221,15 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 if (playCtx.levelNum   == config.progressLevel &&
                     playCtx.difficulty == config.progressDifficulty) {
 
+                    int numLevels = difficultyNumLevels[playCtx.difficulty];
+
                     config.progressLevel++;
-                    if (config.progressLevel > NUM_LEVELS) {
+                    if (config.progressLevel > numLevels) {
                         if (config.progressDifficulty < DIFFICULTY_MAX) {
                             config.progressLevel = 1;
                             config.progressDifficulty++;
                         } else {
-                            config.progressLevel = NUM_LEVELS;
+                            config.progressLevel = numLevels;
                         }
                     }
 
@@ -239,9 +241,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             //Handle level end
             if (playCtx.sequencePart == SEQ_FINISHED) {
-                if (playCtx.timeUp) {
-                    showTitle();
-                } else if (playCtx.levelNum >= NUM_LEVELS) {
+                if (playCtx.timeUp || playCtx.lastLevel) {
                     showTitle();
                 } else {
                     playLevel(playCtx.levelNum + 1, playCtx.difficulty);
@@ -373,6 +373,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         switch (difficulty) {
             case DIFFICULTY_NORMAL: filename += 'n'; break;
             case DIFFICULTY_HARD:   filename += 'h'; break;
+            case DIFFICULTY_SUPER:  filename += 's'; break;
         }
 
         play.clear();
@@ -409,6 +410,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.playing = true;
         playCtx.difficulty = difficulty;
         playCtx.levelNum = levelNum;
+        playCtx.lastLevel = (levelNum == difficultyNumLevels[difficulty]);
 
         switch (levelNum) {
             case 1:

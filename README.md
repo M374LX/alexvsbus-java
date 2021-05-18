@@ -6,7 +6,7 @@ to run in order to catch the bus, or else he will have to wait an eternity for
 the next bus to come.
 
 As it is currently a pre-release, not all planned features are present yet, but
-it is fully playable.
+it is already fully playable and has all planned levels.
 
 The graphical and sound style is mostly inspired by the 8-bit era, although the
 game is not faithful to all of the technical limitations of the period.
@@ -57,7 +57,7 @@ After installing Java and downloading the .jar file, on Windows, a double-click
 on the .jar file should be enough to start the game. To start it from the CLI,
 the command is:
 ```
-java -jar alexvsbus-desktop-pre1.jar
+java -jar alexvsbus-desktop-pre2.jar
 ```
 
 
@@ -66,7 +66,7 @@ java -jar alexvsbus-desktop-pre1.jar
 On PC, the game supports some command line options. For example, to use the
 option --fullscreen, the full command is:
 ```
-java -jar alexvsbus-desktop-pre1.jar --fullscreen
+java -jar alexvsbus-desktop-pre2.jar --fullscreen
 ```
 
 The options are:
@@ -105,7 +105,7 @@ systems (including Linux):
 
 On Windows, replace "./gradlew" with "gradlew.bat".
 
-The built .jar file will be at ``desktop/build/libs/desktop-pre1.jar``.
+The built .jar file will be at ``desktop/build/libs/desktop-pre2.jar``.
 
 Alternatively, the following command allows running the game without keeping the
 build:
@@ -160,8 +160,6 @@ On Windows, replace "./gradlew" with "gradlew.bat".
 ## Planned features
 
 Features planned for the final release include:
-
-* A "super" difficulty
 
 * A different cutscene for each level when reaching the goal
 

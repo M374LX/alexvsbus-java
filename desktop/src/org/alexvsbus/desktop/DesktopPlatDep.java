@@ -31,12 +31,13 @@ import org.alexvsbus.LineRead;
 import static org.alexvsbus.Defs.NONE;
 import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
 import static org.alexvsbus.Defs.DIFFICULTY_HARD;
-import static org.alexvsbus.Defs.NUM_LEVELS;
+import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
 import static org.alexvsbus.Defs.WM_UNSET;
 import static org.alexvsbus.Defs.WM_1X;
 import static org.alexvsbus.Defs.WM_2X;
 import static org.alexvsbus.Defs.WM_3X;
 import static org.alexvsbus.Defs.WM_FULLSCREEN;
+import static org.alexvsbus.Defs.difficultyNumLevels;
 
 class DesktopPlatDep implements PlatDep {
     Path configDirPath;
@@ -212,11 +213,13 @@ class DesktopPlatDep implements PlatDep {
                     config.progressDifficulty = DIFFICULTY_NORMAL;
                 } else if (tokens[1].equals("hard")) {
                     config.progressDifficulty = DIFFICULTY_HARD;
+                } else if (tokens[1].equals("super")) {
+                    config.progressDifficulty = DIFFICULTY_SUPER;
                 }
             } else if (tokens[0].equals("progress-level")) {
                 try {
                     int val = Integer.parseInt(tokens[1]);
-                    if (val < 1 || val > NUM_LEVELS) {
+                    if (val < 1 || val > 9) {
                         val = 1;
                     }
 
@@ -225,6 +228,12 @@ class DesktopPlatDep implements PlatDep {
                     //Do nothing
                 }
             }
+        }
+
+        if (config.progressLevel >
+                            difficultyNumLevels[config.progressDifficulty]) {
+
+            config.progressLevel = 1;
         }
     }
 
@@ -250,6 +259,7 @@ class DesktopPlatDep implements PlatDep {
         switch (config.progressDifficulty) {
             case DIFFICULTY_NORMAL: data += "normal"; break;
             case DIFFICULTY_HARD:   data += "hard";   break;
+            case DIFFICULTY_SUPER:  data += "super";  break;
         }
         data += "\n";
         data += "progress-level " + config.progressLevel + "\n";
