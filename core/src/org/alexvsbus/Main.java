@@ -175,9 +175,18 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                     }
                     break;
 
+                case DLGACT_TITLE:
+                    showTitle();
+                    break;
+
                 case DLGACT_PLAY:
                     dialogs.closeAll();
                     playLevel(levelNum, difficulty);
+                    break;
+
+                case DLGACT_TRYAGAIN:
+                    dialogs.closeAll();
+                    playLevel(playCtx.levelNum, playCtx.difficulty);
                     break;
             }
 
@@ -241,10 +250,18 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             //Handle level end
             if (playCtx.sequencePart == SEQ_FINISHED) {
-                if (playCtx.timeUp || playCtx.lastLevel) {
-                    showTitle();
-                } else {
-                    playLevel(playCtx.levelNum + 1, playCtx.difficulty);
+                if (playCtx.timeUp) {
+                    playCtx.playing = false;
+                    playCtx.score = 0;
+                    audio.stopBgm();
+                    dialogs.open(DLG_TRYAGAIN);
+                    removeWipe();
+                } else if (playCtx.goalReached) {
+                    if (playCtx.lastLevel) {
+                        showTitle();
+                    } else {
+                        playLevel(playCtx.levelNum + 1, playCtx.difficulty);
+                    }
                 }
             }
         }

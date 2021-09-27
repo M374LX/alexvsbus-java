@@ -383,6 +383,18 @@ class Dialogs {
                 }
                 break;
 
+            case DLG_TRYAGAIN:
+                switch (item){
+                    case 0:
+                        ctx.action = DLGACT_TRYAGAIN;
+                        break;
+
+                    case 1:
+                        ctx.action = DLGACT_TITLE;
+                        break;
+                }
+                break;
+
             case DLG_QUIT:
                 switch (item){
                     case 0:
@@ -552,6 +564,12 @@ class Dialogs {
             ctx.textOffsetY = -14;
             ctx.textWidth = 47;
             ctx.textHeight = 14;
+        } else if (dialogType == DLG_TRYAGAIN) {
+            ctx.text = "TRY AGAIN?";
+            ctx.textOffsetX = -9;
+            ctx.textOffsetY = -2;
+            ctx.textWidth = 10;
+            ctx.textHeight = 1;
         } else if (dialogType == DLG_QUIT) {
             ctx.text = "QUIT?";
             ctx.textOffsetX = -9;
@@ -622,6 +640,12 @@ class Dialogs {
                 di(1, CT,  0, 8, 6, 6, 0, 2, 2, 2, SPR_DIALOG_QUIT);
                 di(2, TR, -1, 1, 5, 5, 1, 0, 0, 0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 3;
+                break;
+
+            case DLG_TRYAGAIN:
+                di(0, CT, -4, 8, 6, 6, 1, 1, 1, 1, SPR_DIALOG_CONFIRM);
+                di(1, CT,  4, 8, 6, 6, 0, 0, 0, 0, SPR_DIALOG_CANCEL);
+                ctx.numItems = 2;
                 break;
 
             case DLG_QUIT:

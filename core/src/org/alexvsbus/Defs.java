@@ -627,12 +627,15 @@ public class Defs {
     static final int DLG_ABOUT = 4;
     static final int DLG_CREDITS = 5;
     static final int DLG_PAUSE = 6;
-    static final int DLG_QUIT = 7;
-    static final int DLG_ERROR = 8;
+    static final int DLG_TRYAGAIN = 7;
+    static final int DLG_QUIT = 8;
+    static final int DLG_ERROR = 9;
 
     //Dialog actions
     static final int DLGACT_QUIT = 0;
-    static final int DLGACT_PLAY = 1;
+    static final int DLGACT_TITLE = 1; //Go to title screen
+    static final int DLGACT_PLAY = 2;
+    static final int DLGACT_TRYAGAIN = 3;
 
 
 
