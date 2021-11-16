@@ -398,11 +398,11 @@ class Dialogs {
             case DLG_QUIT:
                 switch (item){
                     case 0:
-                        close();
+                        ctx.action = DLGACT_QUIT;
                         break;
 
                     case 1:
-                        ctx.action = DLGACT_QUIT;
+                        close();
                         break;
 
                     case 2:
@@ -649,8 +649,8 @@ class Dialogs {
                 break;
 
             case DLG_QUIT:
-                di(0, CT, -4, 8, 6, 6, 2, 2, 2, 1, SPR_DIALOG_CANCEL);
-                di(1, CT,  4, 8, 6, 6, 2, 2, 0, 2, SPR_DIALOG_CONFIRM);
+                di(0, CT, -4, 8, 6, 6, 2, 2, 2, 1, SPR_DIALOG_CONFIRM);
+                di(1, CT,  4, 8, 6, 6, 2, 2, 0, 2, SPR_DIALOG_CANCEL);
                 di(2, TL,  1, 1, 5, 5, 1, 0, 1, 0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
                 break;
