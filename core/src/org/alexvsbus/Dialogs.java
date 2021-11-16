@@ -167,8 +167,12 @@ class Dialogs {
             confirm(item, false);
         }
         if ((inputHit & INPUT_DIALOG_RETURN) > 0) {
-            if (ctx.stack[ctx.stackSize - 1].type == DLG_MAIN) {
+            int type = ctx.stack[ctx.stackSize - 1].type;
+
+            if (type == DLG_MAIN) {
                 open(DLG_QUIT);
+            } else if (type == DLG_TRYAGAIN) {
+                //Do nothing
             } else {
                 close();
             }
