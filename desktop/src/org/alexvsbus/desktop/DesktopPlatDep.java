@@ -181,6 +181,10 @@ class DesktopPlatDep implements PlatDep {
             String line = lineRead.getLine();
             String tokens[] = line.split(" ");
 
+            if (tokens.length < 2) {
+                continue;
+            }
+
             if (tokens[0].equals("window-mode")) {
                 //Do not load window mode from config file if set from CLI
                 if (cliWindowMode != WM_UNSET) {
