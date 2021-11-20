@@ -376,6 +376,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         audio.stopAllSfx();
         audio.playBgm(BGMTITLE);
 
+        dialogCtx.showLogo = true;
+
         dialogs.closeAll();
         dialogs.open(DLG_MAIN);
 
@@ -400,7 +402,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             switch (err) {
                 case LVLERR_CANNOT_OPEN:
-                    msg = "Cannot load level";
+                    msg = "Cannot load level file";
                     break;
 
                 case LVLERR_TOO_LARGE:
@@ -454,6 +456,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 playCtx.bus.numCharacters = 3;
                 break;
         }
+
+        dialogCtx.showLogo = false;
 
         audio.playBgm(playCtx.bgm);
         wipeFromBlack();

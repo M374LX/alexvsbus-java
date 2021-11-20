@@ -88,6 +88,7 @@ public class Defs {
         boolean selectedVisible;
 
         boolean showFrame;
+        boolean showLogo;
 
         int action;
         int actionParam;

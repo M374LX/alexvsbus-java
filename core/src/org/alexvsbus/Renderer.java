@@ -96,7 +96,7 @@ class Renderer {
             drawPlay();
             drawHud();
             if (touchButtons) drawTouchButtons(inputState);
-        } else {
+        } else if (dialogCtx.showLogo) {
             drawSprite(SPR_LOGO, (SCREEN_WIDTH - LOGO_WIDTH) / 2 + 4, 16);
         }
 
