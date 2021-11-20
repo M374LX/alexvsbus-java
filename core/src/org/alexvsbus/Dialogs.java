@@ -432,11 +432,15 @@ class Dialogs {
 
         switch (dialogType) {
             case DLG_JUKEBOX:
-                audio.unloadBgm();
+                audio.stopBgm();
                 break;
 
             case DLG_PAUSE:
                 ctx.showFrame = true;
+                break;
+
+            case DLG_TRYAGAIN:
+                audio.stopBgm();
                 break;
 
             case DLG_ERROR:

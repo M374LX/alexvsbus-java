@@ -214,10 +214,6 @@ class Audio {
     }
 
     void stopBgm() {
-        if (bgm != null) bgm.stop();
-    }
-
-    void unloadBgm() {
         if (bgm != null) {
             bgm.stop();
             bgm.dispose();

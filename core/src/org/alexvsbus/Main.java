@@ -253,9 +253,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 if (playCtx.timeUp) {
                     playCtx.playing = false;
                     playCtx.score = 0;
-                    audio.stopBgm();
-                    dialogs.open(DLG_TRYAGAIN);
                     removeWipe();
+                    dialogs.open(DLG_TRYAGAIN);
                 } else if (playCtx.goalReached) {
                     if (playCtx.lastLevel) {
                         showTitle();
