@@ -249,7 +249,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             }
 
             //Handle level end
-            if (playCtx.sequencePart == SEQ_FINISHED) {
+            if (playCtx.sequenceStep == SEQ_FINISHED) {
                 if (playCtx.timeUp) {
                     playCtx.playing = false;
                     playCtx.score = 0;

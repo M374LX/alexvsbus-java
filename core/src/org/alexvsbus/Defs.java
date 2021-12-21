@@ -210,6 +210,24 @@ public class Defs {
         int solid; //Index within PlayCtx.solids[]
     }
 
+    static class CutsceneObject {
+        int sprite;
+        float x;
+        float y;
+        float xvel;
+        float yvel;
+        float acc;
+        float grav;
+
+        int animCurFrame;
+        int animNumFrames;
+        float animDelay;
+        float animDelayMax;
+        boolean animLoop;
+
+        boolean inBus;
+    }
+
     //An invisible area the player character cannot pass through, which is
     //placed along with the floor, crates, and so on
     static class Solid {
@@ -284,9 +302,6 @@ public class Defs {
         boolean goalReached;
         boolean countingScore;
 
-        boolean playerInBus;
-        int playerBusOffsetX;
-
         float cratePushRemaining;
 
         Camera cam;
@@ -301,6 +316,7 @@ public class Defs {
         MovingPeel slipPeel;
         MovingPeel thrownPeel;
         PushableCrate pushableCrates[];
+        CutsceneObject cutsceneObjects[];
         Solid solids[];
 
         Hole holes[];
@@ -329,7 +345,7 @@ public class Defs {
         int crackParticleAnimFrame;
         float crackParticleAnimDelay;
 
-        int sequencePart;
+        int sequenceStep;
         float sequenceDelay;
         boolean wipeToBlack;
         boolean wipeFromBlack;
@@ -651,6 +667,7 @@ public class Defs {
     static final int MAX_GEYSERS = 32;
     static final int MAX_PASSAGEWAYS = 4;
     static final int MAX_PUSHABLE_CRATES = MAX_PASSAGEWAYS;
+    static final int MAX_CUTSCENE_OBJECTS = 2;
     static final int MAX_SOLIDS = 96;
     static final int MAX_TRIGGERS = 8;
     static final int MAX_RESPAWN_POINTS = 32;
@@ -761,7 +778,12 @@ public class Defs {
     static final int SEQ_BUS_LEAVING = 20;
     static final int SEQ_TIMEUP_BUS_NEAR = 30;
     static final int SEQ_TIMEUP_BUS_FAR = 40;
-    static final int SEQ_GOAL_REACHED = 100;
+    static final int SEQ_GOAL_REACHED = 50;
+    static final int SEQ_GOAL_REACHED_DEFAULT = 100;
+    static final int SEQ_GOAL_REACHED_LEVEL2 = 200;
+    static final int SEQ_GOAL_REACHED_LEVEL3 = 300;
+    static final int SEQ_GOAL_REACHED_LEVEL4 = 400;
+    static final int SEQ_GOAL_REACHED_LEVEL5 = 500;
     static final int SEQ_FINISHED = 999;
 
 
@@ -785,9 +807,9 @@ public class Defs {
     static final int[] sprites = new int[]{
         0,    296,  96,  192, //SPR_BACKGROUND
         928,  144,  8,   8,   //SPR_BANANA_PEEL
-        104,  272,  24,  64,  //SPR_BEARDED_MAN_STAND
+        104,  272,  32,  64,  //SPR_BEARDED_MAN_STAND
         136,  272,  32,  64,  //SPR_BEARDED_MAN_WALK
-        328,  272,  24,  64,  //SPR_BEARDED_MAN_JUMP
+        328,  272,  32,  64,  //SPR_BEARDED_MAN_JUMP
         984,  144,  8,   8,   //SPR_BG_BLACK
         992,  144,  8,   8,   //SPR_BG_SKY1
         1000, 144,  8,   8,   //SPR_BG_SKY2
@@ -841,7 +863,7 @@ public class Defs {
         256,  0,    32,  64,  //SPR_PLAYER_GRABROPE
         288,  0,    32,  64,  //SPR_PLAYER_THROWBACK
         384,  0,    48,  64,  //SPR_PLAYER_SLIP
-        208,  72,   48,  64,  //SPR_PLAYER_RUN
+        232,  72,   48,  64,  //SPR_PLAYER_RUN
         0,    72,   24,  64,  //SPR_PLAYER_CLEAN_DUNG
         904,  24,   24,  136, //SPR_POLE
         616,  168,  400, 16,  //SPR_ROPE_HORIZONTAL

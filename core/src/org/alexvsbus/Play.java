@@ -80,6 +80,11 @@ class Play {
             ctx.pushableCrates[i] = new PushableCrate();
         }
 
+        ctx.cutsceneObjects = new CutsceneObject[MAX_CUTSCENE_OBJECTS];
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            ctx.cutsceneObjects[i] = new CutsceneObject();
+        }
+
         ctx.solids = new Solid[MAX_SOLIDS];
         for (i = 0; i < MAX_SOLIDS; i++) {
             ctx.solids[i] = new Solid();
@@ -131,7 +136,6 @@ class Play {
         ctx.goalReached = false;
         ctx.countingScore = false;
 
-        ctx.playerInBus = false;
         ctx.busStopSignX = 440;
 
         ctx.cratePushRemaining = 0.75f;
@@ -190,6 +194,20 @@ class Play {
             ctx.pushableCrates[i].pushed = false;
         }
 
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            ctx.cutsceneObjects[i].sprite = NONE;
+            ctx.cutsceneObjects[i].x = 0;
+            ctx.cutsceneObjects[i].y = 0;
+            ctx.cutsceneObjects[i].xvel = 0;
+            ctx.cutsceneObjects[i].yvel = 0;
+            ctx.cutsceneObjects[i].acc = 0;
+            ctx.cutsceneObjects[i].grav = 0;
+            ctx.cutsceneObjects[i].inBus = false;
+            ctx.cutsceneObjects[i].animCurFrame = 0;
+            ctx.cutsceneObjects[i].animNumFrames = 1;
+            ctx.cutsceneObjects[i].animLoop = false;
+        }
+
         for (i = 0; i < MAX_SOLIDS; i++) {
             ctx.solids[i].type = NONE;
         }
@@ -228,7 +246,7 @@ class Play {
         ctx.crackParticleAnimFrame = 0;
         ctx.crackParticleAnimDelay = 0.1f;
 
-        ctx.sequencePart = SEQ_INITIAL_DELAY;
+        ctx.sequenceStep = SEQ_INITIAL_DELAY;
         ctx.sequenceDelay = 1;
         ctx.wipeToBlack = false;
         ctx.wipeFromBlack = false;
@@ -311,6 +329,25 @@ class Play {
         ctx.crackParticles[ctx.nextCrackParticle].grav =  200;
         ctx.nextCrackParticle++;
         ctx.nextCrackParticle %= MAX_CRACK_PARTICLES;
+    }
+
+    void showPlayerInBus() {
+        CutsceneObject cutscenePlayer = ctx.cutsceneObjects[0];
+
+        cutscenePlayer.sprite = SPR_PLAYER_STAND;
+        cutscenePlayer.inBus = true;
+        cutscenePlayer.x = 342;
+        cutscenePlayer.y = BUS_Y + 36;
+        cutscenePlayer.animCurFrame = 0;
+        cutscenePlayer.animNumFrames = 1;
+
+        ctx.player.state = PLAYER_STATE_INACTIVE;
+        ctx.player.visible = false;
+    }
+
+    void startScoreCount() {
+        ctx.countingScore = true;
+        ctx.timeDelay = 0.1f;
     }
 
     //--------------------------------------------------------------------------
@@ -542,6 +579,19 @@ class Play {
                 ptcl.x = NONE;
             }
         }
+
+        //Cutscene objects
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            CutsceneObject cobj = ctx.cutsceneObjects[i];
+
+            //Ignore inexistent cutscene objects
+            if (cobj.sprite == NONE) continue;
+
+            cobj.xvel += cobj.acc * dt;
+            cobj.yvel += cobj.grav * dt;
+            cobj.x += cobj.xvel * dt;
+            cobj.y += cobj.yvel * dt;
+        }
     }
 
     //Acts if the passing car has reached the X position at which it throws a
@@ -608,16 +658,6 @@ class Play {
             }
 
             pl.x = ctx.grabbedRope.x - 19;
-        }
-
-        //Update the position relative to the bus when the player character is
-        //in it
-        if (ctx.playerInBus && pl.y >= BUS_Y + 36) {
-            pl.x = ctx.bus.x + ctx.playerBusOffsetX;
-            pl.y = BUS_Y + 36;
-            pl.xvel = 0;
-            pl.yvel = 0;
-            pl.onFloor = true;
         }
     }
 
@@ -1588,6 +1628,26 @@ class Play {
                 }
             }
         }
+
+        //Cutscene objects
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            CutsceneObject cobj = ctx.cutsceneObjects[i];
+
+            if (cobj.sprite == NONE || cobj.animNumFrames <= 1) continue;
+
+            cobj.animDelay -= dt;
+            if (cobj.animDelay <= 0) {
+                cobj.animDelay = cobj.animDelayMax;
+                cobj.animCurFrame++;
+                if (cobj.animCurFrame >= cobj.animNumFrames) {
+                    if (cobj.animLoop) {
+                        cobj.animCurFrame = 0;
+                    } else {
+                        cobj.animCurFrame = cobj.animNumFrames - 1;
+                    }
+                }
+            }
+        }
     }
 
     //Determines the position of the light pole
@@ -1609,6 +1669,10 @@ class Play {
     void updateSequence() {
         Player pl = ctx.player;
         Bus bus = ctx.bus;
+        CutsceneObject cutscenePlayer = ctx.cutsceneObjects[0];
+        CutsceneObject beardedMan = ctx.cutsceneObjects[1];
+        CutsceneObject bird = ctx.cutsceneObjects[1];
+        CutsceneObject dung = ctx.cutsceneObjects[0];
         Camera cam = ctx.cam;
         int levelSize = ctx.levelSize;
 
@@ -1617,7 +1681,7 @@ class Play {
 
         ctx.sequenceDelay = 0;
 
-        switch (ctx.sequencePart) {
+        switch (ctx.sequenceStep) {
             //------------------------------------------------------------------
             case 0: //SEQ_NORMAL_PLAY
                 if (pl.x >= levelSize - 426) {
@@ -1636,12 +1700,13 @@ class Play {
                     if (ctx.timeUp) {
                         ctx.sequenceDelay = 1;
                         if (pl.x >= levelSize - 960) {
-                            ctx.sequencePart = SEQ_TIMEUP_BUS_NEAR;
+                            ctx.sequenceStep = SEQ_TIMEUP_BUS_NEAR;
                         } else {
-                            ctx.sequencePart = SEQ_TIMEUP_BUS_FAR;
+                            ctx.sequenceStep = SEQ_TIMEUP_BUS_FAR;
                         }
                     } else { //Goal reached
-                        ctx.sequencePart = SEQ_GOAL_REACHED;
+                        inputRight = true;
+                        ctx.sequenceStep = SEQ_GOAL_REACHED;
                     }
                 }
                 break;
@@ -1652,7 +1717,7 @@ class Play {
                 ignoreUserInput = false;
                 ctx.timeRunning = true;
                 ctx.timeDelay = 1;
-                ctx.sequencePart = SEQ_NORMAL_PLAY;
+                ctx.sequenceStep = SEQ_NORMAL_PLAY;
                 ctx.canPause = true;
                 break;
 
@@ -1664,17 +1729,17 @@ class Play {
                 bus.acc = 256;
                 bus.xvel = 4;
                 ctx.sequenceDelay = 2;
-                ctx.sequencePart++;
+                ctx.sequenceStep++;
                 break;
 
             case 21:
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 1;
-                ctx.sequencePart++;
+                ctx.sequenceStep++;
                 break;
 
             case 22:
-                ctx.sequencePart = SEQ_FINISHED;
+                ctx.sequenceStep = SEQ_FINISHED;
                 break;
 
 
@@ -1683,14 +1748,14 @@ class Play {
                 cam.xdest = levelSize - (SCREEN_WIDTH / 2);
                 cam.xvel = CAMERA_XVEL;
                 cam.yvel = 0;
-                ctx.sequencePart++;
+                ctx.sequenceStep++;
                 break;
 
             case 31:
                 if (cam.xvel != 0) break;
                 if (cam.yvel != 0) break;
                 ctx.sequenceDelay = 0.2f;
-                ctx.sequencePart = SEQ_BUS_LEAVING;
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
                 break;
 
 
@@ -1700,7 +1765,7 @@ class Play {
                 cam.yvel = 0;
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 0.6f;
-                ctx.sequencePart++;
+                ctx.sequenceStep++;
                 break;
 
             case 41:
@@ -1709,63 +1774,368 @@ class Play {
                 cam.y = 0;
                 ctx.wipeFromBlack = true;
                 ctx.sequenceDelay = 0.6f;
-                ctx.sequencePart++;
+                ctx.sequenceStep++;
                 break;
 
             case 42:
-                ctx.sequencePart = SEQ_BUS_LEAVING;
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
                 break;
 
 
             //------------------------------------------------------------------
-            case 100: //SEQ_GOAL_REACHED
-                inputLeft = false;
-                inputRight = true;
-                inputJump = false;
-                ctx.sequencePart++;
+            case 50: //SEQ_GOAL_REACHED
+                if (ctx.difficulty != DIFFICULTY_SUPER) {
+                    if (ctx.levelNum == 3) {
+                        if (pl.x > bus.x + 192) {
+                            ctx.objs[0].type = OBJ_BANANA_PEEL_MOVING;
+                            ctx.objs[0].x = levelSize;
+                            ctx.objs[0].y = BUS_Y + 72;
+                            ctx.thrownPeel.obj = 0;
+                            ctx.thrownPeel.x = ctx.objs[0].x;
+                            ctx.thrownPeel.y = ctx.objs[0].y;
+                            ctx.thrownPeel.xmax = (int)bus.x + 345;
+                            ctx.thrownPeel.xvel = -512;
+                            ctx.thrownPeel.yvel = 200;
+                            ctx.thrownPeel.grav = 500;
+                            ctx.sequenceStep++;
+                        }
+                    } else if (ctx.levelNum == 4) {
+                        if (pl.x >= bus.x + 120) {
+                            bird.sprite = SPR_BIRD;
+                            bird.x = cam.x - 16;
+                            bird.y = 120;
+                            bird.xvel = 304;
+                            bird.animCurFrame = 0;
+                            bird.animNumFrames = 4;
+                            bird.animDelay = 0.1f;
+                            bird.animDelayMax = 0.1f;
+                            bird.animLoop = true;
+                            ctx.sequenceStep++;
+                        }
+                    } else {
+                        ctx.sequenceStep++;
+                    }
+                } else {
+                    ctx.sequenceStep++;
+                }
                 break;
 
-            case 101:
+            case 51:
                 if (pl.x >= bus.x + 256) {
                     pl.x = bus.x + 256;
                     inputRight = false;
-                    ctx.sequencePart++;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+
+            case 52:
+                if (pl.state == PLAYER_STATE_SLIP) {
+                    inputRight = false;
+                    ctx.sequenceStep++;
+                } else if (bird.sprite == SPR_BIRD) {
+                    ctx.sequenceStep++;
+                } else if (pl.xvel <= 0 || pl.x >= bus.x + 342) {
+                    pl.x = bus.x + 342;
+                    pl.xvel = 0;
+                    inputJump = true;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 53:
+                if (ctx.difficulty == DIFFICULTY_SUPER || ctx.levelNum == 1) {
+                    ctx.sequenceStep = SEQ_GOAL_REACHED_DEFAULT;
+                } else if (ctx.levelNum == 2) {
+                    ctx.sequenceStep = SEQ_GOAL_REACHED_LEVEL2;
+                } else if (ctx.levelNum == 3) {
+                    ctx.sequenceStep = SEQ_GOAL_REACHED_LEVEL3;
+                } else if (ctx.levelNum == 4) {
+                    ctx.sequenceStep = SEQ_GOAL_REACHED_LEVEL4;
+                } else if (ctx.levelNum == 5) {
+                    ctx.sequenceStep = SEQ_GOAL_REACHED_LEVEL5;
+                }
+                break;
+
+
+            //------------------------------------------------------------------
+            case 100: //SEQ_GOAL_REACHED_DEFAULT
+                inputJump = false;
+                if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    showPlayerInBus();
+                    startScoreCount();
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 101:
+                if (!ctx.countingScore) {
+                    ctx.sequenceDelay = 0.5f;
+                    ctx.sequenceStep++;
                 }
                 break;
 
             case 102:
-                if (pl.xvel <= 0) {
-                    inputJump = true;
-                    ctx.sequencePart++;
-                }
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
                 break;
 
-            case 103:
+
+            //------------------------------------------------------------------
+            case 200: //SEQ_GOAL_REACHED_LEVEL2
                 inputJump = false;
-                if (pl.yvel > 0) {
-                    ctx.playerBusOffsetX = (int)pl.x - (int)bus.x;
-                    ctx.playerInBus = true;
-                    ctx.sequencePart++;
+                if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    showPlayerInBus();
+                    startScoreCount();
+                    ctx.sequenceStep++;
                 }
                 break;
 
-            case 104:
-                if (pl.yvel == 0) {
-                    ctx.countingScore = true;
-                    ctx.timeDelay = 0.1f;
-                    ctx.sequencePart++;
-                }
-                break;
-
-            case 105:
+            case 201:
                 if (!ctx.countingScore) {
                     ctx.sequenceDelay = 0.5f;
-                    ctx.sequencePart++;
+                    ctx.sequenceStep++;
                 }
                 break;
 
-            case 106:
-                ctx.sequencePart = SEQ_BUS_LEAVING;
+            case 202:
+                bus.frontDoorAnimDelay = 0.1f;
+                bus.frontDoorAnimDelta = -1;
+                ctx.sequenceDelay = 0.5f;
+                ctx.sequenceStep++;
+                break;
+
+            case 203:
+                cutscenePlayer.sprite = NONE;
+                beardedMan.sprite = SPR_BEARDED_MAN_WALK;
+                beardedMan.x = ctx.levelSize;
+                beardedMan.y = 203;
+                beardedMan.xvel = -150;
+                beardedMan.animCurFrame = 0;
+                beardedMan.animNumFrames = 6;
+                beardedMan.animDelay = 0.1f;
+                beardedMan.animDelayMax = 0.1f;
+                beardedMan.animLoop = true;
+                ctx.sequenceStep++;
+                break;
+
+            case 204:
+                if (beardedMan.x <= bus.x + 380) {
+                    beardedMan.x = bus.x + 380;
+                    beardedMan.acc = 256;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 205:
+                if (beardedMan.xvel >= 0 || beardedMan.x <= bus.x + 337) {
+                    beardedMan.sprite = SPR_BEARDED_MAN_STAND;
+                    beardedMan.x = bus.x + 337;
+                    beardedMan.xvel = 0;
+                    beardedMan.acc = 0;
+                    beardedMan.animCurFrame = 0;
+                    beardedMan.animNumFrames = 1;
+                    bus.frontDoorAnimDelay = 0.1f;
+                    bus.frontDoorAnimDelta = 1;
+                    ctx.sequenceDelay = 0.5f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 206:
+                beardedMan.sprite = SPR_BEARDED_MAN_JUMP;
+                beardedMan.yvel = -154;
+                beardedMan.grav = 230;
+                ctx.sequenceStep++;
+                break;
+
+            case 207:
+                if (beardedMan.y > 163 && beardedMan.yvel > 0) {
+                    beardedMan.sprite = SPR_BEARDED_MAN_STAND;
+                    beardedMan.grav = 0;
+                    beardedMan.yvel = 0;
+                    beardedMan.x -= bus.x; //Make it relative to the bus
+                    beardedMan.y = 163;
+                    beardedMan.inBus = true;
+                    ctx.sequenceDelay = 0.25f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 208:
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
+                break;
+
+
+            //------------------------------------------------------------------
+            case 300: //SEQ_GOAL_REACHED_LEVEL3
+                if (pl.onFloor) {
+                    ctx.sequenceDelay = 0.25f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 301:
+                inputRight = !inputRight;
+                oldInputRight = !inputRight;
+                if (pl.state == PLAYER_STATE_GETUP) {
+                    inputRight = true;
+                    oldInputRight = false;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 302:
+                if (pl.x >= bus.x + 342) {
+                    pl.x = bus.x + 342;
+                    pl.xvel = 0;
+                    inputRight = false;
+                    inputJump = true;
+                    jumpPressY = 9999;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 303:
+                if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    showPlayerInBus();
+                    startScoreCount();
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 304:
+                if (!ctx.countingScore) {
+                    ctx.sequenceDelay = 0.25f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 305:
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
+                break;
+
+
+            //------------------------------------------------------------------
+            case 400: //SEQ_GOAL_REACHED_LEVEL4
+                if (pl.x >= bus.x + 342) {
+                    pl.x = bus.x + 342;
+                    pl.xvel = 0;
+                }
+                if (bird.x >= bus.x + 353) {
+                    dung.sprite = SPR_DUNG;
+                    dung.x = bus.x + 353;
+                    dung.y = bird.y;
+                    dung.yvel = 256;
+                    dung.animLoop = true;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 401:
+                if (dung.y >= pl.y + 12) {
+                    dung.sprite = NONE;
+                    dung.yvel = 0;
+                    pl.visible = false;
+                    cutscenePlayer.sprite = SPR_PLAYER_CLEAN_DUNG;
+                    cutscenePlayer.x = pl.x;
+                    cutscenePlayer.y = pl.y;
+                    ctx.sequenceDelay = 0.25f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 402:
+                cutscenePlayer.animCurFrame = 0;
+                cutscenePlayer.animNumFrames = 9;
+                cutscenePlayer.animDelay = 0.2f;
+                cutscenePlayer.animDelayMax = 0.2f;
+                cutscenePlayer.animLoop = false;
+                ctx.sequenceDelay = 2.0f;
+                ctx.sequenceStep++;
+                break;
+
+            case 403:
+                pl.visible = true;
+                cutscenePlayer.sprite = NONE;
+                ctx.sequenceDelay = 0.25f;
+                ctx.sequenceStep++;
+                break;
+
+            case 404:
+                inputJump = true;
+                ctx.sequenceStep++;
+                break;
+
+            case 405:
+                if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    showPlayerInBus();
+                    startScoreCount();
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 406:
+                if (!ctx.countingScore) {
+                    ctx.sequenceDelay = 0.5f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 407:
+                ctx.sequenceStep = SEQ_BUS_LEAVING;
+                break;
+
+
+            //------------------------------------------------------------------
+            case 500: //SEQ_GOAL_REACHED_LEVEL5
+                bus.frontDoorAnimDelay = 0.1f;
+                bus.frontDoorAnimDelta = -1;
+                bus.acc = 256;
+                bus.xvel = 4;
+                ctx.sequenceStep++;
+                break;
+
+            case 501:
+                if (bus.x >= ctx.levelSize + 32) {
+                    bus.acc = 0;
+                    bus.xvel = 0;
+                    pl.visible = false;
+                    cutscenePlayer.sprite = SPR_PLAYER_RUN;
+                    cutscenePlayer.x = pl.x;
+                    cutscenePlayer.y = pl.y;
+                    cutscenePlayer.xvel = 128;
+                    cutscenePlayer.acc = 512;
+                    cutscenePlayer.animNumFrames = 4;
+                    cutscenePlayer.animLoop = true;
+                    cutscenePlayer.animDelay = 0.1f;
+                    cutscenePlayer.animDelayMax = 0.1f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 502:
+                if (cutscenePlayer.x >= ctx.levelSize + 32) {
+                    startScoreCount();
+                    cutscenePlayer.xvel = 0;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 503:
+                if (!ctx.countingScore) {
+                    ctx.sequenceDelay = 0.5f;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 504:
+                ctx.wipeToBlack = true;
+                ctx.sequenceDelay = 1;
+                ctx.sequenceStep++;
+                break;
+
+            case 505:
+                ctx.sequenceStep = SEQ_FINISHED;
                 break;
         }
     }

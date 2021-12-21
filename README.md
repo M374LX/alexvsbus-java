@@ -161,8 +161,6 @@ On Windows, replace "./gradlew" with "gradlew.bat".
 
 Features planned for the final release include:
 
-* A different cutscene for each level when reaching the goal
-
 * An ending sequence
 
 * More documentation

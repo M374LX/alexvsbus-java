@@ -221,12 +221,16 @@ class Renderer {
             drawSprite(SPR_BUS_CHARACTER_3, x + 80, y + 24);
         }
 
-        //Player character (if in the bus)
-        if (ctx.playerInBus) {
-            spr = playerAnimSprites[ctx.player.animType];
-            x = (int)ctx.player.x;
-            y = (int)ctx.player.y;
-            frame = ctx.player.animCurFrame;
+        //Cutscene objects (if in the bus)
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            CutsceneObject cobj = ctx.cutsceneObjects[i];
+
+            if (cobj.sprite == NONE || !cobj.inBus) continue;
+
+            spr = cobj.sprite;
+            x = (int)cobj.x + (int)ctx.bus.x;
+            y = (int)cobj.y;
+            frame = cobj.animCurFrame;
             drawSpriteFrame(spr, x, y, frame);
         }
 
@@ -297,12 +301,25 @@ class Renderer {
             }
         }
 
-        //Player character (if not in the bus)
-        if (!ctx.playerInBus && ctx.player.visible) {
+        //Player character
+        if (ctx.player.visible) {
             spr = playerAnimSprites[ctx.player.animType];
             x = (int)ctx.player.x;
             y = (int)ctx.player.y;
             frame = ctx.player.animCurFrame;
+            drawSpriteFrame(spr, x, y, frame);
+        }
+
+        //Cutscene objects (if not in the bus)
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            CutsceneObject cobj = ctx.cutsceneObjects[i];
+
+            if (cobj.sprite == NONE || cobj.inBus) continue;
+
+            spr = cobj.sprite;
+            x = (int)cobj.x;
+            y = (int)cobj.y;
+            frame = cobj.animCurFrame;
             drawSpriteFrame(spr, x, y, frame);
         }
 
