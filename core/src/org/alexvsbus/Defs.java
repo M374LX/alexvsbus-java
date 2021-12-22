@@ -358,7 +358,7 @@ public class Defs {
     //
 
     //Version and repository
-    public static final String VERSION = "pre2";
+    public static final String VERSION = "pre3";
     public static final String REPOSITORY = "https://github.com/M374LX/alexvsbus-java";
 
     //Maximum delta time

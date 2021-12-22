@@ -57,7 +57,7 @@ After installing Java and downloading the .jar file, on Windows, a double-click
 on the .jar file should be enough to start the game. To start it from the CLI,
 the command is:
 ```
-java -jar alexvsbus-desktop-pre2.jar
+java -jar alexvsbus-desktop-pre3.jar
 ```
 
 
@@ -66,7 +66,7 @@ java -jar alexvsbus-desktop-pre2.jar
 On PC, the game supports some command line options. For example, to use the
 option --fullscreen, the full command is:
 ```
-java -jar alexvsbus-desktop-pre2.jar --fullscreen
+java -jar alexvsbus-desktop-pre3.jar --fullscreen
 ```
 
 The options are:
@@ -105,7 +105,7 @@ systems (including Linux):
 
 On Windows, replace "./gradlew" with "gradlew.bat".
 
-The built .jar file will be at ``desktop/build/libs/desktop-pre2.jar``.
+The built .jar file will be at ``desktop/build/libs/desktop-pre3.jar``.
 
 Alternatively, the following command allows running the game without keeping the
 build:
