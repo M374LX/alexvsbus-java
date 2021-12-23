@@ -180,7 +180,7 @@ class Renderer {
         if (ctx.passingCar.x != NONE) {
             x = (int)ctx.passingCar.x;
             y = PASSING_CAR_Y;
-            frame = ctx.passingCar.wheelAnimFrame;
+            frame = ctx.anims[ANIM_PASSING_CAR_WHEELS].frame;
 
             spr = SPR_CAR_BLUE;
             if (ctx.passingCar.color == CAR_SILVER) {
@@ -196,7 +196,8 @@ class Renderer {
 
         //Hen
         if (ctx.hen.x != NONE) {
-            drawSpriteFrame(SPR_HEN, (int)ctx.hen.x, HEN_Y, ctx.hen.animFrame);
+            frame = ctx.anims[ANIM_HEN].frame;
+            drawSpriteFrame(SPR_HEN, (int)ctx.hen.x, HEN_Y, frame);
         }
 
         //Bus body, wheels, and route sign
@@ -206,7 +207,7 @@ class Renderer {
         if (ctx.bus.routeSign != NONE) {
             drawSpriteFrame(SPR_BUS_ROUTE, x + 308, y + 48, ctx.bus.routeSign);
         }
-        frame = ctx.bus.wheelAnimFrame;
+        frame = ctx.anims[ANIM_BUS_WHEELS].frame;
         drawSpriteFrame(SPR_BUS_WHEEL, x + 104, y + 80, frame);
         drawSpriteFrame(SPR_BUS_WHEEL, x + 296, y + 80, frame);
 
@@ -230,16 +231,16 @@ class Renderer {
             spr = cobj.sprite;
             x = (int)cobj.x + (int)ctx.bus.x;
             y = (int)cobj.y;
-            frame = cobj.animCurFrame;
+            frame = ctx.anims[ANIM_CUTSCENE_OBJECTS + i].frame;
             drawSpriteFrame(spr, x, y, frame);
         }
 
         //Bus doors
         x = (int)ctx.bus.x;
         y = BUS_Y;
-        frame = ctx.bus.rearDoorAnimFrame;
+        frame = ctx.anims[ANIM_BUS_DOOR_REAR].frame;
         drawSpriteFrame(SPR_BUS_DOOR, x + 64,  y + 16, frame);
-        frame = ctx.bus.frontDoorAnimFrame;
+        frame = ctx.anims[ANIM_BUS_DOOR_FRONT].frame;
         drawSpriteFrame(SPR_BUS_DOOR, x + 344, y + 16, frame);
 
         //Light poles (at most two are visible)
@@ -280,7 +281,7 @@ class Renderer {
                 int h = 265 - obj.y;
                 if (h <= 0) h = 1;
 
-                frame = ctx.geyserAnimFrame;
+                frame = ctx.anims[ANIM_GEYSERS].frame;
 
                 drawSpritePart(SPR_GEYSER, obj.x, obj.y, frame * w, 0, w, h);
 
@@ -292,8 +293,8 @@ class Renderer {
                 if (obj.type == OBJ_SPRING) {
                     frame = 5;
 
-                    if (i == ctx.hitSpring.obj) {
-                        frame = ctx.hitSpring.animFrame;
+                    if (i == ctx.hitSpring) {
+                        frame = ctx.anims[ANIM_HIT_SPRING].frame;
                     }
                 }
 
@@ -306,7 +307,7 @@ class Renderer {
             spr = playerAnimSprites[ctx.player.animType];
             x = (int)ctx.player.x;
             y = (int)ctx.player.y;
-            frame = ctx.player.animCurFrame;
+            frame = ctx.anims[ANIM_PLAYER].frame;
             drawSpriteFrame(spr, x, y, frame);
         }
 
@@ -319,7 +320,7 @@ class Renderer {
             spr = cobj.sprite;
             x = (int)cobj.x;
             y = (int)cobj.y;
-            frame = cobj.animCurFrame;
+            frame = ctx.anims[ANIM_CUTSCENE_OBJECTS + i].frame;
             drawSpriteFrame(spr, x, y, frame);
         }
 
@@ -352,9 +353,9 @@ class Renderer {
             } else if (obj.type == OBJ_BANANA_PEEL_MOVING) {
                 frame = 0;
             } else if (obj.type == OBJ_COIN_SILVER) {
-                frame = ctx.coinAnimFrame;
+                frame = ctx.anims[ANIM_COINS].frame;
             } else if (obj.type == OBJ_COIN_GOLD) {
-                frame = ctx.coinAnimFrame;
+                frame = ctx.anims[ANIM_COINS].frame;
             } else {
                 continue;
             }
@@ -380,7 +381,7 @@ class Renderer {
         for (i = 0; i < MAX_CRACK_PARTICLES; i++) {
             x = (int)ctx.crackParticles[i].x;
             y = (int)ctx.crackParticles[i].y;
-            frame = ctx.crackParticleAnimFrame;
+            frame = ctx.anims[ANIM_CRACK_PARTICLES].frame;
 
             if (x != NONE) {
                 drawSpriteFrame(SPR_CRACK_PARTICLE, x, y, frame);
@@ -395,7 +396,7 @@ class Renderer {
             if (x != NONE) {
                 boolean gold = ctx.coinSparks[i].gold;
                 spr = gold ? SPR_COIN_SPARK_GOLD : SPR_COIN_SPARK_SILVER;
-                frame = ctx.coinSparks[i].animFrame;
+                frame = ctx.anims[ANIM_COIN_SPARKS + i].frame;
                 drawSpriteFrame(spr, x, y, frame);
             }
         }

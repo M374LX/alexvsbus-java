@@ -54,7 +54,6 @@ class Play {
         ctx.player = new Player();
         ctx.bus = new Bus();
         ctx.grabbedRope = new GrabbedRope();
-        ctx.hitSpring = new HitSpring();
         ctx.thrownPeel = new MovingPeel();
         ctx.slipPeel = new MovingPeel();
         ctx.passingCar = new PassingCar();
@@ -115,6 +114,11 @@ class Play {
             ctx.crackParticles[i] = new CrackParticle();
         }
 
+        ctx.anims = new Anim[NUM_ANIMS];
+        for (i = 0; i < NUM_ANIMS; i++) {
+            ctx.anims[i] = new Anim();
+        }
+
         return ctx;
     }
 
@@ -162,17 +166,12 @@ class Play {
         ctx.bus.x = 24;
         ctx.bus.xvel = 0;
         ctx.bus.acc = 0;
-        ctx.bus.wheelAnimFrame = 0;
-        ctx.bus.wheelAnimDelay = 0;
-        ctx.bus.rearDoorAnimFrame = 3;
-        ctx.bus.rearDoorAnimDelta = 0;
-        ctx.bus.frontDoorAnimFrame = 0;
-        ctx.bus.frontDoorAnimDelta = 0;
 
         ctx.grabbedRope.obj = NONE;
-        ctx.hitSpring.obj = NONE;
         ctx.slipPeel.obj = NONE;
         ctx.thrownPeel.obj = NONE;
+
+        ctx.hitSpring = NONE;
 
         ctx.passingCar.x = NONE;
         ctx.hen.x = NONE;
@@ -203,9 +202,6 @@ class Play {
             ctx.cutsceneObjects[i].acc = 0;
             ctx.cutsceneObjects[i].grav = 0;
             ctx.cutsceneObjects[i].inBus = false;
-            ctx.cutsceneObjects[i].animCurFrame = 0;
-            ctx.cutsceneObjects[i].animNumFrames = 1;
-            ctx.cutsceneObjects[i].animLoop = false;
         }
 
         for (i = 0; i < MAX_SOLIDS; i++) {
@@ -234,17 +230,29 @@ class Play {
             ctx.crackParticles[i].x = NONE;
         }
 
+        setAnimation(ANIM_PLAYER, true, true, false, 1, 0.1f);
+        setAnimation(ANIM_COINS, true, true, false, 3, 0.1f);
+        setAnimation(ANIM_GEYSERS, true, true, false, 3, 0.05f);
+        setAnimation(ANIM_HIT_SPRING, false, false, false, 6, 0.02f);
+        setAnimation(ANIM_CRACK_PARTICLES, true, true, false, 2, 0.1f);
+        setAnimation(ANIM_BUS_WHEELS, false, true, false, 3, 0.1f);
+        setAnimation(ANIM_BUS_DOOR_REAR, false, false, false, 4, 0.1f);
+        setAnimation(ANIM_BUS_DOOR_FRONT, false, false, false, 4, 0.1f);
+        setAnimation(ANIM_PASSING_CAR_WHEELS, false, true, false, 2, 0.05f);
+        setAnimation(ANIM_HEN, false, true, false, 4, 0.05f);
+
+        for (i = 0; i < MAX_COIN_SPARKS; i++) {
+            setAnimation(ANIM_COIN_SPARKS + i, false, false, false, 4, 0.05f);
+        }
+        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
+            setAnimation(ANIM_CUTSCENE_OBJECTS + i, false, false, false, 1, 0);
+        }
+
+        //Start with bus rear door open
+        ctx.anims[ANIM_BUS_DOOR_REAR].frame = 3;
+
         ctx.nextCoinSpark = 0;
         ctx.nextCrackParticle = 0;
-
-        ctx.geyserAnimFrame = 0;
-        ctx.geyserAnimDelay = 0.1f;
-
-        ctx.coinAnimFrame = 0;
-        ctx.coinAnimDelay = 0.1f;
-
-        ctx.crackParticleAnimFrame = 0;
-        ctx.crackParticleAnimDelay = 0.1f;
 
         ctx.sequenceStep = SEQ_INITIAL_DELAY;
         ctx.sequenceDelay = 1;
@@ -297,6 +305,28 @@ class Play {
 
     //--------------------------------------------------------------------------
 
+    void setAnimation(int anim, boolean running, boolean loop, boolean reverse,
+                                                int numFrames, float delay) {
+
+        Anim a = ctx.anims[anim];
+
+        a.running = running;
+        a.loop = loop;
+        a.reverse = reverse;
+        a.numFrames = numFrames;
+        a.frame = reverse ? numFrames - 1 : 0;
+        a.delay = delay;
+        a.maxDelay = delay;
+    }
+
+    void startAnimation(int anim) {
+        Anim a = ctx.anims[anim];
+
+        a.running = true;
+        a.delay = a.maxDelay;
+        a.frame = a.reverse ? a.numFrames - 1 : 0;
+    }
+
     void addCrackParticles(int x, int y) {
         ctx.crackParticles[ctx.nextCrackParticle].x = x;
         ctx.crackParticles[ctx.nextCrackParticle].y = y;
@@ -333,13 +363,15 @@ class Play {
 
     void showPlayerInBus() {
         CutsceneObject cutscenePlayer = ctx.cutsceneObjects[0];
+        Anim anim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 0];
 
         cutscenePlayer.sprite = SPR_PLAYER_STAND;
         cutscenePlayer.inBus = true;
         cutscenePlayer.x = 342;
         cutscenePlayer.y = BUS_Y + 36;
-        cutscenePlayer.animCurFrame = 0;
-        cutscenePlayer.animNumFrames = 1;
+
+        anim.frame = 0;
+        anim.numFrames = 1;
 
         ctx.player.state = PLAYER_STATE_INACTIVE;
         ctx.player.visible = false;
@@ -417,12 +449,12 @@ class Play {
             ctx.busStopSignX = ctx.levelSize - 40;
 
             //Set rear door closed
-            ctx.bus.rearDoorAnimFrame = 0;
-            ctx.bus.rearDoorAnimDelta = 0;
+            ctx.anims[ANIM_BUS_DOOR_REAR].frame = 0;
+            ctx.anims[ANIM_BUS_DOOR_REAR].reverse = false;
 
             //Set front door open
-            ctx.bus.frontDoorAnimFrame = 3;
-            ctx.bus.frontDoorAnimDelta = 0;
+            ctx.anims[ANIM_BUS_DOOR_FRONT].frame = 3;
+            ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
 
             //Next bus route sign
             if (ctx.lastLevel) {
@@ -967,10 +999,10 @@ class Play {
                     //Add spark
                     ctx.coinSparks[ctx.nextCoinSpark].x = obj.x;
                     ctx.coinSparks[ctx.nextCoinSpark].y = obj.y;
-                    ctx.coinSparks[ctx.nextCoinSpark].animFrame = 0;
-                    ctx.coinSparks[ctx.nextCoinSpark].animDelay = 0.05f;
                     ctx.coinSparks[ctx.nextCoinSpark].gold =
                                                 (obj.type == OBJ_COIN_GOLD);
+
+                    startAnimation(ANIM_COIN_SPARKS + ctx.nextCoinSpark);
 
                     ctx.nextCoinSpark++;
                     if (ctx.nextCoinSpark >= MAX_COIN_SPARKS) {
@@ -1039,9 +1071,8 @@ class Play {
                     if (pl.yvel >= 0) {
                         audio.playSfx(SFX_SPRING);
                         pl.yvel = -244;
-                        ctx.hitSpring.obj = i;
-                        ctx.hitSpring.animFrame = 0;
-                        ctx.hitSpring.animDelay = 0.02f;
+                        ctx.hitSpring = i;
+                        startAnimation(ANIM_HIT_SPRING);
                     }
                     break;
             }
@@ -1128,15 +1159,13 @@ class Play {
 
             if (tr.what == TRIGGER_HEN) {
                 ctx.hen.x = tr.x - (SCREEN_WIDTH / 2) - 32;
-                ctx.hen.animFrame = 0;
-                ctx.hen.animDelay = 0.05f;
+                startAnimation(ANIM_HEN);
             } else { //If not a hen, then trigger a passing car
                 ctx.passingCar.x = tr.x - (SCREEN_WIDTH / 2) - 128;
                 ctx.passingCar.color = tr.what;
                 ctx.passingCar.threwPeel = false;
                 ctx.passingCar.peelThrowX = tr.x + 72;
-                ctx.passingCar.wheelAnimFrame = 0;
-                ctx.passingCar.wheelAnimDelay = 0.05f;
+                startAnimation(ANIM_PASSING_CAR_WHEELS);
             }
 
             tr.x = NONE;
@@ -1410,241 +1439,87 @@ class Play {
 
     //Acts if the player character's animation type has changed
     void handlePlayerAnimationChange() {
-        Player pl = ctx.player;
+        Anim anim = ctx.anims[ANIM_PLAYER];
+        int animType = ctx.player.animType;
 
         //Nothing to do if the animation has not changed
-        if (pl.animType == pl.oldAnimType) return;
+        if (animType == ctx.player.oldAnimType) return;
 
-        pl.animLoop = false;
-        pl.animReverse = false;
-
-        switch (pl.animType) {
+        switch (animType) {
             case PLAYER_ANIM_STAND:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 0;
-                pl.animDelayMax = 0;
+                setAnimation(ANIM_PLAYER, true, false, false, 1, 0.0f);
                 break;
 
             case PLAYER_ANIM_WALK:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 5;
-                pl.animDelayMax = 0.1f;
-                pl.animLoop     = true;
+                setAnimation(ANIM_PLAYER, true, true, false, 6, 0.1f);
                 break;
 
             case PLAYER_ANIM_WALKBACK:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 5;
-                pl.animDelayMax = 0.1f;
-                pl.animLoop     = true;
-                pl.animReverse  = true;
+                setAnimation(ANIM_PLAYER, true, true, true, 6, 0.1f);
                 break;
 
             case PLAYER_ANIM_JUMP:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 0;
-                pl.animDelayMax = 0.1f;
+                setAnimation(ANIM_PLAYER, true, true, false, 1, 0.0f);
                 break;
 
             case PLAYER_ANIM_SLIP:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 3;
-                pl.animDelayMax = 0.05f;
+                setAnimation(ANIM_PLAYER, true, false, false, 4, 0.05f);
                 break;
 
             case PLAYER_ANIM_SLIPREV:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 3;
-                pl.animDelayMax = 0.05f;
-                pl.animReverse  = true;
+                setAnimation(ANIM_PLAYER, true, false, true, 4, 0.05f);
                 break;
 
             case PLAYER_ANIM_THROWBACK:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 2;
-                pl.animDelayMax = 0.05f;
+                setAnimation(ANIM_PLAYER, true, false, false, 3, 0.05f);
                 break;
 
             case PLAYER_ANIM_GRABROPE:
-                pl.animMinFrame = 0;
-                pl.animMaxFrame = 0;
-                pl.animDelayMax = 0.05f;
+                setAnimation(ANIM_PLAYER, true, false, false, 1, 0.05f);
                 break;
         }
-
-        pl.animCurFrame = (pl.animReverse) ? pl.animMaxFrame : pl.animMinFrame;
-        pl.animDelay = pl.animDelayMax;
     }
 
     //Updates all animations
     void updateAnimations() {
-        Player pl = ctx.player;
-        Bus bus = ctx.bus;
         int i;
 
-        //Player character
-        pl.animDelay -= dt;
-        if (pl.animDelay <= 0) {
-            pl.animDelay = pl.animDelayMax;
+        //Set animation speed for bus wheels
+        ctx.anims[ANIM_BUS_WHEELS].running = false;
+        if (ctx.bus.xvel > 0) {
+            float maxDelay = 0.1f;
+            if (ctx.bus.xvel > 64)  maxDelay = 0.05f;
+            if (ctx.bus.xvel > 128) maxDelay = 0.025f;
 
-            if (pl.animReverse) {
-                pl.animCurFrame--;
+            ctx.anims[ANIM_BUS_WHEELS].running = true;
+            ctx.anims[ANIM_BUS_WHEELS].maxDelay = maxDelay;
 
-                if (pl.animCurFrame < pl.animMinFrame) {
-                    pl.animCurFrame =
-                        pl.animLoop ? pl.animMaxFrame : pl.animMinFrame;
+            if (ctx.anims[ANIM_BUS_WHEELS].delay > maxDelay) {
+                ctx.anims[ANIM_BUS_WHEELS].delay = maxDelay;
+            }
+        }
+
+        for (i = 0; i < NUM_ANIMS; i++) {
+            Anim anim = ctx.anims[i];
+
+            if (!anim.running) continue;
+
+            anim.delay -= dt;
+            if (anim.delay > 0) continue;
+
+            anim.delay = anim.maxDelay;
+
+            if (anim.reverse) {
+                anim.frame--;
+
+                if (anim.frame < 0) {
+                    anim.frame = anim.loop ? anim.numFrames - 1 : 0;
                 }
             } else {
-                pl.animCurFrame++;
+                anim.frame++;
 
-                if (pl.animCurFrame > pl.animMaxFrame) {
-                    pl.animCurFrame =
-                        pl.animLoop ? pl.animMinFrame : pl.animMaxFrame;
-                }
-            }
-        }
-
-        //Coins
-        ctx.coinAnimDelay -= dt;
-        if (ctx.coinAnimDelay <= 0) {
-            ctx.coinAnimDelay = 0.1f;
-            ctx.coinAnimFrame++;
-            if (ctx.coinAnimFrame >= 3) {
-                ctx.coinAnimFrame = 0;
-            }
-        }
-
-        //Geysers
-        ctx.geyserAnimDelay -= dt;
-        if (ctx.geyserAnimDelay <= 0) {
-            ctx.geyserAnimDelay = 0.025f;
-            ctx.geyserAnimFrame++;
-            if (ctx.geyserAnimFrame >= 3) {
-                ctx.geyserAnimFrame = 0;
-            }
-        }
-
-        //Hit spring
-        if (ctx.hitSpring.obj >= 0 && ctx.hitSpring.animFrame < 5) {
-            ctx.hitSpring.animDelay -= dt;
-            if (ctx.hitSpring.animDelay <= 0) {
-                ctx.hitSpring.animDelay = 0.02f;
-                ctx.hitSpring.animFrame++;
-            }
-        }
-
-        //Crack particles
-        ctx.crackParticleAnimDelay -= dt;
-        if (ctx.crackParticleAnimDelay <= 0) {
-            ctx.crackParticleAnimDelay = 0.1f;
-            ctx.crackParticleAnimFrame++;
-            if (ctx.crackParticleAnimFrame >= 2) {
-                ctx.crackParticleAnimFrame = 0;
-            }
-        }
-
-        //Coin sparks
-        for (i = 0; i < MAX_COIN_SPARKS; i++) {
-            CoinSpark spk = ctx.coinSparks[i];
-            if (spk.x > 0 && spk.animFrame < 4) {
-                spk.animDelay -= dt;
-                if (spk.animDelay <= 0) {
-                    spk.animDelay = 0.05f;
-                    spk.animFrame++;
-                }
-            }
-        }
-
-        //Bus wheels
-        if (bus.xvel > 0) {
-            float maxDelay = 0.1f;
-            if (bus.xvel > 64)  maxDelay = 0.05f;
-            if (bus.xvel > 128) maxDelay = 0.025f;
-
-            if (bus.wheelAnimDelay > maxDelay) {
-                bus.wheelAnimDelay = maxDelay;
-            }
-
-            bus.wheelAnimDelay -= dt;
-            if (bus.wheelAnimDelay <= 0) {
-                bus.wheelAnimDelay = maxDelay;
-                bus.wheelAnimFrame++;
-                if (bus.wheelAnimFrame >= 3) bus.wheelAnimFrame = 0;
-            }
-        }
-
-        //Bus rear door
-        bus.rearDoorAnimDelay -= dt;
-        if (bus.rearDoorAnimDelay <= 0) {
-            bus.rearDoorAnimDelay = 0.1f;
-            bus.rearDoorAnimFrame += bus.rearDoorAnimDelta;
-
-            if (bus.rearDoorAnimFrame < 0) {
-                bus.rearDoorAnimFrame = 0;
-                bus.rearDoorAnimDelta = 0;
-            }
-            if (bus.rearDoorAnimFrame > 3) {
-                bus.rearDoorAnimFrame = 3;
-                bus.rearDoorAnimDelta = 0;
-            }
-        }
-
-        //Bus front door
-        bus.frontDoorAnimDelay -= dt;
-        if (bus.frontDoorAnimDelay <= 0) {
-            bus.frontDoorAnimDelay = 0.1f;
-            bus.frontDoorAnimFrame += bus.frontDoorAnimDelta;
-
-            if (bus.frontDoorAnimFrame < 0) {
-                bus.frontDoorAnimFrame = 0;
-                bus.frontDoorAnimDelta = 0;
-            }
-            if (bus.frontDoorAnimFrame > 3) {
-                bus.frontDoorAnimFrame = 3;
-                bus.frontDoorAnimDelta = 0;
-            }
-        }
-
-        //Passing car wheels
-        if (ctx.passingCar.x != NONE) {
-            ctx.passingCar.wheelAnimDelay -= dt;
-            if (ctx.passingCar.wheelAnimDelay <= 0) {
-                ctx.passingCar.wheelAnimDelay = 0.05f;
-                ctx.passingCar.wheelAnimFrame++;
-                if (ctx.passingCar.wheelAnimFrame >= 2) {
-                    ctx.passingCar.wheelAnimFrame = 0;
-                }
-            }
-        }
-
-        //Hen
-        if (ctx.hen.x != NONE) {
-            ctx.hen.animDelay -= dt;
-            if (ctx.hen.animDelay <= 0) {
-                ctx.hen.animDelay = 0.05f;
-                ctx.hen.animFrame++;
-                if (ctx.hen.animFrame >= 4) {
-                    ctx.hen.animFrame = 0;
-                }
-            }
-        }
-
-        //Cutscene objects
-        for (i = 0; i < MAX_CUTSCENE_OBJECTS; i++) {
-            CutsceneObject cobj = ctx.cutsceneObjects[i];
-
-            if (cobj.sprite == NONE || cobj.animNumFrames <= 1) continue;
-
-            cobj.animDelay -= dt;
-            if (cobj.animDelay <= 0) {
-                cobj.animDelay = cobj.animDelayMax;
-                cobj.animCurFrame++;
-                if (cobj.animCurFrame >= cobj.animNumFrames) {
-                    if (cobj.animLoop) {
-                        cobj.animCurFrame = 0;
-                    } else {
-                        cobj.animCurFrame = cobj.animNumFrames - 1;
-                    }
+                if (anim.frame >= anim.numFrames) {
+                    anim.frame = anim.loop ? 0 : anim.numFrames - 1;
                 }
             }
         }
@@ -1670,8 +1545,11 @@ class Play {
         Player pl = ctx.player;
         Bus bus = ctx.bus;
         CutsceneObject cutscenePlayer = ctx.cutsceneObjects[0];
+        Anim cutscenePlayerAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 0];
         CutsceneObject beardedMan = ctx.cutsceneObjects[1];
+        Anim beardedManAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
         CutsceneObject bird = ctx.cutsceneObjects[1];
+        Anim birdAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
         CutsceneObject dung = ctx.cutsceneObjects[0];
         Camera cam = ctx.cam;
         int levelSize = ctx.levelSize;
@@ -1724,8 +1602,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 20: //SEQ_BUS_LEAVING
-                bus.frontDoorAnimDelay = 0.1f;
-                bus.frontDoorAnimDelta = -1;
+                startAnimation(ANIM_BUS_DOOR_FRONT);
                 bus.acc = 256;
                 bus.xvel = 4;
                 ctx.sequenceDelay = 2;
@@ -1805,11 +1682,12 @@ class Play {
                             bird.x = cam.x - 16;
                             bird.y = 120;
                             bird.xvel = 304;
-                            bird.animCurFrame = 0;
-                            bird.animNumFrames = 4;
-                            bird.animDelay = 0.1f;
-                            bird.animDelayMax = 0.1f;
-                            bird.animLoop = true;
+                            birdAnim.running = true;
+                            birdAnim.frame = 0;
+                            birdAnim.numFrames = 4;
+                            birdAnim.delay = 0.1f;
+                            birdAnim.maxDelay = 0.1f;
+                            birdAnim.loop = true;
                             ctx.sequenceStep++;
                         }
                     } else {
@@ -1898,8 +1776,7 @@ class Play {
                 break;
 
             case 202:
-                bus.frontDoorAnimDelay = 0.1f;
-                bus.frontDoorAnimDelta = -1;
+                startAnimation(ANIM_BUS_DOOR_FRONT);
                 ctx.sequenceDelay = 0.5f;
                 ctx.sequenceStep++;
                 break;
@@ -1910,11 +1787,12 @@ class Play {
                 beardedMan.x = ctx.levelSize;
                 beardedMan.y = 203;
                 beardedMan.xvel = -150;
-                beardedMan.animCurFrame = 0;
-                beardedMan.animNumFrames = 6;
-                beardedMan.animDelay = 0.1f;
-                beardedMan.animDelayMax = 0.1f;
-                beardedMan.animLoop = true;
+                beardedManAnim.running = true;
+                beardedManAnim.frame = 0;
+                beardedManAnim.numFrames = 6;
+                beardedManAnim.delay = 0.1f;
+                beardedManAnim.maxDelay = 0.1f;
+                beardedManAnim.loop = true;
                 ctx.sequenceStep++;
                 break;
 
@@ -1932,10 +1810,10 @@ class Play {
                     beardedMan.x = bus.x + 337;
                     beardedMan.xvel = 0;
                     beardedMan.acc = 0;
-                    beardedMan.animCurFrame = 0;
-                    beardedMan.animNumFrames = 1;
-                    bus.frontDoorAnimDelay = 0.1f;
-                    bus.frontDoorAnimDelta = 1;
+                    beardedManAnim.frame = 0;
+                    beardedManAnim.numFrames = 1;
+                    ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = false;
+                    startAnimation(ANIM_BUS_DOOR_FRONT);
                     ctx.sequenceDelay = 0.5f;
                     ctx.sequenceStep++;
                 }
@@ -1962,6 +1840,7 @@ class Play {
                 break;
 
             case 208:
+                ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
                 ctx.sequenceStep = SEQ_BUS_LEAVING;
                 break;
 
@@ -2026,7 +1905,6 @@ class Play {
                     dung.x = bus.x + 353;
                     dung.y = bird.y;
                     dung.yvel = 256;
-                    dung.animLoop = true;
                     ctx.sequenceStep++;
                 }
                 break;
@@ -2045,11 +1923,12 @@ class Play {
                 break;
 
             case 402:
-                cutscenePlayer.animCurFrame = 0;
-                cutscenePlayer.animNumFrames = 9;
-                cutscenePlayer.animDelay = 0.2f;
-                cutscenePlayer.animDelayMax = 0.2f;
-                cutscenePlayer.animLoop = false;
+                cutscenePlayerAnim.running = true;
+                cutscenePlayerAnim.frame = 0;
+                cutscenePlayerAnim.numFrames = 9;
+                cutscenePlayerAnim.delay = 0.2f;
+                cutscenePlayerAnim.maxDelay = 0.2f;
+                cutscenePlayerAnim.loop = false;
                 ctx.sequenceDelay = 2.0f;
                 ctx.sequenceStep++;
                 break;
@@ -2088,8 +1967,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 500: //SEQ_GOAL_REACHED_LEVEL5
-                bus.frontDoorAnimDelay = 0.1f;
-                bus.frontDoorAnimDelta = -1;
+                startAnimation(ANIM_BUS_DOOR_FRONT);
                 bus.acc = 256;
                 bus.xvel = 4;
                 ctx.sequenceStep++;
@@ -2105,10 +1983,11 @@ class Play {
                     cutscenePlayer.y = pl.y;
                     cutscenePlayer.xvel = 128;
                     cutscenePlayer.acc = 512;
-                    cutscenePlayer.animNumFrames = 4;
-                    cutscenePlayer.animLoop = true;
-                    cutscenePlayer.animDelay = 0.1f;
-                    cutscenePlayer.animDelayMax = 0.1f;
+                    cutscenePlayerAnim.running = true;
+                    cutscenePlayerAnim.numFrames = 4;
+                    cutscenePlayerAnim.loop = true;
+                    cutscenePlayerAnim.delay = 0.1f;
+                    cutscenePlayerAnim.maxDelay = 0.1f;
                     ctx.sequenceStep++;
                 }
                 break;

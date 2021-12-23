@@ -113,22 +113,13 @@ public class Defs {
         boolean fell; //Fell into a deep hole
         int height;
         float flickerDelay;
+        int animType; //Animation type
 
         float x, y; //Position
         float xvel, yvel; //Velocity
         float acc; //Acceleration
         float dec; //Deceleration
         float grav; //Gravity
-
-        //Animation
-        int animType;
-        int animCurFrame;
-        int animMinFrame;
-        int animMaxFrame;
-        float animDelay;
-        float animDelayMax;
-        boolean animLoop;
-        boolean animReverse;
 
         int oldState;
         float oldx, oldy;
@@ -141,21 +132,7 @@ public class Defs {
         float acc; //Acceleration
 
         int routeSign;
-        int numCharacters;
-
-        //Wheel animation
-        int wheelAnimFrame;
-        float wheelAnimDelay;
-
-        //Rear door animation
-        int rearDoorAnimFrame;
-        int rearDoorAnimDelta; //1 = opening; -1 = closing; 0 = no change
-        float rearDoorAnimDelay;
-
-        //Front door animation
-        int frontDoorAnimFrame;
-        int frontDoorAnimDelta; //1 = opening; -1 = closing; 0 = no change
-        float frontDoorAnimDelay;
+        int numCharacters; //Number of characters at the rear door
     }
 
     //Class used for most game objects, which need only a type and a position
@@ -186,13 +163,6 @@ public class Defs {
         float xvel;
     }
 
-    //Spring hit by the player character
-    static class HitSpring {
-        int obj; //Index of the spring within PlayCtx.objs[]
-        int animFrame;
-        float animDelay;
-    }
-
     //Moving banana peel
     static class MovingPeel {
         int obj; //Index of the peel within PlayCtx.objs[]
@@ -218,13 +188,6 @@ public class Defs {
         float yvel;
         float acc;
         float grav;
-
-        int animCurFrame;
-        int animNumFrames;
-        float animDelay;
-        float animDelayMax;
-        boolean animLoop;
-
         boolean inBus;
     }
 
@@ -255,28 +218,33 @@ public class Defs {
         float x;
         int color; //CAR_BLUE, CAR_SILVER, or CAR_YELLOW
         boolean threwPeel;
-        int peelThrowX; //Throw a banana peel when the car reached this X position
-        int wheelAnimFrame;
-        float wheelAnimDelay;
+        int peelThrowX; //Throw a banana peel when the car reaches this X position
     }
 
     static class Hen {
         float x;
-        int animFrame;
-        float animDelay;
     }
 
     static class CoinSpark {
         int x, y;
         boolean gold;
-        int animFrame;
-        float animDelay;
     }
 
     static class CrackParticle {
         float x, y;
         float xvel, yvel;
         float grav;
+    }
+
+    //Animation
+    static class Anim {
+        boolean running;
+        boolean loop;
+        boolean reverse;
+        int frame;
+        int numFrames;
+        float delay;
+        float maxDelay;
     }
 
     //Gameplay context
@@ -312,12 +280,14 @@ public class Defs {
         CrateBlock crateBlocks[];
         Geyser geysers[];
         GrabbedRope grabbedRope;
-        HitSpring hitSpring;
         MovingPeel slipPeel;
         MovingPeel thrownPeel;
         PushableCrate pushableCrates[];
         CutsceneObject cutsceneObjects[];
         Solid solids[];
+
+        int hitSpring; //Index within objs[] to the last spring hit by the
+                       //player character
 
         Hole holes[];
         Hole curPassageway; //Passageway the player character is in, if any
@@ -333,17 +303,11 @@ public class Defs {
         CoinSpark coinSparks[];
         CrackParticle crackParticles[];
 
+        //Animations
+        Anim anims[];
+
         int nextCoinSpark;
         int nextCrackParticle;
-
-        int geyserAnimFrame;
-        float geyserAnimDelay;
-
-        int coinAnimFrame;
-        float coinAnimDelay;
-
-        int crackParticleAnimFrame;
-        float crackParticleAnimDelay;
 
         int sequenceStep;
         float sequenceDelay;
@@ -772,7 +736,22 @@ public class Defs {
     static final int CAMERA_XVEL = 700;
     static final int CAMERA_YVEL = 400;
 
-    //Sequence parts
+    //Animations
+    static final int ANIM_PLAYER = 0;
+    static final int ANIM_COINS = 1;
+    static final int ANIM_GEYSERS = 2;
+    static final int ANIM_HIT_SPRING = 3;
+    static final int ANIM_CRACK_PARTICLES = 4;
+    static final int ANIM_BUS_WHEELS = 5;
+    static final int ANIM_BUS_DOOR_REAR = 6;
+    static final int ANIM_BUS_DOOR_FRONT = 7;
+    static final int ANIM_PASSING_CAR_WHEELS = 8;
+    static final int ANIM_HEN = 9;
+    static final int ANIM_COIN_SPARKS = 10; //12 positions starting at 10
+    static final int ANIM_CUTSCENE_OBJECTS = 22; //2 positions starting at 22
+    static final int NUM_ANIMS = 24;
+
+    //Sequence types
     static final int SEQ_NORMAL_PLAY = 0;
     static final int SEQ_INITIAL_DELAY = 10;
     static final int SEQ_BUS_LEAVING = 20;
