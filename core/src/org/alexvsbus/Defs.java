@@ -150,7 +150,7 @@ public class Defs {
         int obj; //Index of the geyser within PlayCtx.objs[]
         float y;
         float yvel;
-        float ydest;
+        float ydest; //Destination Y position
         int movePattern[];
         int movePatternPos;
     }
@@ -167,7 +167,7 @@ public class Defs {
     static class MovingPeel {
         int obj; //Index of the peel within PlayCtx.objs[]
         float x, y;
-        float xmax; //Used only by thrown peels (not by slipped peels)
+        float xdest; //Used only by thrown peels (not by slipped peels)
         float xvel, yvel;
         float grav;
     }
@@ -182,10 +182,8 @@ public class Defs {
 
     static class CutsceneObject {
         int sprite;
-        float x;
-        float y;
-        float xvel;
-        float yvel;
+        float x, y;
+        float xvel, yvel;
         float acc;
         float grav;
         boolean inBus;
@@ -203,6 +201,7 @@ public class Defs {
         int x, width;
     }
 
+    //Position the player character can reappear at after falling into a deep hole
     static class RespawnPoint {
         int x, y;
     }
@@ -286,7 +285,7 @@ public class Defs {
         CutsceneObject cutsceneObjects[];
         Solid solids[];
 
-        int hitSpring; //Index within objs[] to the last spring hit by the
+        int hitSpring; //Index within objs[] of the last spring hit by the
                        //player character
 
         Hole holes[];
@@ -340,7 +339,7 @@ public class Defs {
     static final int LVLERR_TOO_LARGE = 2;
     static final int LVLERR_INVALID = 3;
 
-    //Screen size
+    //Size of the virtual screen and default aspect ratio
     public static final int SCREEN_WIDTH = 480;
     public static final int SCREEN_MIN_HEIGHT = 270;
     static final float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
@@ -429,17 +428,16 @@ public class Defs {
     static final int SFX_COIN = 0;
     static final int SFX_CRATE = 1;
     static final int SFX_DIALOG_SELECT = 2;
-    static final int SFX_DIALOG_CONFIRM = 3;
-    static final int SFX_ERROR = 4;
-    static final int SFX_FALL = 5;
-    static final int SFX_HIT = 6;
-    static final int SFX_HOLE = 7;
-    static final int SFX_RESPAWN = 8;
-    static final int SFX_SCORE = 9;
-    static final int SFX_SLIP = 10;
-    static final int SFX_SPRING = 11;
-    static final int SFX_TIME = 12;
-    static final int NUM_SFX = 13;
+    static final int SFX_ERROR = 3;
+    static final int SFX_FALL = 4;
+    static final int SFX_HIT = 5;
+    static final int SFX_HOLE = 6;
+    static final int SFX_RESPAWN = 7;
+    static final int SFX_SCORE = 8;
+    static final int SFX_SLIP = 9;
+    static final int SFX_SPRING = 10;
+    static final int SFX_TIME = 11;
+    static final int NUM_SFX = 12;
 
     //Background music (BGM) tracks
     static final int BGMTITLE = 0;
@@ -645,7 +643,7 @@ public class Defs {
 
     //Floor, holes, light poles, and background
     static final int BACKGROUND_DRAW_Y = 176;
-    static final int POLE_DISTANCE = 384;
+    static final int POLE_DISTANCE = 384; //Distance between light poles
     static final int FLOOR_Y = 264;
     static final int PASSAGEWAY_BOTTOM_Y = 360;
 
@@ -715,7 +713,7 @@ public class Defs {
     static final int CAR_SILVER = 1;
     static final int CAR_YELLOW = 2;
 
-    //Triggers (other than the car colors above)
+    //Triggered objects (other than the car colors above)
     static final int TRIGGER_HEN = 3;
 
     //Objects with a fixed Y position

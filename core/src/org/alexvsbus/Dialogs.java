@@ -95,8 +95,9 @@ class Dialogs {
         return y * TILE_SIZE;
     }
 
-    //Called when the touch screen is tapped
+    //Called when the touchscreen is tapped
     void onTap(int x, int y, int projectionHeight) {
+        //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
 
         int dialogType = ctx.stack[ctx.stackSize - 1].type;
@@ -116,7 +117,7 @@ class Dialogs {
             if (ctx.items[i].disabled) continue;
 
             //Do not change the selection to the audio toggle item when
-            //touching on it
+            //touching it
             if ((dialogType == DLG_MAIN  && i == 3) ||
                 (dialogType == DLG_PAUSE && i == 2)) {
 
@@ -139,6 +140,7 @@ class Dialogs {
     //Handles player's input from keyboard or game controller, but not screen
     //touches
     void handleKeys(int inputHeld, int inputHit) {
+        //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
 
         if (waitInputUp) {
@@ -180,6 +182,7 @@ class Dialogs {
     }
 
     void update(float dt) {
+        //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
 
         boolean selectionChanged = false;
@@ -694,7 +697,7 @@ class Dialogs {
         }
     }
 
-    //Sets the attributes of dialog item
+    //Sets the attributes of a dialog item
     void di(int item, int align, int xoffs, int yoffs, int width, int height,
             int targetUp, int targetDown, int targetLeft, int targetRight,
             int iconSprite) {

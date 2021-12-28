@@ -486,7 +486,7 @@ class Play {
             if (peel.y >= 256) {
                 //Stop the peel when it hits the floor
                 obj.type = OBJ_BANANA_PEEL;
-                peel.x = peel.xmax;
+                peel.x = peel.xdest;
                 peel.y = 256;
                 peel.obj = NONE;
             }
@@ -630,24 +630,23 @@ class Play {
     //banana peel
     void handleCarThrownPeel() {
         if (ctx.passingCar.x == NONE || ctx.passingCar.threwPeel) return;
+        if (ctx.passingCar.x < ctx.passingCar.peelThrowX) return;
 
-        if (ctx.passingCar.x >= ctx.passingCar.peelThrowX) {
-            for (int i = 0; i < MAX_OBJS; i++) {
-                if (ctx.objs[i].type == NONE) {
-                    ctx.objs[i].type = OBJ_BANANA_PEEL_MOVING;
+        for (int i = 0; i < MAX_OBJS; i++) {
+            if (ctx.objs[i].type == NONE) {
+                ctx.objs[i].type = OBJ_BANANA_PEEL_MOVING;
 
-                    ctx.thrownPeel.obj = i;
-                    ctx.thrownPeel.x = ctx.passingCar.peelThrowX + 90;
-                    ctx.thrownPeel.y = 200;
-                    ctx.thrownPeel.xmax = ctx.thrownPeel.x + 70;
-                    ctx.thrownPeel.xvel = 140;
-                    ctx.thrownPeel.yvel = -10;
-                    ctx.thrownPeel.grav = 500;
+                ctx.thrownPeel.obj = i;
+                ctx.thrownPeel.x = ctx.passingCar.peelThrowX + 90;
+                ctx.thrownPeel.y = 200;
+                ctx.thrownPeel.xdest = ctx.thrownPeel.x + 70;
+                ctx.thrownPeel.xvel = 140;
+                ctx.thrownPeel.yvel = -10;
+                ctx.thrownPeel.grav = 500;
 
-                    ctx.passingCar.threwPeel = true;
+                ctx.passingCar.threwPeel = true;
 
-                    break;
-                }
+                break;
             }
         }
     }
@@ -892,7 +891,6 @@ class Play {
         boolean collectedCoin = false;
         boolean slipped = false;
         boolean thrownBack = false;
-        boolean interacted = false;
         int i, j;
 
         for (i = 0; i < MAX_OBJS; i++) {
@@ -979,8 +977,6 @@ class Play {
                 if (plRight  < objLeft || plLeft > objRight)  continue;
                 if (plBottom < objTop  || plTop  > objBottom) continue;
             }
-
-            interacted = true;
 
             switch (obj.type) {
                 case OBJ_BANANA_PEEL:
@@ -1076,8 +1072,6 @@ class Play {
                     }
                     break;
             }
-
-            if (interacted) break;
         }
 
         //Play a sound effect if the player character has collected a coin
@@ -1144,7 +1138,7 @@ class Play {
         }
     }
 
-    //Acts when the player character reaches the position of a trigger, which
+    //Acts when the player character reaches the X position of a trigger, which
     //causes the appearance of a passing car or hen
     void handleTriggers() {
         int plx = (int)ctx.player.x;
@@ -1451,15 +1445,15 @@ class Play {
                 break;
 
             case PLAYER_ANIM_WALK:
-                setAnimation(ANIM_PLAYER, true, true, false, 6, 0.1f);
+                setAnimation(ANIM_PLAYER, true, true,  false, 6, 0.1f);
                 break;
 
             case PLAYER_ANIM_WALKBACK:
-                setAnimation(ANIM_PLAYER, true, true, true, 6, 0.1f);
+                setAnimation(ANIM_PLAYER, true, true,  true,  6, 0.1f);
                 break;
 
             case PLAYER_ANIM_JUMP:
-                setAnimation(ANIM_PLAYER, true, true, false, 1, 0.0f);
+                setAnimation(ANIM_PLAYER, true, true,  false, 1, 0.0f);
                 break;
 
             case PLAYER_ANIM_SLIP:
@@ -1467,7 +1461,7 @@ class Play {
                 break;
 
             case PLAYER_ANIM_SLIPREV:
-                setAnimation(ANIM_PLAYER, true, false, true, 4, 0.05f);
+                setAnimation(ANIM_PLAYER, true, false, true,  4, 0.05f);
                 break;
 
             case PLAYER_ANIM_THROWBACK:
@@ -1499,6 +1493,7 @@ class Play {
             }
         }
 
+        //Update animations
         for (i = 0; i < NUM_ANIMS; i++) {
             Anim anim = ctx.anims[i];
 
@@ -1670,7 +1665,7 @@ class Play {
                             ctx.thrownPeel.obj = 0;
                             ctx.thrownPeel.x = ctx.objs[0].x;
                             ctx.thrownPeel.y = ctx.objs[0].y;
-                            ctx.thrownPeel.xmax = (int)bus.x + 345;
+                            ctx.thrownPeel.xdest = (int)bus.x + 345;
                             ctx.thrownPeel.xvel = -512;
                             ctx.thrownPeel.yvel = 200;
                             ctx.thrownPeel.grav = 500;

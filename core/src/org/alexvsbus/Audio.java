@@ -51,9 +51,9 @@ class Audio {
             quitted = true;
         }
 
-        synchronized void enable(boolean b) {
-            if (enabled != b) {
-                enabled = b;
+        synchronized void enable(boolean en) {
+            if (enabled != en) {
+                enabled = en;
                 if (!enabled) stopAllSfxInternal();
             }
         }
@@ -154,7 +154,6 @@ class Audio {
         loadSound(SFX_COIN, "coin.wav");
         loadSound(SFX_CRATE, "crate.wav");
         loadSound(SFX_DIALOG_SELECT, "dialog-select.wav");
-        loadSound(SFX_DIALOG_CONFIRM, "dialog-confirm.wav");
         loadSound(SFX_ERROR, "error.wav");
         loadSound(SFX_FALL, "fall.wav");
         loadSound(SFX_HIT, "hit.wav");
@@ -168,10 +167,10 @@ class Audio {
         sfxThread.start();
     }
 
-    void enable(boolean b) {
-        if (enabled == b) return;
+    void enable(boolean en) {
+        if (enabled == en) return;
 
-        enabled = b;
+        enabled = en;
 
         if (bgm != null) {
             if (enabled) bgm.play(); else bgm.stop();

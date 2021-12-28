@@ -46,10 +46,10 @@ class Renderer {
 
     //Temporary location for drawDigits()
     //
-    //To prevent an instantiation each
-    //time the method is called and the garbage collector from running more
-    //often, it is declared as a class member, rather than being local to the
-    //method, and instantiated once in the constructor
+    //To prevent an instantiation each time the method is called and the
+    //garbage collector from running more often, it is declared as a class
+    //member, rather than being local to the method, and instantiated once in
+    //the constructor
     int digitsTemp[];
 
     Texture gfx;
@@ -62,8 +62,8 @@ class Renderer {
 
         gfx = null;
 
-        projectionWidth  = 480;
-        projectionHeight = 270;
+        projectionWidth  = SCREEN_WIDTH;
+        projectionHeight = SCREEN_MIN_HEIGHT;
 
         digitsTemp = new int[12];
 
@@ -122,6 +122,7 @@ class Renderer {
     void dispose() {
         if (spriteBatch != null) {
             spriteBatch.dispose();
+            spriteBatch = null;
         }
 
         if (gfx != null) {
@@ -640,10 +641,10 @@ class Renderer {
     }
 
     void drawSpriteStretch(int spr, int dx, int dy, int w, int h) {
-        int sw = sprites[spr * 4 + 2];
-        int sh = sprites[spr * 4 + 3];
         int sx = sprites[spr * 4 + 0];
         int sy = sprites[spr * 4 + 1];
+        int sw = sprites[spr * 4 + 2];
+        int sh = sprites[spr * 4 + 3];
 
         drawRegion(dx, dy, w, h, sx, sy, sw, sh, false, false);
     }

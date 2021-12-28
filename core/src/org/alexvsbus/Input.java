@@ -319,9 +319,6 @@ public class Input extends ControllerAdapter {
         if (joyButtonsHeld[JOY_DPAD_UP]) {
             actionsHeld |= INPUT_UP;
         }
-        if (joyButtonsHeld[JOY_DPAD_UP]) {
-            actionsHeld |= INPUT_UP;
-        }
         if (joyButtonsHeld[JOY_DPAD_DOWN]) {
             actionsHeld |= INPUT_DOWN;
         }

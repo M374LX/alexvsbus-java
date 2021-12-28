@@ -132,6 +132,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             config.hideTouchControls = true;
         }
 
+        //Handle user input
         handleTouch();
         inputHeld = input.read();
         if (waitInputUp) {
@@ -157,6 +158,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             config.audioEnabled = !config.audioEnabled;
         }
 
+        //Handle dialogs
         if (dialogOpen) {
             dialogs.handleKeys(inputHeld, inputHit);
             dialogs.update(dt);
@@ -248,7 +250,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 progressChecked = true;
             }
 
-            //Handle level end
+            //Handle end of level
             if (playCtx.sequenceStep == SEQ_FINISHED) {
                 if (playCtx.timeUp) {
                     playCtx.playing = false;

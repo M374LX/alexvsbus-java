@@ -342,7 +342,7 @@ class LevelLoad {
             ctx.holes[i].x *= LEVEL_BLOCK_SIZE;
         }
 
-        //Convert positions from level blocks to pixels and add solid for
+        //Convert positions from level blocks to pixels and add solids for
         //objects in ctx.objs[]
         for (i = 0; i < numObjs; i++) {
             x = ctx.objs[i].x * LEVEL_BLOCK_SIZE;
@@ -436,7 +436,7 @@ class LevelLoad {
             ctx.pushableCrates[i].xmax = x + LEVEL_BLOCK_SIZE;
         }
 
-        //Convert positions from level blocks to pixels and add solid for crate
+        //Convert positions from level blocks to pixels and add solids for crate
         //blocks
         for (i = 0; i < numCrateBlocks; i++) {
             x = ctx.crateBlocks[i].x * LEVEL_BLOCK_SIZE;
@@ -469,7 +469,7 @@ class LevelLoad {
             ctx.triggers[i].x *= LEVEL_BLOCK_SIZE;
         }
 
-        //Add solid for passageways and pushable crates over passageway entries
+        //Add solids for passageways and pushable crates over passageway entries
         //
         //There is exactly one pushable crate for each passageway
         for (i = 0, j = 0; i < numHoles; i++) {
