@@ -213,15 +213,20 @@ public class Defs {
         int what; //CAR_BLUE, CAR_SILVER, CAR_YELLOW, or TRIGGER_HEN
     }
 
-    static class PassingCar {
+    //Either a single car that appears when triggered and throws a banana peel
+    //or the traffic jam of the ending sequence, but not used for parked cars
+    static class Car {
         float x;
-        int color; //CAR_BLUE, CAR_SILVER, or CAR_YELLOW
+        float xvel;
+        int type; //CAR_BLUE, CAR_SILVER, CAR_YELLOW, or TRAFFIC_JAM
         boolean threwPeel;
         int peelThrowX; //Throw a banana peel when the car reaches this X position
     }
 
     static class Hen {
         float x;
+        float xvel;
+        float acc;
     }
 
     static class CoinSpark {
@@ -295,7 +300,7 @@ public class Defs {
         Trigger triggers[];
 
         //Objects that appear when triggered
-        PassingCar passingCar;
+        Car car;
         Hen hen;
 
         //Visual effects
@@ -307,6 +312,11 @@ public class Defs {
 
         int nextCoinSpark;
         int nextCrackParticle;
+
+        //Used in the ending sequence
+        boolean playerReachedFlagman;
+        boolean henReachedFlagman;
+        boolean busReachedFlagman;
 
         int sequenceStep;
         float sequenceDelay;
@@ -496,85 +506,88 @@ public class Defs {
     static final int SPR_HUD_TIME = 41;
     static final int SPR_HYDRANT = 42;
     static final int SPR_LOGO = 43;
-    static final int SPR_OVERHEAD_SIGN = 44;
-    static final int SPR_OVERHEAD_SIGN_BASE = 45;
-    static final int SPR_PASSAGEWAY_LEFT = 46;
-    static final int SPR_PASSAGEWAY_LEFT_FG = 47;
-    static final int SPR_PASSAGEWAY_MIDDLE = 48;
-    static final int SPR_PASSAGEWAY_RIGHT = 49;
-    static final int SPR_PASSAGEWAY_RIGHT_FG = 50;
-    static final int SPR_PAUSE = 51;
-    static final int SPR_PLAYER_STAND = 52;
-    static final int SPR_PLAYER_WALK = 53;
-    static final int SPR_PLAYER_JUMP = 54;
-    static final int SPR_PLAYER_GRABROPE = 55;
-    static final int SPR_PLAYER_THROWBACK = 56;
-    static final int SPR_PLAYER_SLIP = 57;
-    static final int SPR_PLAYER_RUN = 58;
-    static final int SPR_PLAYER_CLEAN_DUNG = 59;
-    static final int SPR_POLE = 60;
-    static final int SPR_ROPE_HORIZONTAL = 61;
-    static final int SPR_ROPE_VERTICAL = 62;
-    static final int SPR_SPRING = 63;
-    static final int SPR_TOUCH_LEFT = 64;
-    static final int SPR_TOUCH_LEFT_HELD = 65;
-    static final int SPR_TOUCH_RIGHT = 66;
-    static final int SPR_TOUCH_RIGHT_HELD = 67;
-    static final int SPR_TOUCH_JUMP = 68;
-    static final int SPR_TOUCH_JUMP_HELD = 69;
-    static final int SPR_TRUCK = 70;
-    static final int SPR_DIALOG_PLAY = 71;
-    static final int SPR_DIALOG_PLAY_SELECTED = 72;
-    static final int SPR_DIALOG_JUKEBOX = 73;
-    static final int SPR_DIALOG_JUKEBOX_SELECTED = 74;
-    static final int SPR_DIALOG_OPTIONS = 75;
-    static final int SPR_DIALOG_OPTIONS_SELECTED = 76;
-    static final int SPR_DIALOG_ABOUT = 77;
-    static final int SPR_DIALOG_ABOUT_SELECTED = 78;
-    static final int SPR_DIALOG_QUIT = 79;
-    static final int SPR_DIALOG_QUIT_SELECTED = 80;
-    static final int SPR_DIALOG_RETURN = 81;
-    static final int SPR_DIALOG_RETURN_SELECTED = 82;
-    static final int SPR_DIALOG_CREDITS = 83;
-    static final int SPR_DIALOG_CREDITS_SELECTED = 84;
-    static final int SPR_DIALOG_RESET = 85;
-    static final int SPR_DIALOG_RESET_SELECTED = 86;
-    static final int SPR_DIALOG_AUDIO_ON = 87;
-    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 88;
-    static final int SPR_DIALOG_AUDIO_OFF = 89;
-    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 90;
-    static final int SPR_DIALOG_CONFIRM = 91;
-    static final int SPR_DIALOG_CONFIRM_SELECTED = 92;
-    static final int SPR_DIALOG_CANCEL = 93;
-    static final int SPR_DIALOG_CANCEL_SELECTED = 94;
-    static final int SPR_DIALOG_NORMAL = 95;
-    static final int SPR_DIALOG_NORMAL_SELECTED = 96;
-    static final int SPR_DIALOG_HARD = 97;
-    static final int SPR_DIALOG_HARD_SELECTED = 98;
-    static final int SPR_DIALOG_HARD_DISABLED = 99;
-    static final int SPR_DIALOG_SUPER = 100;
-    static final int SPR_DIALOG_SUPER_SELECTED = 101;
-    static final int SPR_DIALOG_SUPER_DISABLED = 102;
-    static final int SPR_DIALOG_1 = 103;
-    static final int SPR_DIALOG_1_SELECTED = 104;
-    static final int SPR_DIALOG_2 = 105;
-    static final int SPR_DIALOG_2_SELECTED = 106;
-    static final int SPR_DIALOG_3 = 107;
-    static final int SPR_DIALOG_3_SELECTED = 108;
-    static final int SPR_DIALOG_4 = 109;
-    static final int SPR_DIALOG_4_SELECTED = 110;
-    static final int SPR_DIALOG_5 = 111;
-    static final int SPR_DIALOG_5_SELECTED = 112;
-    static final int SPR_DIALOG_LOCKED = 113;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 114;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 115;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 116;
-    static final int SPR_DIALOG_BORDER_TOP = 117;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 118;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 119;
-    static final int SPR_DIALOG_BORDER_LEFT = 120;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 121;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 122;
+    static final int SPR_MEDAL1 = 44;
+    static final int SPR_MEDAL2 = 45;
+    static final int SPR_MEDAL3 = 46;
+    static final int SPR_OVERHEAD_SIGN = 47;
+    static final int SPR_OVERHEAD_SIGN_BASE = 48;
+    static final int SPR_PASSAGEWAY_LEFT = 49;
+    static final int SPR_PASSAGEWAY_LEFT_FG = 50;
+    static final int SPR_PASSAGEWAY_MIDDLE = 51;
+    static final int SPR_PASSAGEWAY_RIGHT = 52;
+    static final int SPR_PASSAGEWAY_RIGHT_FG = 53;
+    static final int SPR_PAUSE = 54;
+    static final int SPR_PLAYER_STAND = 55;
+    static final int SPR_PLAYER_WALK = 56;
+    static final int SPR_PLAYER_JUMP = 57;
+    static final int SPR_PLAYER_GRABROPE = 58;
+    static final int SPR_PLAYER_THROWBACK = 59;
+    static final int SPR_PLAYER_SLIP = 60;
+    static final int SPR_PLAYER_RUN = 61;
+    static final int SPR_PLAYER_CLEAN_DUNG = 62;
+    static final int SPR_POLE = 63;
+    static final int SPR_ROPE_HORIZONTAL = 64;
+    static final int SPR_ROPE_VERTICAL = 65;
+    static final int SPR_SPRING = 66;
+    static final int SPR_TOUCH_LEFT = 67;
+    static final int SPR_TOUCH_LEFT_HELD = 68;
+    static final int SPR_TOUCH_RIGHT = 69;
+    static final int SPR_TOUCH_RIGHT_HELD = 70;
+    static final int SPR_TOUCH_JUMP = 71;
+    static final int SPR_TOUCH_JUMP_HELD = 72;
+    static final int SPR_TRUCK = 73;
+    static final int SPR_DIALOG_PLAY = 74;
+    static final int SPR_DIALOG_PLAY_SELECTED = 75;
+    static final int SPR_DIALOG_JUKEBOX = 76;
+    static final int SPR_DIALOG_JUKEBOX_SELECTED = 77;
+    static final int SPR_DIALOG_OPTIONS = 78;
+    static final int SPR_DIALOG_OPTIONS_SELECTED = 79;
+    static final int SPR_DIALOG_ABOUT = 80;
+    static final int SPR_DIALOG_ABOUT_SELECTED = 81;
+    static final int SPR_DIALOG_QUIT = 82;
+    static final int SPR_DIALOG_QUIT_SELECTED = 83;
+    static final int SPR_DIALOG_RETURN = 84;
+    static final int SPR_DIALOG_RETURN_SELECTED = 85;
+    static final int SPR_DIALOG_CREDITS = 86;
+    static final int SPR_DIALOG_CREDITS_SELECTED = 87;
+    static final int SPR_DIALOG_RESET = 88;
+    static final int SPR_DIALOG_RESET_SELECTED = 89;
+    static final int SPR_DIALOG_AUDIO_ON = 90;
+    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 91;
+    static final int SPR_DIALOG_AUDIO_OFF = 92;
+    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 93;
+    static final int SPR_DIALOG_CONFIRM = 94;
+    static final int SPR_DIALOG_CONFIRM_SELECTED = 95;
+    static final int SPR_DIALOG_CANCEL = 96;
+    static final int SPR_DIALOG_CANCEL_SELECTED = 97;
+    static final int SPR_DIALOG_NORMAL = 98;
+    static final int SPR_DIALOG_NORMAL_SELECTED = 99;
+    static final int SPR_DIALOG_HARD = 100;
+    static final int SPR_DIALOG_HARD_SELECTED = 101;
+    static final int SPR_DIALOG_HARD_DISABLED = 102;
+    static final int SPR_DIALOG_SUPER = 103;
+    static final int SPR_DIALOG_SUPER_SELECTED = 104;
+    static final int SPR_DIALOG_SUPER_DISABLED = 105;
+    static final int SPR_DIALOG_1 = 106;
+    static final int SPR_DIALOG_1_SELECTED = 107;
+    static final int SPR_DIALOG_2 = 108;
+    static final int SPR_DIALOG_2_SELECTED = 109;
+    static final int SPR_DIALOG_3 = 110;
+    static final int SPR_DIALOG_3_SELECTED = 111;
+    static final int SPR_DIALOG_4 = 112;
+    static final int SPR_DIALOG_4_SELECTED = 113;
+    static final int SPR_DIALOG_5 = 114;
+    static final int SPR_DIALOG_5_SELECTED = 115;
+    static final int SPR_DIALOG_LOCKED = 116;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 117;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 118;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 119;
+    static final int SPR_DIALOG_BORDER_TOP = 120;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 121;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 122;
+    static final int SPR_DIALOG_BORDER_LEFT = 123;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 124;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 125;
 
     static final int LOGO_WIDTH = 296;
 
@@ -621,6 +634,9 @@ public class Defs {
     //==========================================================================
     // Constants: gameplay
     //
+
+    //Internal level number of ending sequence
+    static final int LVLNUM_ENDING = 8;
 
     //Maximum numbers
     static final int MAX_OBJS = 160;
@@ -716,6 +732,10 @@ public class Defs {
     //Triggered objects (other than the car colors above)
     static final int TRIGGER_HEN = 3;
 
+    //Used as a type for the Car class to represent the traffic jam of the
+    //ending sequence
+    static final int TRAFFIC_JAM = 4;
+
     //Objects with a fixed Y position
     static final int BUS_Y = 128;
     static final int BUS_STOP_SIGN_Y = 176;
@@ -761,6 +781,7 @@ public class Defs {
     static final int SEQ_GOAL_REACHED_LEVEL3 = 300;
     static final int SEQ_GOAL_REACHED_LEVEL4 = 400;
     static final int SEQ_GOAL_REACHED_LEVEL5 = 500;
+    static final int SEQ_ENDING = 800;
     static final int SEQ_FINISHED = 999;
 
 
@@ -817,7 +838,7 @@ public class Defs {
         152,  368,  24,  120, //SPR_DEEP_HOLE_RIGHT
         736,  552,  8,   8,   //SPR_DIGITS
         856,  72,   8,   8,   //SPR_DUNG
-        8,    176,  8,   88,  //SPR_FLAGMAN
+        0,    176,  64,  88,  //SPR_FLAGMAN
         952,  0,    24,  88,  //SPR_GEYSER
         1000, 96,   16,  8,   //SPR_GEYSER_CRACK
         976,  96,   16,  8,   //SPR_GEYSER_HOLE
@@ -826,6 +847,9 @@ public class Defs {
         784,  536,  32,  8,   //SPR_HUD_TIME
         872,  32,   16,  24,  //SPR_HYDRANT
         712,  680,  296, 80,  //SPR_LOGO
+        288,  168,  32,  32,  //SPR_MEDAL1
+        328,  168,  32,  32,  //SPR_MEDAL2
+        368,  168,  32,  32,  //SPR_MEDAL3
         824,  0,    40,  40,  //SPR_OVERHEAD_SIGN
         1008, 184,  8,   320, //SPR_OVERHEAD_SIGN_BASE
         176,  368,  24,  120, //SPR_PASSAGEWAY_LEFT

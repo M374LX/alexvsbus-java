@@ -56,7 +56,7 @@ class Play {
         ctx.grabbedRope = new GrabbedRope();
         ctx.thrownPeel = new MovingPeel();
         ctx.slipPeel = new MovingPeel();
-        ctx.passingCar = new PassingCar();
+        ctx.car = new Car();
         ctx.hen = new Hen();
 
         ctx.objs = new Obj[MAX_OBJS];
@@ -173,7 +173,7 @@ class Play {
 
         ctx.hitSpring = NONE;
 
-        ctx.passingCar.x = NONE;
+        ctx.car.x = NONE;
         ctx.hen.x = NONE;
 
         for (i = 0; i < MAX_OBJS; i++) {
@@ -248,14 +248,26 @@ class Play {
             setAnimation(ANIM_CUTSCENE_OBJECTS + i, false, false, false, 1, 0);
         }
 
-        //Start with bus rear door open
-        ctx.anims[ANIM_BUS_DOOR_REAR].frame = 3;
+        if (ctx.levelNum != LVLNUM_ENDING) {
+            //Start with bus rear door open
+            ctx.anims[ANIM_BUS_DOOR_REAR].frame = 3;
+        }
 
         ctx.nextCoinSpark = 0;
         ctx.nextCrackParticle = 0;
 
-        ctx.sequenceStep = SEQ_INITIAL_DELAY;
-        ctx.sequenceDelay = 1;
+        ctx.playerReachedFlagman = false;
+        ctx.henReachedFlagman = false;
+        ctx.busReachedFlagman = false;
+
+        if (ctx.levelNum == LVLNUM_ENDING) {
+            ctx.sequenceStep = SEQ_ENDING;
+            ctx.sequenceDelay = 0;
+        } else {
+            ctx.sequenceStep = SEQ_INITIAL_DELAY;
+            ctx.sequenceDelay = 1;
+        }
+
         ctx.wipeToBlack = false;
         ctx.wipeFromBlack = false;
     }
@@ -441,6 +453,8 @@ class Play {
     //Shifts the position of the bus and the bus stop sign from the start to
     //the end of the level
     void shiftBusToEnd() {
+        if (ctx.levelNum == LVLNUM_ENDING) return;
+
         //Nothing to do if the bus position has been already shifted
         if (ctx.bus.x > SCREEN_WIDTH) return;
 
@@ -579,17 +593,18 @@ class Play {
         }
 
         //Passing car
-        if (ctx.passingCar.x != NONE) {
-            ctx.passingCar.x += 1200 * dt;
+        if (ctx.car.x != NONE) {
+            ctx.car.x += ctx.car.xvel * dt;
 
-            if (ctx.passingCar.x >= ctx.cam.x + SCREEN_WIDTH + 64) {
-                ctx.passingCar.x = NONE;
+            if (ctx.car.x >= ctx.cam.x + SCREEN_WIDTH + 64) {
+                ctx.car.x = NONE;
             }
         }
 
         //Hen
         if (ctx.hen.x != NONE) {
-            ctx.hen.x += 350 * dt;
+            ctx.hen.xvel += ctx.hen.acc * dt;
+            ctx.hen.x += ctx.hen.xvel * dt;
 
             if (ctx.hen.x > ctx.cam.x + SCREEN_WIDTH + 64) {
                 ctx.hen.x = NONE;
@@ -629,22 +644,23 @@ class Play {
     //Acts if the passing car has reached the X position at which it throws a
     //banana peel
     void handleCarThrownPeel() {
-        if (ctx.passingCar.x == NONE || ctx.passingCar.threwPeel) return;
-        if (ctx.passingCar.x < ctx.passingCar.peelThrowX) return;
+        if (ctx.car.x == NONE || ctx.car.threwPeel) return;
+        if (ctx.car.type == TRAFFIC_JAM) return;
+        if (ctx.car.x < ctx.car.peelThrowX) return;
 
         for (int i = 0; i < MAX_OBJS; i++) {
             if (ctx.objs[i].type == NONE) {
                 ctx.objs[i].type = OBJ_BANANA_PEEL_MOVING;
 
                 ctx.thrownPeel.obj = i;
-                ctx.thrownPeel.x = ctx.passingCar.peelThrowX + 90;
+                ctx.thrownPeel.x = ctx.car.peelThrowX + 90;
                 ctx.thrownPeel.y = 200;
                 ctx.thrownPeel.xdest = ctx.thrownPeel.x + 70;
                 ctx.thrownPeel.xvel = 140;
                 ctx.thrownPeel.yvel = -10;
                 ctx.thrownPeel.grav = 500;
 
-                ctx.passingCar.threwPeel = true;
+                ctx.car.threwPeel = true;
 
                 break;
             }
@@ -1153,12 +1169,15 @@ class Play {
 
             if (tr.what == TRIGGER_HEN) {
                 ctx.hen.x = tr.x - (SCREEN_WIDTH / 2) - 32;
+                ctx.hen.xvel = 350;
+                ctx.hen.acc = 0;
                 startAnimation(ANIM_HEN);
             } else { //If not a hen, then trigger a passing car
-                ctx.passingCar.x = tr.x - (SCREEN_WIDTH / 2) - 128;
-                ctx.passingCar.color = tr.what;
-                ctx.passingCar.threwPeel = false;
-                ctx.passingCar.peelThrowX = tr.x + 72;
+                ctx.car.x = tr.x - (SCREEN_WIDTH / 2) - 128;
+                ctx.car.xvel = 1200;
+                ctx.car.type = tr.what;
+                ctx.car.threwPeel = false;
+                ctx.car.peelThrowX = tr.x + 72;
                 startAnimation(ANIM_PASSING_CAR_WHEELS);
             }
 
@@ -1546,6 +1565,8 @@ class Play {
         CutsceneObject bird = ctx.cutsceneObjects[1];
         Anim birdAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
         CutsceneObject dung = ctx.cutsceneObjects[0];
+        CutsceneObject flagman = ctx.cutsceneObjects[1];
+        Anim flagmanAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
         Camera cam = ctx.cam;
         int levelSize = ctx.levelSize;
 
@@ -2009,6 +2030,191 @@ class Play {
                 break;
 
             case 505:
+                ctx.sequenceStep = SEQ_FINISHED;
+                break;
+
+
+            //------------------------------------------------------------------
+            case 800: //SEQ_ENDING
+                ctx.player.visible = false;
+                ctx.player.state = PLAYER_STATE_INACTIVE;
+
+                ctx.cam.x = SCREEN_WIDTH;
+
+                ctx.car.x = SCREEN_WIDTH + 8;
+                ctx.car.type = TRAFFIC_JAM;
+                ctx.car.xvel = 0;
+
+                ctx.bus.x = SCREEN_WIDTH + 8 - 408;
+                ctx.bus.xvel = 0;
+                ctx.bus.routeSign = 4; //Finish (checkered flag) sign
+
+                flagman.sprite = SPR_FLAGMAN;
+                flagman.x = SCREEN_WIDTH * 2 + 136;
+                flagman.y = 180;
+                flagmanAnim.running = false;
+                flagmanAnim.loop = false;
+                flagmanAnim.reverse = false;
+                flagmanAnim.frame = 3;
+                flagmanAnim.numFrames = 4;
+                flagmanAnim.delay = 0.1f;
+                flagmanAnim.maxDelay = 0.1f;
+
+                ctx.sequenceDelay = 1;
+                ctx.sequenceStep++;
+                break;
+
+            case 801:
+                ctx.cam.xvel = CAMERA_XVEL / 4;
+                ctx.cam.xdest = SCREEN_WIDTH * 2 - 136;
+                ctx.sequenceDelay = 3;
+                ctx.sequenceStep++;
+                break;
+
+            case 802:
+                ctx.car.xvel = 64;
+                ctx.bus.xvel = 64;
+                ctx.anims[ANIM_PASSING_CAR_WHEELS].delay = 0.1f;
+                ctx.anims[ANIM_PASSING_CAR_WHEELS].maxDelay = 0.1f;
+                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                ctx.sequenceStep++;
+                break;
+
+            case 803:
+                if (ctx.car.x >= SCREEN_WIDTH + 144) {
+                    ctx.car.xvel = 0;
+                    ctx.bus.xvel = 0;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    ctx.sequenceDelay = 1;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 804:
+                cutscenePlayer.sprite = SPR_PLAYER_RUN;
+                cutscenePlayer.x = cam.x - 80;
+                cutscenePlayer.y = 204;
+                cutscenePlayer.xvel = 210;
+                cutscenePlayerAnim.running = true;
+                cutscenePlayerAnim.numFrames = 4;
+                cutscenePlayerAnim.loop = true;
+                cutscenePlayerAnim.delay = 0.1f;
+                cutscenePlayerAnim.maxDelay = 0.1f;
+
+                ctx.sequenceStep++;
+                break;
+
+            case 805:
+                if (cutscenePlayer.x > flagman.x && !ctx.playerReachedFlagman) {
+                    ctx.playerReachedFlagman = true;
+                    flagmanAnim.frame = 0;
+                    flagmanAnim.running = true;
+                }
+                if (cutscenePlayer.x >= cam.x + 320) {
+                    cutscenePlayer.acc = -256;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 806:
+                if (cutscenePlayer.xvel <= 128) {
+                    if (cutscenePlayer.sprite == SPR_PLAYER_RUN) {
+                        cutscenePlayer.sprite = SPR_PLAYER_WALK;
+                        cutscenePlayer.x += 8;
+                    }
+                }
+                if (cutscenePlayer.xvel <= 0 || cutscenePlayer.x >= 1238) {
+                    cutscenePlayer.x = 1238;
+                    cutscenePlayer.xvel = 0;
+                    cutscenePlayer.acc = 0;
+                    cutscenePlayer.sprite = SPR_PLAYER_STAND;
+                    cutscenePlayerAnim.running = false;
+                    cutscenePlayerAnim.frame = 0;
+                    ctx.sequenceDelay = 1;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 807:
+                ctx.car.xvel = 64;
+                ctx.bus.xvel = 64;
+                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                ctx.sequenceStep++;
+                break;
+
+            case 808:
+                if (ctx.car.x >= SCREEN_WIDTH + 416) {
+                    ctx.car.xvel = 0;
+                    ctx.bus.xvel = 0;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    ctx.sequenceDelay = 1;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 809:
+                ctx.hen.x = cam.x - 64;
+                ctx.hen.xvel = 350;
+                startAnimation(ANIM_HEN);
+                ctx.sequenceStep++;
+                break;
+
+            case 810:
+                if (ctx.hen.x >= cam.x + 144) {
+                    ctx.hen.acc = -256;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 811:
+                if (ctx.hen.x > flagman.x && !ctx.henReachedFlagman) {
+                    ctx.henReachedFlagman = true;
+                    flagmanAnim.frame = 0;
+                    flagmanAnim.running = true;
+                }
+                if (ctx.hen.xvel <= 0 || ctx.hen.x >= 1208) {
+                    ctx.hen.x = 1208;
+                    ctx.hen.xvel = 0;
+                    ctx.hen.acc = 0;
+                    ctx.anims[ANIM_HEN].running = false;
+                    ctx.anims[ANIM_HEN].frame = 1;
+                    ctx.sequenceDelay = 1;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 812:
+                ctx.car.xvel = 64;
+                ctx.bus.xvel = 64;
+                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                ctx.sequenceStep++;
+                break;
+
+            case 813:
+                if (ctx.bus.x >= ctx.cam.x + 8) {
+                    ctx.busReachedFlagman = true;
+                    flagmanAnim.frame = 0;
+                    flagmanAnim.running = true;
+
+                    ctx.car.xvel = 0;
+                    ctx.bus.xvel = 0;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    startAnimation(ANIM_BUS_DOOR_FRONT);
+                    ctx.sequenceDelay = 3;
+                    ctx.sequenceStep++;
+                }
+                break;
+
+            case 814:
+                ctx.wipeToBlack = true;
+                ctx.sequenceDelay = 1;
+                ctx.sequenceStep++;
+                break;
+
+            case 815:
                 ctx.sequenceStep = SEQ_FINISHED;
                 break;
         }

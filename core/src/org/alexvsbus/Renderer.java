@@ -177,30 +177,6 @@ class Renderer {
             }
         }
 
-        //Passing car
-        if (ctx.passingCar.x != NONE) {
-            x = (int)ctx.passingCar.x;
-            y = PASSING_CAR_Y;
-            frame = ctx.anims[ANIM_PASSING_CAR_WHEELS].frame;
-
-            spr = SPR_CAR_BLUE;
-            if (ctx.passingCar.color == CAR_SILVER) {
-                spr = SPR_CAR_SILVER;
-            } else if (ctx.passingCar.color == CAR_YELLOW) {
-                spr = SPR_CAR_YELLOW;
-            }
-
-            drawSprite(spr, x, y); //Car body
-            drawSpriteFrame(SPR_CAR_WHEEL, x + 16, y + 32, frame); //Rear wheel
-            drawSpriteFrame(SPR_CAR_WHEEL, x + 96, y + 32, frame); //Front wheel
-        }
-
-        //Hen
-        if (ctx.hen.x != NONE) {
-            frame = ctx.anims[ANIM_HEN].frame;
-            drawSpriteFrame(SPR_HEN, (int)ctx.hen.x, HEN_Y, frame);
-        }
-
         //Bus body, wheels, and route sign
         x = (int)ctx.bus.x;
         y = BUS_Y;
@@ -243,6 +219,50 @@ class Renderer {
         drawSpriteFrame(SPR_BUS_DOOR, x + 64,  y + 16, frame);
         frame = ctx.anims[ANIM_BUS_DOOR_FRONT].frame;
         drawSpriteFrame(SPR_BUS_DOOR, x + 344, y + 16, frame);
+
+        //Passing car
+        if (ctx.car.x != NONE) {
+            int numCars;
+
+            x = (int)ctx.car.x;
+            y = PASSING_CAR_Y;
+            frame = ctx.anims[ANIM_PASSING_CAR_WHEELS].frame;
+
+            if (ctx.car.type == TRAFFIC_JAM) { //Traffic jam
+                numCars = 6;
+                spr = SPR_CAR_BLUE;
+            } else { //Single car
+                numCars = 1;
+
+                spr = SPR_CAR_BLUE;
+                if (ctx.car.type == CAR_SILVER) {
+                    spr = SPR_CAR_SILVER;
+                } else if (ctx.car.type == CAR_YELLOW) {
+                    spr = SPR_CAR_YELLOW;
+                }
+            }
+
+            for (i = 0; i < numCars; i++) {
+                drawSprite(spr, x, y); //Car body
+                drawSpriteFrame(SPR_CAR_WHEEL, x + 16, y + 32, frame); //Rear wheel
+                drawSpriteFrame(SPR_CAR_WHEEL, x + 96, y + 32, frame); //Front wheel
+
+                x += 136;
+
+                //Next car color
+                switch (spr) {
+                    case SPR_CAR_BLUE:   spr = SPR_CAR_SILVER; break;
+                    case SPR_CAR_SILVER: spr = SPR_CAR_YELLOW; break;
+                    case SPR_CAR_YELLOW: spr = SPR_CAR_BLUE;   break;
+                }
+            }
+        }
+
+        //Hen
+        if (ctx.hen.x != NONE) {
+            frame = ctx.anims[ANIM_HEN].frame;
+            drawSpriteFrame(SPR_HEN, (int)ctx.hen.x, HEN_Y, frame);
+        }
 
         //Light poles (at most two are visible)
         drawSprite(SPR_POLE, ctx.poleX, POLE_Y);
@@ -323,6 +343,28 @@ class Renderer {
             y = (int)cobj.y;
             frame = ctx.anims[ANIM_CUTSCENE_OBJECTS + i].frame;
             drawSpriteFrame(spr, x, y, frame);
+        }
+
+        //Medal icons (used in the ending sequence)
+        if (ctx.playerReachedFlagman) {
+            x = (int)ctx.cutsceneObjects[0].x;
+            y = 160;
+
+            if (ctx.cutsceneObjects[0].sprite == SPR_PLAYER_RUN) {
+                x += 8;
+            }
+
+            drawSprite(SPR_MEDAL1, x, y);
+        }
+        if (ctx.henReachedFlagman) {
+            x = (int)ctx.hen.x;
+            y = 184;
+            drawSprite(SPR_MEDAL2, x, y);
+        }
+        if (ctx.busReachedFlagman) {
+            x = (int)ctx.bus.x + 343;
+            y = 120;
+            drawSprite(SPR_MEDAL3, x, y);
         }
 
         //Holes (foreground part)

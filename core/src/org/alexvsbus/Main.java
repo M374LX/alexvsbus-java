@@ -252,14 +252,20 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             //Handle end of level
             if (playCtx.sequenceStep == SEQ_FINISHED) {
-                if (playCtx.timeUp) {
+                if (playCtx.levelNum == LVLNUM_ENDING) {
+                    showTitle();
+                } else if (playCtx.timeUp) {
                     playCtx.playing = false;
                     playCtx.score = 0;
                     removeWipe();
                     dialogs.open(DLG_TRYAGAIN);
                 } else if (playCtx.goalReached) {
                     if (playCtx.lastLevel) {
-                        showTitle();
+                        if (playCtx.difficulty == DIFFICULTY_SUPER) {
+                            showTitle();
+                        } else {
+                            startEndingSequence();
+                        }
                     } else {
                         playLevel(playCtx.levelNum + 1, playCtx.difficulty);
                     }
@@ -460,6 +466,23 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         dialogCtx.showLogo = false;
+
+        audio.playBgm(playCtx.bgm);
+        wipeFromBlack();
+    }
+
+    void startEndingSequence() {
+        playCtx.playing = true;
+        playCtx.levelNum = LVLNUM_ENDING;
+        playCtx.lastLevel = false;
+
+        playCtx.levelSize = 8 * SCREEN_WIDTH;
+        playCtx.bgColor = SPR_BG_SKY3;
+        playCtx.bgm = BGM3;
+
+        dialogCtx.showLogo = false;
+
+        play.clear();
 
         audio.playBgm(playCtx.bgm);
         wipeFromBlack();
