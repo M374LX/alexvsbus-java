@@ -45,7 +45,6 @@ class Play {
 
         ctx = new PlayCtx();
 
-        ctx.playing = false;
         ctx.canPause = false;
         ctx.difficulty = DIFFICULTY_NORMAL;
         ctx.levelNum = -1;
@@ -259,14 +258,6 @@ class Play {
         ctx.playerReachedFlagman = false;
         ctx.henReachedFlagman = false;
         ctx.busReachedFlagman = false;
-
-        if (ctx.levelNum == LVLNUM_ENDING) {
-            ctx.sequenceStep = SEQ_ENDING;
-            ctx.sequenceDelay = 0;
-        } else {
-            ctx.sequenceStep = SEQ_INITIAL_DELAY;
-            ctx.sequenceDelay = 1;
-        }
 
         ctx.wipeToBlack = false;
         ctx.wipeFromBlack = false;

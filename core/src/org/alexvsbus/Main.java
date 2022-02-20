@@ -43,10 +43,16 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //Game progress
     boolean progressChecked;
 
+    //Screen type
+    int screenType;
+
     //Gameplay
     PlayCtx playCtx;
     Play play;
     LevelLoad levelLoad;
+
+    //Delay on final score screen
+    float finalScoreDelay;
 
     //Dialogs
     DialogCtx dialogCtx;
@@ -120,7 +126,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     @Override
     public void render() {
         int inputHeld, inputHit;
-        boolean dialogOpen = dialogCtx.stackSize > 0;
+        boolean playing = (screenType == SCR_PLAY);
+        boolean dialogOpen = (dialogCtx.stackSize > 0);
         float dt = Gdx.graphics.getDeltaTime();
 
         //Limit delta time to prevent problems with collision detection
@@ -128,7 +135,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Decide whether to show or hide touchscreen game controls
         config.hideTouchControls = false;
-        if (!config.touchEnabled || dialogOpen || !playCtx.playing) {
+        if (!config.touchEnabled || dialogOpen || !playing) {
             config.hideTouchControls = true;
         }
 
@@ -169,7 +176,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             switch (dialogCtx.action) {
                 case DLGACT_QUIT:
-                    if (playCtx.playing) {
+                    if (playing) {
                         showTitle();
                     } else {
                         dialogs.closeAll();
@@ -204,7 +211,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         handleConfigChange();
 
-        if (playCtx.playing && !dialogOpen) {
+        if (playing && !dialogOpen) {
             play.setInput(inputHeld);
             play.update(dt);
 
@@ -253,22 +260,35 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             //Handle end of level
             if (playCtx.sequenceStep == SEQ_FINISHED) {
                 if (playCtx.levelNum == LVLNUM_ENDING) {
-                    showTitle();
+                    showFinalScore();
                 } else if (playCtx.timeUp) {
-                    playCtx.playing = false;
+                    screenType = SCR_BLANK;
                     playCtx.score = 0;
                     removeWipe();
                     dialogs.open(DLG_TRYAGAIN);
                 } else if (playCtx.goalReached) {
                     if (playCtx.lastLevel) {
-                        if (playCtx.difficulty == DIFFICULTY_SUPER) {
-                            showTitle();
+                        if (playCtx.difficulty == DIFFICULTY_MAX) {
+                            showFinalScore();
                         } else {
                             startEndingSequence();
                         }
                     } else {
                         playLevel(playCtx.levelNum + 1, playCtx.difficulty);
                     }
+                }
+            }
+        }
+
+        //Handle final score screen
+        if (screenType == SCR_FINALSCORE) {
+            finalScoreDelay -= dt;
+
+            if (finalScoreDelay <= 0) {
+                if (playCtx.difficulty == DIFFICULTY_MAX) {
+                    showTitle();
+                } else {
+                    playLevel(1, playCtx.difficulty + 1);
                 }
             }
         }
@@ -289,7 +309,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         //Draw graphics
-        renderer.draw(config.touchEnabled, inputHeld, wipeValue);
+        renderer.draw(screenType, config.touchEnabled, inputHeld, wipeValue);
 
         oldInputHeld = inputHeld;
     }
@@ -300,7 +320,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Show the pause dialog when losing focus while playing the game
         //(Android only, as when pressing the home button)
-        if (playCtx.playing && playCtx.canPause && !dialogOpen) {
+        if (screenType == SCR_PLAY && playCtx.canPause && !dialogOpen) {
             dialogs.open(DLG_PAUSE);
         }
     }
@@ -377,18 +397,23 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void showTitle() {
-        playCtx.playing = false;
+        screenType = SCR_LOGO;
+
         playCtx.score = 0;
         playCtx.levelNum = -1;
 
         audio.stopAllSfx();
         audio.playBgm(BGMTITLE);
 
-        dialogCtx.showLogo = true;
-
         dialogs.closeAll();
         dialogs.open(DLG_MAIN);
 
+        removeWipe();
+    }
+
+    void showFinalScore() {
+        screenType = SCR_FINALSCORE;
+        finalScoreDelay = 4.0f;
         removeWipe();
     }
 
@@ -425,18 +450,20 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             msg += ":\n" + filename;
 
             removeWipe();
-            playCtx.playing = false;
+            screenType = SCR_BLANK;
             dialogs.showError(msg);
 
             return;
         }
 
         progressChecked = false;
+        screenType = SCR_PLAY;
 
-        playCtx.playing = true;
         playCtx.difficulty = difficulty;
         playCtx.levelNum = levelNum;
         playCtx.lastLevel = (levelNum == difficultyNumLevels[difficulty]);
+        playCtx.sequenceStep = SEQ_INITIAL_DELAY;
+        playCtx.sequenceDelay = 1;
 
         switch (levelNum) {
             case 1:
@@ -465,14 +492,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 break;
         }
 
-        dialogCtx.showLogo = false;
-
         audio.playBgm(playCtx.bgm);
         wipeFromBlack();
     }
 
     void startEndingSequence() {
-        playCtx.playing = true;
+        screenType = SCR_PLAY;
+
         playCtx.levelNum = LVLNUM_ENDING;
         playCtx.lastLevel = false;
 
@@ -480,7 +506,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.bgColor = SPR_BG_SKY3;
         playCtx.bgm = BGM3;
 
-        dialogCtx.showLogo = false;
+        playCtx.sequenceStep = SEQ_ENDING;
+        playCtx.sequenceDelay = 0;
 
         play.clear();
 

@@ -88,7 +88,6 @@ public class Defs {
         boolean selectedVisible;
 
         boolean showFrame;
-        boolean showLogo;
 
         int action;
         int actionParam;
@@ -253,7 +252,6 @@ public class Defs {
 
     //Gameplay context
     static class PlayCtx {
-        boolean playing;
         boolean canPause;
         int difficulty;
         int levelNum;
@@ -336,6 +334,12 @@ public class Defs {
 
     //Maximum delta time
     static final float MAX_DT = 1.0f / 30.0f;
+
+    //Screen types
+    static final int SCR_BLANK = 0;
+    static final int SCR_LOGO = 1;
+    static final int SCR_PLAY = 2;
+    static final int SCR_FINALSCORE = 3;
 
     //Difficulty
     public static final int DIFFICULTY_NORMAL = 0;

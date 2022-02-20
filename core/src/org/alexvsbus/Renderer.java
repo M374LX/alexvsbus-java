@@ -80,7 +80,7 @@ class Renderer {
         gfx = new Texture(Gdx.files.internal("gfx.png"));
     }
 
-    void draw(boolean touchButtons, int inputState, int wipeValue) {
+    void draw(int screenType, boolean touchButtons, int inputState, int wipeValue) {
         //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -92,12 +92,24 @@ class Renderer {
         spriteBatch.setProjectionMatrix(mat);
         spriteBatch.begin();
 
-        if (playCtx.playing) {
-            drawPlay();
-            drawHud();
-            if (touchButtons) drawTouchButtons(inputState);
-        } else if (dialogCtx.showLogo) {
-            drawSprite(SPR_LOGO, (SCREEN_WIDTH - LOGO_WIDTH) / 2 + 4, 16);
+        switch (screenType) {
+            case SCR_BLANK:
+                //Do nothing
+                break;
+
+            case SCR_LOGO:
+                drawSprite(SPR_LOGO, (SCREEN_WIDTH - LOGO_WIDTH) / 2 + 4, 16);
+                break;
+
+            case SCR_PLAY:
+                drawPlay();
+                drawHud();
+                if (touchButtons) drawTouchButtons(inputState);
+                break;
+
+            case SCR_FINALSCORE:
+                drawFinalScore();
+                break;
         }
 
         if (dialogCtx.stackSize > 0) {
@@ -453,10 +465,14 @@ class Renderer {
         drawSpriteStretch(SPR_BG_BLACK, 0, 0, SCREEN_WIDTH, 24);
 
         drawSprite(SPR_HUD_SCORE, 1, 1);
-        drawDigits(1, 9, playCtx.score, 6);
+        drawDigits(playCtx.score, 6, 1, 9);
 
         drawSprite(SPR_HUD_TIME, 225, 1);
-        drawDigits(233, 9, playCtx.time, 2);
+        if (playCtx.levelNum == LVLNUM_ENDING) {
+            drawText("--", 233, 9);
+        } else {
+            drawDigits(playCtx.time, 2, 233, 9);
+        }
     }
 
     void drawTouchButtons(int inputState) {
@@ -494,6 +510,36 @@ class Renderer {
             spr = SPR_TOUCH_JUMP_HELD;
         }
         drawSpriteTransparent(spr, x, y, TOUCH_OPACITY);
+    }
+
+    void drawFinalScore() {
+        int cx = (projectionWidth  / TILE_SIZE) / 2 * TILE_SIZE;
+        int cy = (projectionHeight / TILE_SIZE) / 2 * TILE_SIZE;
+        int x = 0;
+        String msg = "";
+
+        drawText("SCORE:", cx - 7 * TILE_SIZE, cy - TILE_SIZE);
+        drawDigits(playCtx.score, 6, cx + 1 * TILE_SIZE, cy - TILE_SIZE);
+
+        switch (playCtx.difficulty) {
+            case DIFFICULTY_NORMAL:
+                x = cx - 12 * TILE_SIZE;
+                msg = "GET READY FOR HARD MODE!";
+                break;
+
+            case DIFFICULTY_HARD:
+                x = cx - 12 * TILE_SIZE;
+                msg = "GET READY FOR SUPER MODE!";
+                break;
+
+            case DIFFICULTY_SUPER:
+                x = cx - 4 * TILE_SIZE;
+                msg = "THE  END";
+                break;
+        }
+
+
+        drawText(msg, x, cy + TILE_SIZE);
     }
 
     void drawDialog() {
@@ -698,7 +744,7 @@ class Renderer {
         spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
     }
 
-    void drawDigits(int x, int y, int value, int width) {
+    void drawDigits(int value, int width, int x, int y) {
         int numDigits = 0;
         int i;
 
