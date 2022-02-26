@@ -33,7 +33,7 @@ class LevelLoad {
     int xMax;
     int numObjs;
     int numCrateBlocks;
-    int numGeysers, numGeyserCracks;
+    int numGushes, numGushCracks;
     int numSolids;
     int numHoles, numDeepHoles, numPassageways;
     int numRespawnPoints;
@@ -66,8 +66,8 @@ class LevelLoad {
         xMax = NONE;
         numObjs = 0;
         numCrateBlocks = 0;
-        numGeysers = 0;
-        numGeyserCracks = 0;
+        numGushes = 0;
+        numGushCracks = 0;
         numSolids = 0;
         numHoles = 0;
         numDeepHoles = 0;
@@ -188,23 +188,23 @@ class LevelLoad {
                 addObj(OBJ_COIN_GOLD, x, token2, true);
             } else if (tokens[0].equals("crates")) {
                 addCrateBlock(x, token2, token3, token4);
-            } else if (tokens[0].equals("geyser")) {
-                addObj(OBJ_GEYSER, x, NONE, false);
+            } else if (tokens[0].equals("gush")) {
+                addObj(OBJ_GUSH, x, NONE, false);
 
-                if (numGeysers >= MAX_GEYSERS) {
+                if (numGushes >= MAX_GUSHES) {
                     return LVLERR_INVALID;
                 }
 
-                ctx.geysers[numGeysers].obj = numObjs - 1;
-                ctx.geysers[numGeysers].y = GEYSER_INITIAL_Y;
-                ctx.geysers[numGeysers].movePattern = geyserMovePattern1;
-                ctx.geysers[numGeysers].movePatternPos = 0;
-                ctx.geysers[numGeysers].yvel = geyserMovePattern1[0];
-                ctx.geysers[numGeysers].ydest = geyserMovePattern1[1];
+                ctx.gushes[numGushes].obj = numObjs - 1;
+                ctx.gushes[numGushes].y = GUSH_INITIAL_Y;
+                ctx.gushes[numGushes].movePattern = gushMovePattern1;
+                ctx.gushes[numGushes].movePatternPos = 0;
+                ctx.gushes[numGushes].yvel = gushMovePattern1[0];
+                ctx.gushes[numGushes].ydest = gushMovePattern1[1];
 
-                numGeysers++;
-            } else if (tokens[0].equals("geyser-crack")) {
-                addObj(OBJ_GEYSER_CRACK, x, NONE, false);
+                numGushes++;
+            } else if (tokens[0].equals("gush-crack")) {
+                addObj(OBJ_GUSH_CRACK, x, NONE, false);
             } else if (tokens[0].equals("hydrant")) {
                 addObj(OBJ_HYDRANT, x, NONE, false);
             } else if (tokens[0].equals("overhead-sign")) {
@@ -250,8 +250,8 @@ class LevelLoad {
             return LVLERR_INVALID;
         }
 
-        //Error: running out of geysers due to geyser cracks
-        if (numGeysers + numGeyserCracks > MAX_GEYSERS) {
+        //Error: running out of gushes due to gush cracks
+        if (numGushes + numGushCracks > MAX_GUSHES) {
             return LVLERR_INVALID;
         }
 
@@ -378,12 +378,12 @@ class LevelLoad {
                     y = PUSHABLE_CRATE_Y;
                     break;
 
-                case OBJ_GEYSER:
-                    y = GEYSER_INITIAL_Y;
+                case OBJ_GUSH:
+                    y = GUSH_INITIAL_Y;
                     break;
 
-                case OBJ_GEYSER_CRACK:
-                    y = GEYSER_CRACK_Y;
+                case OBJ_GUSH_CRACK:
+                    y = GUSH_CRACK_Y;
                     break;
 
                 case OBJ_HYDRANT:

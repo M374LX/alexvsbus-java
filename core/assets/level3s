@@ -1,12 +1,12 @@
 level-size 18
 sky-color 3
 bgm 3
-geyser 2
+gush 2
 banana-peel 1 11
-geyser 2
+gush 2
 coin-silver 2 9
 crates 0 10 1 1
-geyser 3
+gush 3
 banana-peel 1 11
 coin-silver 2 7
 coin-silver 0 9
@@ -14,7 +14,7 @@ spring 0 10
 respawn-point 1 4
 crates 0 6 1 5
 deep-hole 1 6
-geyser 6
+gush 6
 coin-silver 1 7
 respawn-point 0 9
 deep-hole 1 6
@@ -34,12 +34,12 @@ respawn-point 0 9
 deep-hole 1 7
 overhead-sign 1 3
 coin-silver 2 8
-geyser 4
+gush 4
 car-yellow 1
 coin-silver 2 7
 banana-peel 6 11
 coin-gold 4 10
-geyser 1
+gush 1
 coin-silver 3 9
 spring 0 10
 respawn-point 1 9
@@ -47,7 +47,7 @@ deep-hole 1 13
 coin-silver 2 6
 coin-silver 5 4
 coin-silver 5 5
-geyser 1
+gush 1
 coin-silver 1 9
 spring 0 10
 respawn-point 1 9
@@ -68,9 +68,9 @@ coin-silver 3 4
 coin-gold 6 4
 overhead-sign 2 4
 coin-silver 2 10
-geyser 1
+gush 1
 coin-silver 3 10
-geyser-crack 2
+gush-crack 2
 respawn-point 3 9
 deep-hole 1 10
 trigger-car-silver 1
@@ -91,15 +91,15 @@ banana-peel 2 15
 coin-silver 2 9
 coin-silver 0 12
 spring 0 14
-geyser 2
-geyser-crack 2
+gush 2
+gush-crack 2
 coin-gold 1 10
-geyser 1
+gush 1
 banana-peel 2 11
 coin-silver 1 8
-geyser 2
+gush 2
 coin-silver 1 9
-geyser-crack 2
+gush-crack 2
 coin-silver 2 6
 coin-silver 0 8
 spring 0 10
@@ -109,8 +109,8 @@ deep-hole 1 8
 overhead-sign 5 3
 coin-gold 0 5
 coin-silver 2 9
-geyser-crack 2
-geyser 2
+gush-crack 2
+gush 2
 coin-silver 3 9
 spring 0 10
 respawn-point 1 9
@@ -119,10 +119,10 @@ coin-silver 2 4
 coin-gold 6 5
 overhead-sign 1 3
 banana-peel 3 11
-geyser 2
+gush 2
 coin-silver 2 10
-geyser-crack 1
-geyser 2
+gush-crack 1
+gush 2
 coin-silver 2 10
 crates 3 10 1 1
 coin-silver 3 8
@@ -130,14 +130,14 @@ banana-peel 0 11
 rope 2
 respawn-point 0 9
 deep-hole 1 16
-geyser 17
+gush 17
 trigger-hen 1
 banana-peel 1 11
 coin-silver 1 10
-geyser 2
+gush 2
 coin-silver 2 10
-geyser-crack 1
-geyser 2
+gush-crack 1
+gush 2
 coin-silver 3 9
 passageway 2 15
 banana-peel 1 15
@@ -166,11 +166,11 @@ coin-silver 3 8
 overhead-sign 4 3
 banana-peel 1 11
 coin-silver 1 9
-geyser 2
+gush 2
 car-blue 3
 coin-silver 2 7
 coin-silver 4 6
 crates 0 7 1 4
 coin-gold 1 10
 coin-silver 3 10
-geyser 4
+gush 4

@@ -145,8 +145,8 @@ public class Defs {
         int width, height;
     }
 
-    static class Geyser {
-        int obj; //Index of the geyser within PlayCtx.objs[]
+    static class Gush {
+        int obj; //Index of the gush within PlayCtx.objs[]
         float y;
         float yvel;
         float ydest; //Destination Y position
@@ -280,7 +280,7 @@ public class Defs {
 
         Obj objs[];
         CrateBlock crateBlocks[];
-        Geyser geysers[];
+        Gush gushes[];
         GrabbedRope grabbedRope;
         MovingPeel slipPeel;
         MovingPeel thrownPeel;
@@ -502,9 +502,9 @@ public class Defs {
     static final int SPR_DIGITS = 33;
     static final int SPR_DUNG = 34;
     static final int SPR_FLAGMAN = 35;
-    static final int SPR_GEYSER = 36;
-    static final int SPR_GEYSER_CRACK = 37;
-    static final int SPR_GEYSER_HOLE = 38;
+    static final int SPR_GUSH = 36;
+    static final int SPR_GUSH_CRACK = 37;
+    static final int SPR_GUSH_HOLE = 38;
     static final int SPR_HEN = 39;
     static final int SPR_HUD_SCORE = 40;
     static final int SPR_HUD_TIME = 41;
@@ -646,7 +646,7 @@ public class Defs {
     static final int MAX_OBJS = 160;
     static final int MAX_CRATE_BLOCKS = 32;
     static final int MAX_HOLES = 32;
-    static final int MAX_GEYSERS = 32;
+    static final int MAX_GUSHES = 32;
     static final int MAX_PASSAGEWAYS = 4;
     static final int MAX_PUSHABLE_CRATES = MAX_PASSAGEWAYS;
     static final int MAX_CUTSCENE_OBJECTS = 2;
@@ -691,8 +691,8 @@ public class Defs {
     static final int OBJ_CRATE_PUSHABLE = 2;
     static final int OBJ_BANANA_PEEL = 3;
     static final int OBJ_BANANA_PEEL_MOVING = 4;
-    static final int OBJ_GEYSER = 5;
-    static final int OBJ_GEYSER_CRACK = 6;
+    static final int OBJ_GUSH = 5;
+    static final int OBJ_GUSH_CRACK = 6;
     static final int OBJ_ROPE_HORIZONTAL = 7;
     static final int OBJ_ROPE_VERTICAL = 8;
     static final int OBJ_SPRING = 9;
@@ -744,8 +744,8 @@ public class Defs {
     static final int BUS_Y = 128;
     static final int BUS_STOP_SIGN_Y = 176;
     static final int POLE_Y = 120;
-    static final int GEYSER_CRACK_Y = 260;
-    static final int GEYSER_INITIAL_Y = 232;
+    static final int GUSH_CRACK_Y = 260;
+    static final int GUSH_INITIAL_Y = 232;
     static final int HYDRANT_Y = 240;
     static final int PARKED_CAR_Y = 208;
     static final int PARKED_TRUCK_Y = 136;
@@ -761,7 +761,7 @@ public class Defs {
     //Animations
     static final int ANIM_PLAYER = 0;
     static final int ANIM_COINS = 1;
-    static final int ANIM_GEYSERS = 2;
+    static final int ANIM_GUSHES = 2;
     static final int ANIM_HIT_SPRING = 3;
     static final int ANIM_CRACK_PARTICLES = 4;
     static final int ANIM_BUS_WHEELS = 5;
@@ -843,9 +843,9 @@ public class Defs {
         736,  552,  8,   8,   //SPR_DIGITS
         856,  72,   8,   8,   //SPR_DUNG
         0,    176,  64,  88,  //SPR_FLAGMAN
-        952,  0,    24,  88,  //SPR_GEYSER
-        1000, 96,   16,  8,   //SPR_GEYSER_CRACK
-        976,  96,   16,  8,   //SPR_GEYSER_HOLE
+        952,  0,    24,  88,  //SPR_GUSH
+        1000, 96,   16,  8,   //SPR_GUSH_CRACK
+        976,  96,   16,  8,   //SPR_GUSH_HOLE
         760,  88,   32,  32,  //SPR_HEN
         776,  520,  40,  8,   //SPR_HUD_SCORE
         784,  536,  32,  8,   //SPR_HUD_TIME
@@ -954,8 +954,8 @@ public class Defs {
         SPR_CRATE, //OBJ_CRATE_PUSHABLE
         SPR_BANANA_PEEL, //OBJ_BANANA_PEEL
         SPR_BANANA_PEEL, //OBJ_BANANA_PEEL_MOVING
-        SPR_GEYSER, //OBJ_GEYSER
-        SPR_GEYSER_CRACK, //OBJ_GEYSER_CRACK
+        SPR_GUSH, //OBJ_GUSH
+        SPR_GUSH_CRACK, //OBJ_GUSH_CRACK
         SPR_ROPE_HORIZONTAL, //OBJ_ROPE_HORIZONTAL
         SPR_ROPE_VERTICAL, //OBJ_ROPE_VERTICAL
         SPR_SPRING, //OBJ_SPRING
@@ -967,13 +967,13 @@ public class Defs {
         SPR_TRUCK, //OBJ_PARKED_TRUCK
     };
 
-    //Geyser movement patterns
+    //Gush movement patterns
     //
     //For each pair of values, the first value is the vertical velocity (yvel)
     //and the second value is the destination Y position (ydest)
     //
     //The value zero indicates the end of the pattern
-    static final int[] geyserMovePattern1 = {
+    static final int[] gushMovePattern1 = {
         -64, 224, 64, 232,
         -64, 224, 64, 232,
         -64, 224, 64, 232,
@@ -983,7 +983,7 @@ public class Defs {
         0,
     };
 
-    static final int[] geyserMovePattern2 = {
+    static final int[] gushMovePattern2 = {
         -64, 216, 64, 224,
         0,
     };

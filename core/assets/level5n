@@ -17,7 +17,7 @@ coin-gold 2 3
 banana-peel 3 11
 respawn-point 3 9
 deep-hole 1 4
-geyser 4
+gush 4
 coin-silver 2 10
 respawn-point 1 9
 deep-hole 1 5
@@ -40,7 +40,7 @@ spring 6 10
 respawn-point 1 9
 deep-hole 1 7
 coin-gold 4 3
-geyser 3
+gush 3
 coin-silver 2 9
 hydrant 2
 coin-silver 3 8
@@ -61,7 +61,7 @@ crates 1 8 2 3
 respawn-point 1 6
 deep-hole 1 7
 coin-gold 8 4
-geyser 0
+gush 0
 respawn-point 2 9
 coin-silver 1 10
 deep-hole 0 10
@@ -90,18 +90,18 @@ crates 0 9 1 2
 coin-silver 6 9
 respawn-point 2 9
 deep-hole 1 5
-geyser-crack 5
+gush-crack 5
 respawn-point 1 9
 coin-silver 1 9
 deep-hole 0 6
 coin-silver 6 7
 crates 0 9 1 2
-geyser 2
+gush 2
 respawn-point 1 9
 deep-hole 1 7
 coin-gold 5 5
-geyser 3
-geyser-crack 4
+gush 3
+gush-crack 4
 coin-silver 2 10
 passageway 1 15
 coin-gold 2 12
@@ -115,14 +115,14 @@ coin-silver 2 14
 spring 3 14
 hydrant 3
 coin-silver 3 9
-geyser 4
+gush 4
 coin-silver 6 9
-geyser-crack 4
+gush-crack 4
 coin-silver 5 7
-geyser 0
+gush 0
 coin-silver 3 10
 banana-peel 1 11
-geyser-crack 2
+gush-crack 2
 coin-silver 1 8
 rope 1
 respawn-point 0 9
@@ -145,7 +145,7 @@ respawn-point 1 9
 deep-hole 1 8
 coin-silver 4 8
 coin-silver 4 10
-geyser 1
+gush 1
 banana-peel 3 11
 coin-silver 3 7
 banana-peel 2 11
@@ -165,7 +165,7 @@ respawn-point 2 9
 deep-hole 1 7
 respawn-point 9 9
 deep-hole 1 4
-geyser-crack 4
+gush-crack 4
 respawn-point 1 9
 coin-gold 1 7
 deep-hole 0 3

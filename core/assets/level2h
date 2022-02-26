@@ -9,7 +9,7 @@ spring 0 10
 crates 1 7 2 4
 respawn-point 1 5
 deep-hole 1 7
-geyser 7
+gush 7
 car-yellow 3
 coin-gold 0 4
 coin-silver 4 6
@@ -18,7 +18,7 @@ deep-hole 1 5
 coin-gold 2 4
 coin-silver 3 7
 crates 0 10 1 1
-geyser 2
+gush 2
 car-silver 2
 coin-silver 5 8
 hydrant 2
@@ -28,7 +28,7 @@ coin-silver 4 7
 hydrant 0
 coin-silver 3 9
 banana-peel 3 11
-geyser 2
+gush 2
 crates 2 9 2 2
 coin-silver 1 7
 respawn-point 1 9
@@ -62,7 +62,7 @@ respawn-point 1 9
 deep-hole 1 6
 coin-silver 2 7
 coin-silver 3 7
-geyser-crack 2
+gush-crack 2
 crates 2 10 1 1
 crates 1 9 1 2
 crates 1 8 1 3
@@ -75,7 +75,7 @@ coin-gold 9 2
 coin-silver 0 4
 coin-silver 0 5
 coin-silver 0 6
-geyser-crack 0
+gush-crack 0
 overhead-sign 0 3
 passageway 5 19
 coin-gold 2 13
@@ -108,7 +108,7 @@ spring 0 14
 trigger-car-blue 1
 coin-silver 5 8
 hydrant 0
-geyser 2
+gush 2
 coin-gold 2 7
 respawn-point 2 9
 deep-hole 1 4
@@ -125,12 +125,12 @@ coin-gold 1 2
 overhead-sign 1 3
 coin-silver 3 8
 crates 0 10 1 1
-geyser 5
+gush 5
 coin-gold 1 6
 crates 3 10 1 1
 coin-silver 4 6
 coin-silver 1 6
-geyser 0
+gush 0
 coin-silver 1 6
 hydrant 2
 respawn-point 1 9
@@ -151,12 +151,12 @@ coin-gold 4 2
 crates 0 7 2 4
 respawn-point 1 5
 deep-hole 1 5
-geyser 5
+gush 5
 coin-silver 2 9
 coin-silver 3 7
 crates 0 9 2 2
 coin-silver 1 7
-geyser 3
+gush 3
 coin-gold 3 3
 spring 0 10
 crates 1 7 2 4
@@ -168,7 +168,7 @@ coin-gold 2 4
 coin-gold 2 5
 banana-peel 2 11
 coin-silver 1 9
-geyser-crack 3
+gush-crack 3
 banana-peel 3 11
 banana-peel 3 11
 coin-silver 3 7
@@ -177,7 +177,7 @@ respawn-point 4 9
 deep-hole 1 11
 coin-gold 9 7
 banana-peel 2 11
-geyser 5
+gush 5
 coin-silver 1 7
 crates 0 9 2 2
 coin-silver 1 7
@@ -201,9 +201,9 @@ deep-hole 1 5
 coin-gold 5 5
 hydrant 3
 coin-silver 1 8
-geyser 3
+gush 3
 respawn-point 2 9
 deep-hole 1 4
 trigger-car-silver 0
-geyser 14
+gush 14
 banana-peel 4 11

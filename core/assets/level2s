@@ -4,12 +4,12 @@ bgm 2
 respawn-point 0 9
 deep-hole 1 6
 coin-silver 4 7
-geyser 2
+gush 2
 respawn-point 1 9
 deep-hole 1 4
-geyser 4
+gush 4
 coin-silver 1 10
-geyser 2
+gush 2
 respawn-point 1 9
 deep-hole 1 11
 coin-silver 2 8
@@ -22,7 +22,7 @@ coin-silver 0 9
 coin-gold 1 7
 overhead-sign 1 4
 banana-peel 3 11
-geyser 2
+gush 2
 coin-silver 2 9
 banana-peel 0 11
 coin-gold 2 4
@@ -35,21 +35,21 @@ spring 3 10
 respawn-point 1 9
 deep-hole 1 5
 coin-silver 2 7
-geyser 3
+gush 3
 coin-gold 2 9
 banana-peel 1 11
-geyser 2
+gush 2
 respawn-point 1 9
 deep-hole 1 9
 coin-silver 4 8
 coin-silver 4 9
-geyser 2
+gush 2
 banana-peel 2 11
 respawn-point 1 9
 deep-hole 1 6
 coin-silver 2 8
 banana-peel 4 11
-geyser 2
+gush 2
 spring 2 10
 respawn-point 1 9
 deep-hole 1 13
@@ -64,15 +64,15 @@ coin-silver 5 8
 crates 1 10 1 1
 coin-silver 5 9
 banana-peel 2 11
-geyser 3
+gush 3
 banana-peel 3 11
 coin-silver 2 9
-geyser 2
+gush 2
 banana-peel 3 11
-geyser 3
+gush 3
 coin-silver 2 9
 banana-peel 1 11
-geyser 3
+gush 3
 coin-silver 3 8
 crates 0 9 1 2
 crates 1 7 1 4
@@ -82,16 +82,16 @@ deep-hole 1 8
 overhead-sign 1 4
 coin-silver 1 8
 coin-silver 3 8
-geyser 4
+gush 4
 banana-peel 2 11
 coin-silver 1 8
 trigger-car-blue 1
 banana-peel 0 11
-geyser-crack 2
+gush-crack 2
 respawn-point 1 9
 deep-hole 1 4
 coin-silver 6 10
-geyser 2
+gush 2
 coin-silver 2 10
 banana-peel 1 11
 coin-silver 3 8
@@ -103,7 +103,7 @@ coin-silver 0 9
 overhead-sign 3 4
 coin-silver 0 8
 coin-silver 4 9
-geyser 2
+gush 2
 coin-silver 3 6
 coin-silver 0 8
 spring 0 10
@@ -131,8 +131,8 @@ banana-peel 0 15
 coin-silver 2 10
 coin-silver 0 13
 spring 0 14
-geyser 3
-geyser-crack 4
+gush 3
+gush-crack 4
 coin-silver 2 9
 spring 2 10
 respawn-point 1 9
@@ -150,7 +150,7 @@ coin-silver 4 9
 banana-peel 1 11
 coin-silver 2 10
 coin-silver 6 10
-geyser 4
+gush 4
 respawn-point 2 9
 deep-hole 1 11
 trigger-car-silver 2
@@ -159,4 +159,4 @@ coin-silver 7 9
 respawn-point 3 9
 deep-hole 1 6
 coin-silver 5 7
-geyser 1
+gush 1

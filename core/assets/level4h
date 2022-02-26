@@ -18,7 +18,7 @@ respawn-point 1 9
 deep-hole 1 4
 coin-silver 4 7
 crates 0 10 1 1
-geyser 2
+gush 2
 hydrant 3
 coin-gold 1 6
 respawn-point 1 9
@@ -40,11 +40,11 @@ deep-hole 1 6
 coin-silver 1 5
 coin-silver 3 5
 banana-peel 2 11
-geyser-crack 2
+gush-crack 2
 banana-peel 2 11
 coin-silver 2 8
 crates 0 10 1 1
-geyser 3
+gush 3
 respawn-point 1 9
 deep-hole 1 4
 coin-silver 4 8
@@ -53,9 +53,9 @@ respawn-point 4 9
 deep-hole 1 4
 trigger-car-yellow 0
 coin-gold 4 5
-geyser 0
+gush 0
 coin-silver 3 9
-geyser-crack 5
+gush-crack 5
 respawn-point 1 9
 deep-hole 1 8
 coin-silver 4 7
@@ -63,13 +63,13 @@ respawn-point 3 9
 deep-hole 1 7
 coin-silver 3 7
 coin-silver 3 7
-geyser-crack 2
+gush-crack 2
 banana-peel 1 11
 coin-silver 1 10
 banana-peel 1 11
 respawn-point 1 9
 deep-hole 1 4
-geyser 4
+gush 4
 banana-peel 1 11
 banana-peel 2 11
 coin-silver 2 8
@@ -96,11 +96,11 @@ coin-silver 2 5
 respawn-point 5 9
 deep-hole 1 8
 coin-gold 7 3
-geyser 1
+gush 1
 coin-gold 1 5
 crates 1 10 1 1
 coin-silver 3 7
-geyser 0
+gush 0
 passageway 3 20
 banana-peel 2 11
 banana-peel 0 15
@@ -128,11 +128,11 @@ banana-peel 2 11
 coin-silver 1 7
 crates 2 10 1 1
 banana-peel 3 11
-geyser-crack 2
+gush-crack 2
 respawn-point 1 9
 deep-hole 1 7
 coin-silver 6 9
-geyser 2
+gush 2
 banana-peel 3 11
 coin-silver 3 8
 crates 0 10 1 1
@@ -145,12 +145,12 @@ coin-silver 3 5
 coin-gold 2 4
 coin-gold 1 9
 hydrant 0
-geyser 2
+gush 2
 respawn-point 1 9
 deep-hole 1 7
 trigger-car-blue 1
 coin-silver 6 10
-geyser 1
+gush 1
 coin-silver 5 8
 crates 0 9 1 2
 crates 1 7 1 4
@@ -164,12 +164,12 @@ respawn-point 1 4
 crates 0 6 1 5
 deep-hole 1 6
 coin-gold 6 4
-geyser 0
+gush 0
 banana-peel 1 11
 trigger-hen 0
 coin-silver 2 10
 banana-peel 1 11
-geyser-crack 3
+gush-crack 3
 banana-peel 1 11
 banana-peel 2 11
 coin-silver 2 8
@@ -187,7 +187,7 @@ deep-hole 1 13
 coin-silver 7 3
 coin-silver 1 3
 coin-gold 5 10
-geyser 1
+gush 1
 banana-peel 2 11
 banana-peel 2 11
 coin-silver 1 9
@@ -198,10 +198,10 @@ crates 1 8 2 3
 respawn-point 2 9
 deep-hole 1 3
 coin-gold 3 4
-geyser 0
+gush 0
 coin-silver 3 8
 crates 0 9 1 2
 respawn-point 1 9
 deep-hole 1 4
 coin-gold 2 5
-geyser 2
+gush 2

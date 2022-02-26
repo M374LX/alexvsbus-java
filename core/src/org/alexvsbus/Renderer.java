@@ -309,17 +309,17 @@ class Renderer {
             if (obj.type == OBJ_BANANA_PEEL) continue;
             if (obj.type == OBJ_BANANA_PEEL_MOVING) continue;
 
-            if (obj.type == OBJ_GEYSER) {
-                int w = sprites[SPR_GEYSER * 4 + 2];
+            if (obj.type == OBJ_GUSH) {
+                int w = sprites[SPR_GUSH * 4 + 2];
                 int h = 265 - obj.y;
                 if (h <= 0) h = 1;
 
-                frame = ctx.anims[ANIM_GEYSERS].frame;
+                frame = ctx.anims[ANIM_GUSHES].frame;
 
-                drawSpritePart(SPR_GEYSER, obj.x, obj.y, frame * w, 0, w, h);
+                drawSpritePart(SPR_GUSH, obj.x, obj.y, frame * w, 0, w, h);
 
-                //Geyser hole
-                drawSprite(SPR_GEYSER_HOLE, obj.x, 263);
+                //Gush hole
+                drawSprite(SPR_GUSH_HOLE, obj.x, 263);
             } else {
                 frame = 0;
 

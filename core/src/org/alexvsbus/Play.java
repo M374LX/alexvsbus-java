@@ -68,9 +68,9 @@ class Play {
             ctx.crateBlocks[i] = new CrateBlock();
         }
 
-        ctx.geysers = new Geyser[MAX_GEYSERS];
-        for (i = 0; i < MAX_GEYSERS; i++) {
-            ctx.geysers[i] = new Geyser();
+        ctx.gushes = new Gush[MAX_GUSHES];
+        for (i = 0; i < MAX_GUSHES; i++) {
+            ctx.gushes[i] = new Gush();
         }
 
         ctx.pushableCrates = new PushableCrate[MAX_PUSHABLE_CRATES];
@@ -183,8 +183,8 @@ class Play {
             ctx.crateBlocks[i].x = NONE;
         }
 
-        for (i = 0; i < MAX_GEYSERS; i++) {
-            ctx.geysers[i].obj = NONE;
+        for (i = 0; i < MAX_GUSHES; i++) {
+            ctx.gushes[i].obj = NONE;
         }
 
         for (i = 0; i < MAX_PUSHABLE_CRATES; i++) {
@@ -231,7 +231,7 @@ class Play {
 
         setAnimation(ANIM_PLAYER, true, true, false, 1, 0.1f);
         setAnimation(ANIM_COINS, true, true, false, 3, 0.1f);
-        setAnimation(ANIM_GEYSERS, true, true, false, 3, 0.05f);
+        setAnimation(ANIM_GUSHES, true, true, false, 3, 0.05f);
         setAnimation(ANIM_HIT_SPRING, false, false, false, 6, 0.02f);
         setAnimation(ANIM_CRACK_PARTICLES, true, true, false, 2, 0.1f);
         setAnimation(ANIM_BUS_WHEELS, false, true, false, 3, 0.1f);
@@ -518,20 +518,20 @@ class Play {
             obj.y = (int)peel.y;
         }
 
-        //Geysers
-        for (i = 0; i < MAX_GEYSERS; i++) {
-            Geyser gsr = ctx.geysers[i];
+        //Gushes
+        for (i = 0; i < MAX_GUSHES; i++) {
+            Gush gsr = ctx.gushes[i];
 
             float y = gsr.y;
             float yvel = gsr.yvel;
             float ydest = gsr.ydest;
 
-            //Ignore inexistent geysers
+            //Ignore inexistent gushes
             if (gsr.obj == NONE) continue;
 
             y += yvel * dt;
 
-            //If the geyser reaches its destination Y position
+            //If the gush reaches its destination Y position
             if ((yvel < 0 && y <= ydest) || (yvel > 0 && y >= ydest)) {
                 y = ydest;
 
@@ -947,13 +947,13 @@ class Play {
                     objBottom = objTop + 4;
                     break;
 
-                case OBJ_GEYSER:
+                case OBJ_GUSH:
                     objLeft += 3;
                     objRight = objLeft + 9;
                     objBottom += 72;
                     break;
 
-                case OBJ_GEYSER_CRACK:
+                case OBJ_GUSH_CRACK:
                     objLeft += 3;
                     objRight = objLeft + 10;
                     break;
@@ -1016,21 +1016,21 @@ class Play {
 
                     break;
 
-                case OBJ_GEYSER:
+                case OBJ_GUSH:
                     thrownBack = true;
                     break;
 
-                case OBJ_GEYSER_CRACK:
-                    obj.type = OBJ_GEYSER;
+                case OBJ_GUSH_CRACK:
+                    obj.type = OBJ_GUSH;
 
-                    for (j = 0; j < MAX_GEYSERS; j++) {
-                        if (ctx.geysers[j].obj == NONE) {
-                            ctx.geysers[j].obj = i;
-                            ctx.geysers[j].y = 266;
-                            ctx.geysers[j].movePattern = geyserMovePattern2;
-                            ctx.geysers[j].movePatternPos = 0;
-                            ctx.geysers[j].yvel = -140;
-                            ctx.geysers[j].ydest = geyserMovePattern2[1];
+                    for (j = 0; j < MAX_GUSHES; j++) {
+                        if (ctx.gushes[j].obj == NONE) {
+                            ctx.gushes[j].obj = i;
+                            ctx.gushes[j].y = 266;
+                            ctx.gushes[j].movePattern = gushMovePattern2;
+                            ctx.gushes[j].movePatternPos = 0;
+                            ctx.gushes[j].yvel = -140;
+                            ctx.gushes[j].ydest = gushMovePattern2[1];
 
                             addCrackParticles(obj.x + 6, 276);
 
@@ -1102,7 +1102,7 @@ class Play {
             }
         }
 
-        //Act if the player character has been thrown back by a geyser
+        //Act if the player character has been thrown back by a gush
         if (thrownBack) {
             audio.playSfx(SFX_HIT);
             pl.state = PLAYER_STATE_THROWBACK;
