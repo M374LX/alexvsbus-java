@@ -1609,6 +1609,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 20: //SEQ_BUS_LEAVING
+                //Bus leaves while closing the front door
                 startAnimation(ANIM_BUS_DOOR_FRONT);
                 bus.acc = 256;
                 bus.xvel = 4;
@@ -1617,6 +1618,7 @@ class Play {
                 break;
 
             case 21:
+                //Screen wipes to black
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
@@ -1629,6 +1631,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 30: //SEQ_TIMEUP_BUS_NEAR
+                //Camera moves towards the bus
                 cam.xdest = levelSize - (SCREEN_WIDTH / 2);
                 cam.xvel = CAMERA_XVEL;
                 cam.yvel = 0;
@@ -1636,6 +1639,7 @@ class Play {
                 break;
 
             case 31:
+                //Camera stops and bus leaves
                 if (cam.xvel != 0) break;
                 if (cam.yvel != 0) break;
                 ctx.sequenceDelay = 0.2f;
@@ -1645,6 +1649,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 40: //SEQ_TIMEUP_BUS_FAR
+                //Screen wipes to black
                 cam.xvel = 0;
                 cam.yvel = 0;
                 ctx.wipeToBlack = true;
@@ -1653,6 +1658,8 @@ class Play {
                 break;
 
             case 41:
+                //Camera is placed so the bus is visible and screen wipes from
+                //black
                 pl.state = PLAYER_STATE_INACTIVE;
                 cam.x = levelSize - SCREEN_WIDTH;
                 cam.y = 0;
@@ -1671,6 +1678,8 @@ class Play {
                 if (ctx.difficulty != DIFFICULTY_SUPER) {
                     if (ctx.levelNum == 3) {
                         if (pl.x > bus.x + 192) {
+                            //A banana peel is thrown from the right side of the
+                            //screen
                             ctx.objs[0].type = OBJ_BANANA_PEEL_MOVING;
                             ctx.objs[0].x = levelSize;
                             ctx.objs[0].y = BUS_Y + 72;
@@ -1685,6 +1694,7 @@ class Play {
                         }
                     } else if (ctx.levelNum == 4) {
                         if (pl.x >= bus.x + 120) {
+                            //A bird appears
                             bird.sprite = SPR_BIRD;
                             bird.x = cam.x - 16;
                             bird.y = 120;
@@ -1707,12 +1717,12 @@ class Play {
 
             case 51:
                 if (pl.x >= bus.x + 256) {
+                    //Player character decelerates
                     pl.x = bus.x + 256;
                     inputRight = false;
                     ctx.sequenceStep++;
                 }
                 break;
-
 
             case 52:
                 if (pl.state == PLAYER_STATE_SLIP) {
@@ -1721,6 +1731,7 @@ class Play {
                 } else if (bird.sprite == SPR_BIRD) {
                     ctx.sequenceStep++;
                 } else if (pl.xvel <= 0 || pl.x >= bus.x + 342) {
+                    //Player character jumps into the bus
                     pl.x = bus.x + 342;
                     pl.xvel = 0;
                     inputJump = true;
@@ -1747,6 +1758,7 @@ class Play {
             case 100: //SEQ_GOAL_REACHED_DEFAULT
                 inputJump = false;
                 if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    //Player character is now in the bus and score count starts
                     showPlayerInBus();
                     startScoreCount();
                     ctx.sequenceStep++;
@@ -1755,6 +1767,7 @@ class Play {
 
             case 101:
                 if (!ctx.countingScore) {
+                    //Score count finished
                     ctx.sequenceDelay = 0.5f;
                     ctx.sequenceStep++;
                 }
@@ -1769,6 +1782,7 @@ class Play {
             case 200: //SEQ_GOAL_REACHED_LEVEL2
                 inputJump = false;
                 if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    //Player character is now in the bus and score count starts
                     showPlayerInBus();
                     startScoreCount();
                     ctx.sequenceStep++;
@@ -1777,18 +1791,21 @@ class Play {
 
             case 201:
                 if (!ctx.countingScore) {
+                    //Score count finished
                     ctx.sequenceDelay = 0.5f;
                     ctx.sequenceStep++;
                 }
                 break;
 
             case 202:
+                //Bus front door closes
                 startAnimation(ANIM_BUS_DOOR_FRONT);
                 ctx.sequenceDelay = 0.5f;
                 ctx.sequenceStep++;
                 break;
 
             case 203:
+                //Bearded man comes from the right side of the screen
                 cutscenePlayer.sprite = NONE;
                 beardedMan.sprite = SPR_BEARDED_MAN_WALK;
                 beardedMan.x = ctx.levelSize;
@@ -1805,6 +1822,7 @@ class Play {
 
             case 204:
                 if (beardedMan.x <= bus.x + 380) {
+                    //Bearded man decelerates
                     beardedMan.x = bus.x + 380;
                     beardedMan.acc = 256;
                     ctx.sequenceStep++;
@@ -1813,6 +1831,7 @@ class Play {
 
             case 205:
                 if (beardedMan.xvel >= 0 || beardedMan.x <= bus.x + 337) {
+                    //Bearded man stops and bus front door opens
                     beardedMan.sprite = SPR_BEARDED_MAN_STAND;
                     beardedMan.x = bus.x + 337;
                     beardedMan.xvel = 0;
@@ -1827,6 +1846,7 @@ class Play {
                 break;
 
             case 206:
+                //Bearded man jumps into the bus
                 beardedMan.sprite = SPR_BEARDED_MAN_JUMP;
                 beardedMan.yvel = -154;
                 beardedMan.grav = 230;
@@ -1835,10 +1855,11 @@ class Play {
 
             case 207:
                 if (beardedMan.y > 163 && beardedMan.yvel > 0) {
+                    //Bearded man is now in the bus
                     beardedMan.sprite = SPR_BEARDED_MAN_STAND;
                     beardedMan.grav = 0;
                     beardedMan.yvel = 0;
-                    beardedMan.x -= bus.x; //Make it relative to the bus
+                    beardedMan.x -= bus.x; //Make position relative to the bus
                     beardedMan.y = 163;
                     beardedMan.inBus = true;
                     ctx.sequenceDelay = 0.25f;
@@ -1864,6 +1885,8 @@ class Play {
                 inputRight = !inputRight;
                 oldInputRight = !inputRight;
                 if (pl.state == PLAYER_STATE_GETUP) {
+                    //Player character gets up after slipping on a banana peel
+                    //and starts walking again
                     inputRight = true;
                     oldInputRight = false;
                     ctx.sequenceStep++;
@@ -1872,6 +1895,7 @@ class Play {
 
             case 302:
                 if (pl.x >= bus.x + 342) {
+                    //Player character jumps into the bus
                     pl.x = bus.x + 342;
                     pl.xvel = 0;
                     inputRight = false;
@@ -1883,6 +1907,7 @@ class Play {
 
             case 303:
                 if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    //Player character is now in the bus and score count starts
                     showPlayerInBus();
                     startScoreCount();
                     ctx.sequenceStep++;
@@ -1891,6 +1916,7 @@ class Play {
 
             case 304:
                 if (!ctx.countingScore) {
+                    //Score count finished
                     ctx.sequenceDelay = 0.25f;
                     ctx.sequenceStep++;
                 }
@@ -1904,10 +1930,12 @@ class Play {
             //------------------------------------------------------------------
             case 400: //SEQ_GOAL_REACHED_LEVEL4
                 if (pl.x >= bus.x + 342) {
+                    //Player character stops at bus front door
                     pl.x = bus.x + 342;
                     pl.xvel = 0;
                 }
                 if (bird.x >= bus.x + 353) {
+                    //Bird dung appears
                     dung.sprite = SPR_DUNG;
                     dung.x = bus.x + 353;
                     dung.y = bird.y;
@@ -1918,6 +1946,7 @@ class Play {
 
             case 401:
                 if (dung.y >= pl.y + 12) {
+                    //Bird dung hits the player character
                     dung.sprite = NONE;
                     dung.yvel = 0;
                     pl.visible = false;
@@ -1948,12 +1977,14 @@ class Play {
                 break;
 
             case 404:
+                //Player character jumps into the bus
                 inputJump = true;
                 ctx.sequenceStep++;
                 break;
 
             case 405:
                 if (pl.yvel > 0 && pl.y >= BUS_Y + 36) {
+                    //Player character is now in the bus and score count starts
                     showPlayerInBus();
                     startScoreCount();
                     ctx.sequenceStep++;
@@ -1962,6 +1993,7 @@ class Play {
 
             case 406:
                 if (!ctx.countingScore) {
+                    //Score count finished
                     ctx.sequenceDelay = 0.5f;
                     ctx.sequenceStep++;
                 }
@@ -1974,6 +2006,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 500: //SEQ_GOAL_REACHED_LEVEL5
+                //Bus leaves before the player character can enter it
                 startAnimation(ANIM_BUS_DOOR_FRONT);
                 bus.acc = 256;
                 bus.xvel = 4;
@@ -1982,6 +2015,7 @@ class Play {
 
             case 501:
                 if (bus.x >= ctx.levelSize + 32) {
+                    //Player character starts running crazily
                     bus.acc = 0;
                     bus.xvel = 0;
                     pl.visible = false;
@@ -2001,6 +2035,7 @@ class Play {
 
             case 502:
                 if (cutscenePlayer.x >= ctx.levelSize + 32) {
+                    //Score count starts
                     startScoreCount();
                     cutscenePlayer.xvel = 0;
                     ctx.sequenceStep++;
@@ -2009,12 +2044,14 @@ class Play {
 
             case 503:
                 if (!ctx.countingScore) {
+                    //Score count finished
                     ctx.sequenceDelay = 0.5f;
                     ctx.sequenceStep++;
                 }
                 break;
 
             case 504:
+                //Screen wipes to black
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
@@ -2027,6 +2064,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 800: //SEQ_ENDING
+                //Ending sequence, with a traffic jam and a flagman
                 ctx.player.visible = false;
                 ctx.player.state = PLAYER_STATE_INACTIVE;
 
@@ -2056,6 +2094,7 @@ class Play {
                 break;
 
             case 801:
+                //Camera moves to the right
                 ctx.cam.xvel = CAMERA_XVEL / 4;
                 ctx.cam.xdest = SCREEN_WIDTH * 2 - 136;
                 ctx.sequenceDelay = 3;
@@ -2063,6 +2102,7 @@ class Play {
                 break;
 
             case 802:
+                //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
                 ctx.anims[ANIM_PASSING_CAR_WHEELS].delay = 0.1f;
@@ -2073,6 +2113,7 @@ class Play {
 
             case 803:
                 if (ctx.car.x >= SCREEN_WIDTH + 144) {
+                    //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
@@ -2083,6 +2124,8 @@ class Play {
                 break;
 
             case 804:
+                //Player character appears from the left side of the screen and
+                //is running crazily
                 cutscenePlayer.sprite = SPR_PLAYER_RUN;
                 cutscenePlayer.x = cam.x - 80;
                 cutscenePlayer.y = 204;
@@ -2092,17 +2135,19 @@ class Play {
                 cutscenePlayerAnim.loop = true;
                 cutscenePlayerAnim.delay = 0.1f;
                 cutscenePlayerAnim.maxDelay = 0.1f;
-
                 ctx.sequenceStep++;
                 break;
 
             case 805:
                 if (cutscenePlayer.x > flagman.x && !ctx.playerReachedFlagman) {
+                    //Player character reaches the flagman, who swings the flag
                     ctx.playerReachedFlagman = true;
                     flagmanAnim.frame = 0;
                     flagmanAnim.running = true;
                 }
-                if (cutscenePlayer.x >= cam.x + 320) {
+                if (cutscenePlayer.x >= cam.x + 324) {
+                    //Player character decelerates
+                    cutscenePlayer.x = cam.x + 324;
                     cutscenePlayer.acc = -256;
                     ctx.sequenceStep++;
                 }
@@ -2115,8 +2160,9 @@ class Play {
                         cutscenePlayer.x += 8;
                     }
                 }
-                if (cutscenePlayer.xvel <= 0 || cutscenePlayer.x >= 1238) {
-                    cutscenePlayer.x = 1238;
+                if (cutscenePlayer.xvel <= 0 || cutscenePlayer.x >= cam.x + 414) {
+                    //Player character stops
+                    cutscenePlayer.x = cam.x + 414;
                     cutscenePlayer.xvel = 0;
                     cutscenePlayer.acc = 0;
                     cutscenePlayer.sprite = SPR_PLAYER_STAND;
@@ -2128,6 +2174,7 @@ class Play {
                 break;
 
             case 807:
+                //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
                 startAnimation(ANIM_PASSING_CAR_WHEELS);
@@ -2136,6 +2183,7 @@ class Play {
 
             case 808:
                 if (ctx.car.x >= SCREEN_WIDTH + 416) {
+                    //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
@@ -2146,6 +2194,7 @@ class Play {
                 break;
 
             case 809:
+                //Hen appears from the left side of the screen
                 ctx.hen.x = cam.x - 64;
                 ctx.hen.xvel = 350;
                 startAnimation(ANIM_HEN);
@@ -2153,7 +2202,9 @@ class Play {
                 break;
 
             case 810:
-                if (ctx.hen.x >= cam.x + 144) {
+                if (ctx.hen.x >= cam.x + 148) {
+                    //Hen decelerates
+                    ctx.hen.x = cam.x + 148;
                     ctx.hen.acc = -256;
                     ctx.sequenceStep++;
                 }
@@ -2161,12 +2212,14 @@ class Play {
 
             case 811:
                 if (ctx.hen.x > flagman.x && !ctx.henReachedFlagman) {
+                    //Hen reaches the flagman, who swings the flag
                     ctx.henReachedFlagman = true;
                     flagmanAnim.frame = 0;
                     flagmanAnim.running = true;
                 }
-                if (ctx.hen.xvel <= 0 || ctx.hen.x >= 1208) {
-                    ctx.hen.x = 1208;
+                if (ctx.hen.xvel <= 0 || ctx.hen.x >= cam.x + 383) {
+                    //Hen stops
+                    ctx.hen.x = cam.x + 383;
                     ctx.hen.xvel = 0;
                     ctx.hen.acc = 0;
                     ctx.anims[ANIM_HEN].running = false;
@@ -2177,6 +2230,7 @@ class Play {
                 break;
 
             case 812:
+                //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
                 startAnimation(ANIM_PASSING_CAR_WHEELS);
@@ -2185,10 +2239,12 @@ class Play {
 
             case 813:
                 if (ctx.bus.x >= ctx.cam.x + 8) {
+                    //Bus reaches the flagman, who swings the flag
                     ctx.busReachedFlagman = true;
                     flagmanAnim.frame = 0;
                     flagmanAnim.running = true;
 
+                    //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
@@ -2200,6 +2256,7 @@ class Play {
                 break;
 
             case 814:
+                //Screen wipes to black
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
