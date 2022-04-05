@@ -1,6 +1,6 @@
 /*
  * Alex vs Bus
- * Copyright (C) 2021 M-374 LX
+ * Copyright (C) 2021-2022 M-374 LX
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -538,7 +538,7 @@ class Dialogs {
         if (dialogType == DLG_ABOUT) {
             ctx.text =
                 "Alex vs Bus: The Race\n" +
-                "\177 2021 M-374 LX\n" + // \177 = copyright symbol
+                "\177 2021-2022 M-374 LX\n" + // \177 = copyright symbol
                 "\n" +
                 "Version\n" +
                 VERSION + "\n" +
