@@ -157,11 +157,8 @@ be used on Unix systems (including Linux):
 On Windows, replace "./gradlew" with "gradlew.bat".
 
 
-## Planned features
+## Project status and plans
 
-Features planned for the final release include:
-
-* An ending sequence
-
-* More documentation
+It is quite close to becoming a finished game, but more testing and
+documentation are planned.
 
