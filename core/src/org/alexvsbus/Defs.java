@@ -767,7 +767,7 @@ public class Defs {
     static final int ANIM_BUS_WHEELS = 5;
     static final int ANIM_BUS_DOOR_REAR = 6;
     static final int ANIM_BUS_DOOR_FRONT = 7;
-    static final int ANIM_PASSING_CAR_WHEELS = 8;
+    static final int ANIM_CAR_WHEELS = 8;
     static final int ANIM_HEN = 9;
     static final int ANIM_COIN_SPARKS = 10; //12 positions starting at 10
     static final int ANIM_CUTSCENE_OBJECTS = 22; //2 positions starting at 22

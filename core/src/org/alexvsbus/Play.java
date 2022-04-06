@@ -237,7 +237,7 @@ class Play {
         setAnimation(ANIM_BUS_WHEELS, false, true, false, 3, 0.1f);
         setAnimation(ANIM_BUS_DOOR_REAR, false, false, false, 4, 0.1f);
         setAnimation(ANIM_BUS_DOOR_FRONT, false, false, false, 4, 0.1f);
-        setAnimation(ANIM_PASSING_CAR_WHEELS, false, true, false, 2, 0.05f);
+        setAnimation(ANIM_CAR_WHEELS, false, true, false, 2, 0.05f);
         setAnimation(ANIM_HEN, false, true, false, 4, 0.05f);
 
         for (i = 0; i < MAX_COIN_SPARKS; i++) {
@@ -1169,7 +1169,7 @@ class Play {
                 ctx.car.type = tr.what;
                 ctx.car.threwPeel = false;
                 ctx.car.peelThrowX = tr.x + 72;
-                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                startAnimation(ANIM_CAR_WHEELS);
             }
 
             tr.x = NONE;
@@ -2105,9 +2105,9 @@ class Play {
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
-                ctx.anims[ANIM_PASSING_CAR_WHEELS].delay = 0.1f;
-                ctx.anims[ANIM_PASSING_CAR_WHEELS].maxDelay = 0.1f;
-                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                ctx.anims[ANIM_CAR_WHEELS].delay = 0.1f;
+                ctx.anims[ANIM_CAR_WHEELS].maxDelay = 0.1f;
+                startAnimation(ANIM_CAR_WHEELS);
                 ctx.sequenceStep++;
                 break;
 
@@ -2116,8 +2116,8 @@ class Play {
                     //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    ctx.anims[ANIM_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     ctx.sequenceDelay = 1;
                     ctx.sequenceStep++;
                 }
@@ -2177,7 +2177,7 @@ class Play {
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
-                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                startAnimation(ANIM_CAR_WHEELS);
                 ctx.sequenceStep++;
                 break;
 
@@ -2186,8 +2186,8 @@ class Play {
                     //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    ctx.anims[ANIM_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     ctx.sequenceDelay = 1;
                     ctx.sequenceStep++;
                 }
@@ -2233,7 +2233,7 @@ class Play {
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
                 ctx.bus.xvel = 64;
-                startAnimation(ANIM_PASSING_CAR_WHEELS);
+                startAnimation(ANIM_CAR_WHEELS);
                 ctx.sequenceStep++;
                 break;
 
@@ -2247,8 +2247,8 @@ class Play {
                     //Traffic jam stops
                     ctx.car.xvel = 0;
                     ctx.bus.xvel = 0;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].running = false;
-                    ctx.anims[ANIM_PASSING_CAR_WHEELS].frame = 0;
+                    ctx.anims[ANIM_CAR_WHEELS].running = false;
+                    ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     startAnimation(ANIM_BUS_DOOR_FRONT);
                     ctx.sequenceDelay = 3;
                     ctx.sequenceStep++;

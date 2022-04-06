@@ -238,7 +238,7 @@ class Renderer {
 
             x = (int)ctx.car.x;
             y = PASSING_CAR_Y;
-            frame = ctx.anims[ANIM_PASSING_CAR_WHEELS].frame;
+            frame = ctx.anims[ANIM_CAR_WHEELS].frame;
 
             if (ctx.car.type == TRAFFIC_JAM) { //Traffic jam
                 numCars = 6;
