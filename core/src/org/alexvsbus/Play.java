@@ -2079,7 +2079,7 @@ class Play {
                 ctx.bus.routeSign = 4; //Finish (checkered flag) sign
 
                 flagman.sprite = SPR_FLAGMAN;
-                flagman.x = SCREEN_WIDTH * 2 + 136;
+                flagman.x = SCREEN_WIDTH * 2 + 88;
                 flagman.y = 180;
                 flagmanAnim.running = false;
                 flagmanAnim.loop = false;
