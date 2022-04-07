@@ -1632,6 +1632,11 @@ class Play {
             //------------------------------------------------------------------
             case 30: //SEQ_TIMEUP_BUS_NEAR
                 //Camera moves towards the bus
+                if (ctx.hen.x != NONE && ctx.hen.x - ctx.cam.x < -32) {
+                    ctx.hen.x = NONE;
+                }
+                if (ctx.car.x != NONE) break; //Wait until the car and hen are
+                if (ctx.hen.x != NONE) break; //not visible anymore
                 cam.xdest = levelSize - (SCREEN_WIDTH / 2);
                 cam.xvel = CAMERA_XVEL;
                 cam.yvel = 0;
@@ -1652,6 +1657,8 @@ class Play {
                 //Screen wipes to black
                 cam.xvel = 0;
                 cam.yvel = 0;
+                ctx.car.x = NONE;
+                ctx.hen.x = NONE;
                 ctx.wipeToBlack = true;
                 ctx.sequenceDelay = 0.6f;
                 ctx.sequenceStep++;
