@@ -492,6 +492,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 break;
         }
 
+        if (playCtx.lastLevel) {
+            playCtx.bus.numCharacters = 3;
+        }
+
         audio.playBgm(playCtx.bgm);
         wipeFromBlack();
     }
