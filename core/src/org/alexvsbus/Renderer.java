@@ -184,8 +184,12 @@ class Renderer {
                 //Right
                 x = ctx.holes[i].x + ((w - 1) * LEVEL_BLOCK_SIZE);
                 spr = (isDeep ? SPR_DEEP_HOLE_RIGHT : SPR_PASSAGEWAY_RIGHT);
-                if (!isDeep && !exitOpened) spr = SPR_PASSAGEWAY_MIDDLE;
                 drawSprite(spr, x, y);
+
+                if (!isDeep && !exitOpened) {
+                    spr = SPR_PASSAGEWAY_RIGHT_CLOSED;
+                    drawSprite(spr, x, y);
+                }
             }
         }
 
@@ -562,6 +566,10 @@ class Renderer {
 
             drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
             drawText(dialogCtx.text, x, y);
+
+            if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
+                drawSprite(SPR_ERROR, x, y);
+            }
         }
 
         for (i = 0; i < dialogCtx.numItems; i++) {
@@ -771,7 +779,7 @@ class Renderer {
         }
 
         for (i = numDigits - 1; i >= 0; i--) {
-            drawSpriteFrame(SPR_DIGITS, x, y, digitsTemp[i]);
+            drawSpritePart(SPR_CHARSET, x, y, digitsTemp[i] * 8, 8, 8, 8);
             x += 8;
         }
     }

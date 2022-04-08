@@ -521,7 +521,10 @@ class Dialogs {
         closeAll();
         open(DLG_ERROR);
 
-        ctx.text = "ERROR\n\n" + msg;
+        //Move the text downwards by two lines because the word "ERROR" is drawn
+        //separately by Render.java on the first line
+        ctx.text = "\n\n" + msg;
+
         ctx.textOffsetX = -40;
         ctx.textOffsetY = -6;
         ctx.textWidth = 40;
@@ -541,14 +544,14 @@ class Dialogs {
                 "\177 2021-2022 M-374 LX\n" + // \177 = copyright symbol
                 "\n" +
                 "Version\n" +
-                VERSION + "\n" +
+                " " + VERSION + "\n" +
                 "\n" +
                 "Repository\n" +
-                REPOSITORY + "\n" +
+                " " + REPOSITORY + "\n" +
                 "\n" +
                 "Licenses\n" +
-                "The code is under GNU GPLv3, while the\n" +
-                "assets are under CC BY-SA 4.0.";
+                " The code is under GNU GPLv3, while the\n" +
+                " assets are under CC BY-SA 4.0.";
 
             ctx.textOffsetX = -47;
             ctx.textOffsetY = -14;
