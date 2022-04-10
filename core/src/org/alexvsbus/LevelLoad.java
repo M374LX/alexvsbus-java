@@ -228,12 +228,20 @@ class LevelLoad {
                 addRespawnPoint(x, token2);
             } else if (tokens[0].equals("deep-hole")) {
                 addHole(HOLE_DEEP, x, token2);
-            } else if (tokens[0].equals("passageway")) {
+            } else if (tokens[0].equals("passageway") ||
+                        tokens[0].equals("passageway-arrow")) {
+
                 addHole(HOLE_PASSAGEWAY_EXIT_CLOSED, x, token2);
 
                 //Pushable crate over passageway entry
                 addObj(OBJ_CRATE_PUSHABLE, x, NONE, false);
                 ctx.pushableCrates[numPassageways - 1].obj = numObjs - 1;
+
+                //Determine whether or not to show an arrow near the crate
+                ctx.pushableCrates[numPassageways - 1].showArrow = false;
+                if (tokens[0].equals("passageway-arrow")) {
+                    ctx.pushableCrates[numPassageways - 1].showArrow = true;
+                }
             } else {
                 //Error: invalid object type
                 return LVLERR_INVALID;

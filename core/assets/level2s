@@ -119,7 +119,7 @@ respawn-point 1 9
 deep-hole 1 7
 coin-silver 2 8
 coin-silver 3 8
-passageway 3 11
+passageway-arrow 3 11
 banana-peel 2 15
 crates 2 6 1 5
 banana-peel 0 15

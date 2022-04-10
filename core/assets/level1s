@@ -132,8 +132,8 @@ trigger-car-silver 1
 coin-gold 2 7
 coin-silver 4 9
 gush 7
-coin-silver 2 10
-passageway 1 8
+coin-silver 2 9
+passageway-arrow 1 8
 banana-peel 2 15
 crates 2 6 1 5
 coin-gold 0 13

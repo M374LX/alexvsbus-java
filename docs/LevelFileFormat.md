@@ -85,3 +85,5 @@ The object types are:
 
 * `passageway <x> <w>`
 
+* `passageway-arrow <x> <w>`
+

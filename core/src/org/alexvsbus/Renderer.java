@@ -422,6 +422,18 @@ class Renderer {
             drawSpriteFrame(objSprites[obj.type], obj.x, obj.y, frame);
         }
 
+        //Pushable crate arrows
+        for (i = 0; i < MAX_PUSHABLE_CRATES; i++) {
+            PushableCrate crate = ctx.pushableCrates[i];
+
+            if (crate.obj != NONE && crate.showArrow) {
+                x = ctx.objs[crate.obj].x - 24 + (int)ctx.pushArrow.xoffs;
+                y = FLOOR_Y - 20;
+
+                drawSprite(SPR_PUSH_ARROW, x, y);
+            }
+        }
+
         //Overhead sign bases
         for (i = 0; i < MAX_OBJS; i++) {
             Obj obj = ctx.objs[i];

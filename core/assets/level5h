@@ -110,8 +110,8 @@ coin-gold 5 5
 gush 3
 banana-peel 2 11
 gush-crack 2
-coin-silver 2 10
-passageway 1 15
+coin-silver 2 9
+passageway-arrow 1 15
 coin-gold 2 12
 banana-peel 0 15
 truck 0

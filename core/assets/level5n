@@ -102,8 +102,8 @@ deep-hole 1 7
 coin-gold 5 5
 gush 3
 gush-crack 4
-coin-silver 2 10
-passageway 1 15
+coin-silver 2 9
+passageway-arrow 1 15
 coin-gold 2 12
 truck 0
 coin-silver 1 14

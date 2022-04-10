@@ -57,6 +57,7 @@ class Play {
         ctx.slipPeel = new MovingPeel();
         ctx.car = new Car();
         ctx.hen = new Hen();
+        ctx.pushArrow = new PushArrow();
 
         ctx.objs = new Obj[MAX_OBJS];
         for (i = 0; i < MAX_OBJS; i++) {
@@ -255,6 +256,10 @@ class Play {
         ctx.nextCoinSpark = 0;
         ctx.nextCrackParticle = 0;
 
+        ctx.pushArrow.xoffs = 0;
+        ctx.pushArrow.xvel = 0;
+        ctx.pushArrow.delay = 1;
+
         ctx.playerReachedFlagman = false;
         ctx.henReachedFlagman = false;
         ctx.busReachedFlagman = false;
@@ -301,6 +306,7 @@ class Play {
         keepPlayerWithinLimits();
         handlePlayerAnimationChange();
         updateAnimations();
+        movePushArrow();
         findLightPolePosition();
         findBackgroundOffset();
         updateSequence();
@@ -1139,6 +1145,7 @@ class Play {
             if (ctx.cratePushRemaining <= 0) {
                 //Finished pushing
                 ctx.cratePushRemaining = 0.75f;
+                crate.showArrow = false;
                 crate.pushed = true;
                 audio.playSfx(SFX_CRATE);
             }
@@ -1526,6 +1533,29 @@ class Play {
                 if (anim.frame >= anim.numFrames) {
                     anim.frame = anim.loop ? 0 : anim.numFrames - 1;
                 }
+            }
+        }
+    }
+
+    //Moves the arrows indicating that a crate is pushable
+    void movePushArrow() {
+        ctx.pushArrow.xoffs += ctx.pushArrow.xvel * dt;
+        if (ctx.pushArrow.xoffs >= 8) {
+            ctx.pushArrow.xoffs = 8;
+            ctx.pushArrow.xvel = -32;
+        }
+        if (ctx.pushArrow.xvel < 0 && ctx.pushArrow.xoffs <= 0) {
+            ctx.pushArrow.xoffs = 0;
+            ctx.pushArrow.xvel = 0;
+        }
+
+        ctx.pushArrow.delay -= dt;
+        if (ctx.pushArrow.delay <= 0) {
+            ctx.pushArrow.delay = 0;
+
+            if (ctx.pushArrow.xoffs == 0) {
+                ctx.pushArrow.xvel = 32;
+                ctx.pushArrow.delay = 1;
             }
         }
     }
