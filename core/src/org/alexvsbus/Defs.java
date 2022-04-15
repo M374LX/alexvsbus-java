@@ -263,7 +263,7 @@ public class Defs {
         boolean canPause;
         int difficulty;
         int levelNum;
-        boolean lastLevel;
+        boolean lastLevel; //Last level of current difficulty
         int levelSize;
         int bgColor;
         int bgOffsetX;
@@ -338,7 +338,7 @@ public class Defs {
     //
 
     //Version and repository
-    public static final String VERSION = "pre3";
+    public static final String VERSION = "pre4";
     public static final String REPOSITORY = "https://github.com/M374LX/alexvsbus-java";
 
     //Maximum delta time

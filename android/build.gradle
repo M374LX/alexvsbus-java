@@ -21,7 +21,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
-        versionName "pre3"
+        versionName "pre4"
     }
     buildTypes {
         release {
