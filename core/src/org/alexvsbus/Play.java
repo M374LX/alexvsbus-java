@@ -722,6 +722,10 @@ class Play {
         boolean movedDown = (pl.y > pl.oldy);
         boolean movedUp = (pl.y < pl.oldy);
 
+        boolean onLedge = false;
+        int ledgeRight = 0;
+        int ledgeTop = 0;
+
         int limit;
         int i;
 
@@ -776,6 +780,16 @@ class Play {
 
             if (sol.left >= plRight || sol.right <= plLeft) continue;
 
+            //Detect if the player character's bounding box is on a ledge while
+            //the sprite seems to be standing on the air
+            if (sol.type == SOL_FULL && pl.xvel == 0) {
+                if (sol.right <= plLeft + 4 && sol.top <= plBottom + 1) {
+                    onLedge = true;
+                    ledgeRight = sol.right;
+                    ledgeTop = sol.top;
+                }
+            }
+
             if (movedDown) {
                 int top = sol.top;
 
@@ -819,9 +833,13 @@ class Play {
         }
 
         if (movedDown && limit <= pl.y + pl.height) {
-            pl.y = limit - pl.height;
-            pl.yvel = 0;
-            pl.onFloor = true;
+            if (onLedge) {
+                pl.x = ledgeRight - PLAYER_BOX_OFFSET_X;
+            } else {
+                pl.y = limit - pl.height;
+                pl.yvel = 0;
+                pl.onFloor = true;
+            }
         } else if (movedUp && limit > pl.y) {
             pl.y = limit;
             pl.yvel = 0;

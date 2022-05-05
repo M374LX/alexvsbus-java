@@ -369,12 +369,13 @@ class LevelLoad {
                 case OBJ_PARKED_CAR_SILVER:
                 case OBJ_PARKED_CAR_YELLOW:
                     y = PARKED_CAR_Y;
-                    addSolid(SOL_FULL, x + 1, y + 18, 26, 4);
-                    addSolid(SOL_SLOPE_UP, x + 27, y + 2, 13, 15);
-                    addSolid(SOL_VERTICAL, x + 46, y + 2, 22, 4);
-                    addSolid(SOL_SLOPE_DOWN, x + 72, y + 2, 20, 18);
-                    addSolid(SOL_KEEP_ON_TOP, x + 100, y + 20, 4, 4);
-                    addSolid(SOL_FULL, x + 104, y + 22, 23, 4);
+                    addSolid(SOL_FULL, x + 4, y + 18, 26, 4);
+                    addSolid(SOL_SLOPE_UP, x + 27, y + 2, 15, 15);
+                    addSolid(SOL_VERTICAL, x + 40, y + 2, 22, 4);
+                    addSolid(SOL_SLOPE_DOWN, x + 66, y + 2, 18, 18);
+                    addSolid(SOL_KEEP_ON_TOP, x + 90, y + 20, 18, 4);
+                    addSolid(SOL_KEEP_ON_TOP, x + 112, y + 22, 8, 4);
+                    addSolid(SOL_FULL, x + 120, y + 24, 8, 4);
                     break;
 
                 case OBJ_COIN_SILVER:
