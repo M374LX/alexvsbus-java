@@ -1,5 +1,5 @@
 Game design, programming, music, sound effects, and graphics by
-Alexandre Almeida, aka M-374 LX
+Alexandre Almeida, aka M374LX
 (http://m374lx.users.sourceforge.net, wilsalx@gmail.com)
 
 Additional game design by Hoton Bastos
