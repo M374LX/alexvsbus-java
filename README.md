@@ -162,3 +162,10 @@ On Windows, replace "./gradlew" with "gradlew.bat".
 It is quite close to becoming a finished game, but more testing and
 documentation are planned.
 
+There are also plans to port the game from Java/libGDX to C/SDL. This is why
+the GitHub repository contains "java" in its name and also why many Java
+features are avoided, including inheritance and generics. The new port will not
+be a replacement for this one. Instead, there will be two editions of the game:
+the Java/libGDX edition will be focused on Android and the C/SDL version will
+be focused on PC while not requiring the JRE.
+
