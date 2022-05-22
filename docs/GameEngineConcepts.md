@@ -62,3 +62,11 @@ moving and jumping into the bus, or the ending sequence, are handled by the
 method ``updateSequence()``, found in the ``Play`` class, itself found in the
 ``Play.java`` file.
 
+
+## Sprites
+
+The graphics are contained in a single image file (gfx.png). Each element in
+the file is referred to as a sprite.
+
+A sprite can have more than one animation frame.
+

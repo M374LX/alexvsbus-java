@@ -817,6 +817,9 @@ public class Defs {
     };
 
     //x, y, width, height
+    //
+    //For sprites with more than one animation frame, the width refers to a
+    //single frame
     static final int[] sprites = new int[]{
         0,    296,  96,  192, //SPR_BACKGROUND
         928,  144,  8,   8,   //SPR_BANANA_PEEL
