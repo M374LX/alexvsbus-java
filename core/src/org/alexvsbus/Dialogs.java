@@ -173,7 +173,7 @@ class Dialogs {
 
             if (type == DLG_MAIN) {
                 open(DLG_QUIT);
-            } else if (type == DLG_TRYAGAIN) {
+            } else if (type == DLG_TRYAGAIN_TIMEUP) {
                 //Do nothing
             } else {
                 close();
@@ -249,7 +249,7 @@ class Dialogs {
         if (type == DLG_MAIN) {
             ctx.items[4].iconSprite = spr;
         } else if (type == DLG_PAUSE) {
-            ctx.items[2].iconSprite = spr;
+            ctx.items[3].iconSprite = spr;
         }
     }
 
@@ -381,19 +381,39 @@ class Dialogs {
                         break;
 
                     case 1:
-                        open(DLG_QUIT);
+                        open(DLG_TRYAGAIN_PAUSE);
                         break;
 
                     case 2:
+                        open(DLG_QUIT);
+                        break;
+
+                    case 3:
                         config.audioEnabled = !config.audioEnabled;
                         break;
                 }
                 break;
 
-            case DLG_TRYAGAIN:
+            case DLG_TRYAGAIN_PAUSE:
                 switch (item){
                     case 0:
-                        ctx.action = DLGACT_TRYAGAIN;
+                        ctx.action = DLGACT_TRYAGAIN_WIPE;
+                        break;
+
+                    case 1:
+                        close();
+                        break;
+
+                    case 2:
+                        close();
+                        break;
+                }
+                break;
+
+            case DLG_TRYAGAIN_TIMEUP:
+                switch (item){
+                    case 0:
+                        ctx.action = DLGACT_TRYAGAIN_IMMEDIATE;
                         break;
 
                     case 1:
@@ -440,10 +460,6 @@ class Dialogs {
 
             case DLG_PAUSE:
                 ctx.showFrame = true;
-                break;
-
-            case DLG_TRYAGAIN:
-                audio.stopBgm();
                 break;
 
             case DLG_ERROR:
@@ -538,58 +554,65 @@ class Dialogs {
         final int CT = ALIGN_CENTER;
 
         //Load text
-        if (dialogType == DLG_ABOUT) {
-            ctx.text =
-                "Alex vs Bus: The Race\n" +
-                "\177 2021-2022 M374LX\n" + // \177 = copyright symbol
-                "\n" +
-                "Version\n" +
-                " " + VERSION + "\n" +
-                "\n" +
-                "Repository\n" +
-                " " + REPOSITORY + "\n" +
-                "\n" +
-                "Licenses\n" +
-                " The code is under GNU GPLv3, while the\n" +
-                " assets are under CC BY-SA 4.0.";
+        switch (dialogType) {
+            case DLG_ABOUT:
+                ctx.text =
+                    "Alex vs Bus: The Race\n" +
+                    "\177 2021-2022 M374LX\n" + // \177 = copyright symbol
+                    "\n" +
+                    "Version\n" +
+                    " " + VERSION + "\n" +
+                    "\n" +
+                    "Repository\n" +
+                    " " + REPOSITORY + "\n" +
+                    "\n" +
+                    "Licenses\n" +
+                    " The code is under GNU GPLv3, while the\n" +
+                    " assets are under CC BY-SA 4.0.";
+                ctx.textOffsetX = -47;
+                ctx.textOffsetY = -14;
+                ctx.textWidth = 47;
+                ctx.textHeight = 14;
+                break;
 
-            ctx.textOffsetX = -47;
-            ctx.textOffsetY = -14;
-            ctx.textWidth = 47;
-            ctx.textHeight = 14;
-        } else if (dialogType == DLG_CREDITS) {
-            ctx.text =
-                "M374LX (http://m374lx.users.sourceforge.net)\n" +
-                " Game design, programming, music, SFX, graphics\n" +
-                "\n" +
-                "Hoton Bastos\n" +
-                " Additional game design\n" +
-                "\n" +
-                "Harim Pires\n" +
-                " Testing\n" +
-                "\n" +
-                "Codeman38 (https://www.zone38.net)\n" +
-                " \"Press Start 2P\" font\n" +
-                "\n" +
-                "YoWorks (https://www.yoworks.com)\n" +
-                " \"Telegrama\" font";
+            case DLG_CREDITS:
+                ctx.text =
+                    "M374LX (http://m374lx.users.sourceforge.net)\n" +
+                    " Game design, programming, music, SFX, graphics\n" +
+                    "\n" +
+                    "Hoton Bastos\n" +
+                    " Additional game design\n" +
+                    "\n" +
+                    "Harim Pires\n" +
+                    " Testing\n" +
+                    "\n" +
+                    "Codeman38 (https://www.zone38.net)\n" +
+                    " \"Press Start 2P\" font\n" +
+                    "\n" +
+                    "YoWorks (https://www.yoworks.com)\n" +
+                    " \"Telegrama\" font";
+                ctx.textOffsetX = -47;
+                ctx.textOffsetY = -14;
+                ctx.textWidth = 47;
+                ctx.textHeight = 14;
+                break;
 
-            ctx.textOffsetX = -47;
-            ctx.textOffsetY = -14;
-            ctx.textWidth = 47;
-            ctx.textHeight = 14;
-        } else if (dialogType == DLG_TRYAGAIN) {
-            ctx.text = "TRY AGAIN?";
-            ctx.textOffsetX = -9;
-            ctx.textOffsetY = -2;
-            ctx.textWidth = 10;
-            ctx.textHeight = 1;
-        } else if (dialogType == DLG_QUIT) {
-            ctx.text = "QUIT?";
-            ctx.textOffsetX = -9;
-            ctx.textOffsetY = -2;
-            ctx.textWidth = 10;
-            ctx.textHeight = 1;
+            case DLG_TRYAGAIN_PAUSE:
+            case DLG_TRYAGAIN_TIMEUP:
+                ctx.text = "TRY AGAIN?";
+                ctx.textOffsetX = -9;
+                ctx.textOffsetY = -2;
+                ctx.textWidth = 10;
+                ctx.textHeight = 1;
+                break;
+
+            case DLG_QUIT:
+                ctx.text = "QUIT?";
+                ctx.textOffsetX = -9;
+                ctx.textOffsetY = -2;
+                ctx.textWidth = 10;
+                ctx.textHeight = 1;
+                break;
         }
 
         //Load items
@@ -650,13 +673,21 @@ class Dialogs {
                 break;
 
             case DLG_PAUSE:
-                di(0, CT,  0, 0, 14, 6, 2, 1, 2, 2, SPR_DIALOG_PLAY);
-                di(1, CT,  0, 8, 6, 6, 0, 2, 2, 2, SPR_DIALOG_QUIT);
-                di(2, TR, -1, 1, 5, 5, 1, 0, 0, 0, SPR_DIALOG_AUDIO_ON);
+                di(0, CT,  0, 0, 14, 6, 3, 1, 3, 1, SPR_DIALOG_PLAY);
+                di(1, CT, -4, 8, 6, 6, 0, 3, 0, 2, SPR_DIALOG_TRYAGAIN);
+                di(2, CT,  4, 8, 6, 6, 0, 3, 1, 3, SPR_DIALOG_QUIT);
+                di(3, TR, -1, 1, 5, 5, 2, 0, 2, 0, SPR_DIALOG_AUDIO_ON);
+                ctx.numItems = 4;
+                break;
+
+            case DLG_TRYAGAIN_PAUSE:
+                di(0, CT, -4, 8, 6, 6, 2, 2, 2, 1, SPR_DIALOG_CONFIRM);
+                di(1, CT,  4, 8, 6, 6, 2, 2, 0, 2, SPR_DIALOG_CANCEL);
+                di(2, TL,  1, 1, 5, 5, 1, 0, 1, 0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
                 break;
 
-            case DLG_TRYAGAIN:
+            case DLG_TRYAGAIN_TIMEUP:
                 di(0, CT, -4, 8, 6, 6, 1, 1, 1, 1, SPR_DIALOG_CONFIRM);
                 di(1, CT,  4, 8, 6, 6, 0, 0, 0, 0, SPR_DIALOG_CANCEL);
                 ctx.numItems = 2;

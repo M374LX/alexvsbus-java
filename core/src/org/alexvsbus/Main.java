@@ -51,8 +51,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     Play play;
     LevelLoad levelLoad;
 
-    //Delay on final score screen
-    float finalScoreDelay;
+    //Delay on final score screen and when the player selects "Try again" on
+    //the pause dialog
+    float screenDelay;
+
+    //True if the player has selected "Try again"
+    boolean tryAgain;
 
     //Dialogs
     DialogCtx dialogCtx;
@@ -104,6 +108,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         waitInputUp = false;
         wasTouching = false;
         config.hideTouchControls = true;
+
+        tryAgain = false;
 
         wipeValue = 0;
         wipeDelta = 0;
@@ -193,9 +199,16 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                     playLevel(levelNum, difficulty);
                     break;
 
-                case DLGACT_TRYAGAIN:
+                case DLGACT_TRYAGAIN_WIPE:
                     dialogs.closeAll();
-                    playLevel(playCtx.levelNum, playCtx.difficulty);
+                    wipeToBlack();
+                    tryAgain = true;
+                    screenDelay = 1.0f;
+                    break;
+
+                case DLGACT_TRYAGAIN_IMMEDIATE:
+                    tryAgain = true;
+                    screenDelay = 0;
                     break;
             }
 
@@ -211,7 +224,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         handleConfigChange();
 
-        if (playing && !dialogOpen) {
+        if (playing && !dialogOpen && !tryAgain) {
             play.setInput(inputHeld);
             play.update(dt);
 
@@ -263,9 +276,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                     showFinalScore();
                 } else if (playCtx.timeUp) {
                     screenType = SCR_BLANK;
-                    playCtx.score = 0;
                     removeWipe();
-                    dialogs.open(DLG_TRYAGAIN);
+                    audio.stopBgm();
+                    dialogs.open(DLG_TRYAGAIN_TIMEUP);
                 } else if (playCtx.goalReached) {
                     if (playCtx.lastLevel) {
                         if (playCtx.difficulty == DIFFICULTY_MAX) {
@@ -282,14 +295,26 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Handle final score screen
         if (screenType == SCR_FINALSCORE) {
-            finalScoreDelay -= dt;
+            screenDelay -= dt;
 
-            if (finalScoreDelay <= 0) {
+            if (screenDelay <= 0) {
                 if (playCtx.difficulty == DIFFICULTY_MAX) {
                     showTitle();
                 } else {
                     playLevel(1, playCtx.difficulty + 1);
                 }
+            }
+        }
+
+        //Act if the player has selected "Try again"
+        if (tryAgain) {
+            screenDelay -= dt;
+
+            if (screenDelay <= 0) {
+                tryAgain = false;
+                playCtx.score = 0;
+                dialogs.closeAll();
+                playLevel(playCtx.levelNum, playCtx.difficulty);
             }
         }
 
@@ -413,7 +438,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     void showFinalScore() {
         screenType = SCR_FINALSCORE;
-        finalScoreDelay = 4.0f;
+        screenDelay = 4.0f;
         removeWipe();
     }
 

@@ -571,38 +571,40 @@ public class Defs {
     static final int SPR_DIALOG_AUDIO_ON_SELECTED = 93;
     static final int SPR_DIALOG_AUDIO_OFF = 94;
     static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 95;
-    static final int SPR_DIALOG_CONFIRM = 96;
-    static final int SPR_DIALOG_CONFIRM_SELECTED = 97;
-    static final int SPR_DIALOG_CANCEL = 98;
-    static final int SPR_DIALOG_CANCEL_SELECTED = 99;
-    static final int SPR_DIALOG_NORMAL = 100;
-    static final int SPR_DIALOG_NORMAL_SELECTED = 101;
-    static final int SPR_DIALOG_HARD = 102;
-    static final int SPR_DIALOG_HARD_SELECTED = 103;
-    static final int SPR_DIALOG_HARD_DISABLED = 104;
-    static final int SPR_DIALOG_SUPER = 105;
-    static final int SPR_DIALOG_SUPER_SELECTED = 106;
-    static final int SPR_DIALOG_SUPER_DISABLED = 107;
-    static final int SPR_DIALOG_1 = 108;
-    static final int SPR_DIALOG_1_SELECTED = 109;
-    static final int SPR_DIALOG_2 = 110;
-    static final int SPR_DIALOG_2_SELECTED = 111;
-    static final int SPR_DIALOG_3 = 112;
-    static final int SPR_DIALOG_3_SELECTED = 113;
-    static final int SPR_DIALOG_4 = 114;
-    static final int SPR_DIALOG_4_SELECTED = 115;
-    static final int SPR_DIALOG_5 = 116;
-    static final int SPR_DIALOG_5_SELECTED = 117;
-    static final int SPR_DIALOG_LOCKED = 118;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 119;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 120;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 121;
-    static final int SPR_DIALOG_BORDER_TOP = 122;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 123;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 124;
-    static final int SPR_DIALOG_BORDER_LEFT = 125;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 126;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 127;
+    static final int SPR_DIALOG_TRYAGAIN = 96;
+    static final int SPR_DIALOG_TRYAGAIN_SELECTED = 97;
+    static final int SPR_DIALOG_CONFIRM = 98;
+    static final int SPR_DIALOG_CONFIRM_SELECTED = 99;
+    static final int SPR_DIALOG_CANCEL = 100;
+    static final int SPR_DIALOG_CANCEL_SELECTED = 101;
+    static final int SPR_DIALOG_NORMAL = 102;
+    static final int SPR_DIALOG_NORMAL_SELECTED = 103;
+    static final int SPR_DIALOG_HARD = 104;
+    static final int SPR_DIALOG_HARD_SELECTED = 105;
+    static final int SPR_DIALOG_HARD_DISABLED = 106;
+    static final int SPR_DIALOG_SUPER = 107;
+    static final int SPR_DIALOG_SUPER_SELECTED = 108;
+    static final int SPR_DIALOG_SUPER_DISABLED = 109;
+    static final int SPR_DIALOG_1 = 110;
+    static final int SPR_DIALOG_1_SELECTED = 111;
+    static final int SPR_DIALOG_2 = 112;
+    static final int SPR_DIALOG_2_SELECTED = 113;
+    static final int SPR_DIALOG_3 = 114;
+    static final int SPR_DIALOG_3_SELECTED = 115;
+    static final int SPR_DIALOG_4 = 116;
+    static final int SPR_DIALOG_4_SELECTED = 117;
+    static final int SPR_DIALOG_5 = 118;
+    static final int SPR_DIALOG_5_SELECTED = 119;
+    static final int SPR_DIALOG_LOCKED = 120;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 121;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 122;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 123;
+    static final int SPR_DIALOG_BORDER_TOP = 124;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 125;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 126;
+    static final int SPR_DIALOG_BORDER_LEFT = 127;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 128;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 129;
 
     static final int LOGO_WIDTH = 296;
 
@@ -634,15 +636,17 @@ public class Defs {
     static final int DLG_ABOUT = 4;
     static final int DLG_CREDITS = 5;
     static final int DLG_PAUSE = 6;
-    static final int DLG_TRYAGAIN = 7;
-    static final int DLG_QUIT = 8;
-    static final int DLG_ERROR = 9;
+    static final int DLG_TRYAGAIN_PAUSE = 7;
+    static final int DLG_TRYAGAIN_TIMEUP = 8;
+    static final int DLG_QUIT = 9;
+    static final int DLG_ERROR = 10;
 
     //Dialog actions
     static final int DLGACT_QUIT = 0;
     static final int DLGACT_TITLE = 1; //Go to title screen
     static final int DLGACT_PLAY = 2;
-    static final int DLGACT_TRYAGAIN = 3;
+    static final int DLGACT_TRYAGAIN_WIPE = 3;
+    static final int DLGACT_TRYAGAIN_IMMEDIATE = 4;
 
 
 
@@ -917,6 +921,8 @@ public class Defs {
         360,  552,  24,  24,  //SPR_DIALOG_AUDIO_ON_SELECTED
         104,  552,  24,  24,  //SPR_DIALOG_AUDIO_OFF
         392,  552,  24,  24,  //SPR_DIALOG_AUDIO_OFF_SELECTED
+        176,  632,  32,  32,  //SPR_DIALOG_TRYAGAIN
+        464,  632,  32,  32,  //SPR_DIALOG_TRYAGAIN_SELECTED
         152,  552,  32,  32,  //SPR_DIALOG_CONFIRM
         440,  552,  32,  32,  //SPR_DIALOG_CONFIRM_SELECTED
         192,  552,  32,  32,  //SPR_DIALOG_CANCEL
