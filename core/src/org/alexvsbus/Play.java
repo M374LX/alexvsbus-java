@@ -781,7 +781,8 @@ class Play {
             if (sol.left >= plRight || sol.right <= plLeft) continue;
 
             //Detect if the player character's bounding box is on a ledge while
-            //the sprite seems to be standing on the air
+            //the sprite appears to be standing on the air, so we can prevent
+            //this weird visual effect
             if (sol.type == SOL_FULL && pl.xvel == 0) {
                 if (sol.right <= plLeft + 4 && sol.top <= plBottom + 1) {
                     onLedge = true;
@@ -791,38 +792,45 @@ class Play {
             }
 
             if (movedDown) {
+                int type = sol.type;
                 int top = sol.top;
+                boolean checkLimit = false;
 
-                //When moving down, ignore passageway entry solids, which are
-                //intended to prevent the player character from leaving the
-                //passageway through the entry
-                if (sol.type == SOL_PASSAGEWAY_ENTRY) {
+                if (sol.bottom < plTop) {
                     continue;
                 }
 
-                if (sol.type == SOL_SLOPE_UP || sol.type == SOL_SLOPE_DOWN) {
-                    if (sol.type == SOL_SLOPE_UP && plRight < sol.right) {
+                if (type == SOL_PASSAGEWAY_ENTRY) {
+                    //When moving down, ignore passageway entry solids, which
+                    //are intended to prevent the player character from leaving
+                    //the passageway through the entry
+                    continue;
+                } else if (type == SOL_SLOPE_UP) {
+                    if (plRight < sol.right) {
                         top = sol.bottom + (sol.left - plRight);
-                    } else if (sol.type == SOL_SLOPE_DOWN && plLeft > sol.left) {
+                    }
+                    checkLimit = true;
+                } else if (type == SOL_SLOPE_DOWN) {
+                    if (plLeft > sol.left) {
                         top = sol.top - (sol.left - plLeft);
                     }
-
-                    if (top < limit) {
-                        limit = top;
-                    }
-                } else if (sol.type == SOL_KEEP_ON_TOP) {
-                    if (plLeft > sol.left || plRight < sol.right) {
-                        limit = sol.top;
+                    checkLimit = true;
+                } else if (type == SOL_KEEP_ON_TOP) {
+                    checkLimit = true;
+                } else {
+                    if (top >= plBottom) {
+                        checkLimit = true;
                     }
                 }
 
-                if (top < limit && top >= plBottom) {
+                if (checkLimit && top < limit) {
                     limit = top;
                 }
             } else if (movedUp) {
-                //Ignore passageway exit solids if the player is moving upwards
-                //at a high enough velocity, as when hitting a spring
                 if (sol.type == SOL_PASSAGEWAY_EXIT && pl.yvel < -160) {
+                    //Ignore passageway exit solids if the player is moving
+                    //upwards at a high enough velocity, as when hitting a
+                    //spring
                     continue;
                 }
 
