@@ -784,7 +784,7 @@ class Play {
             //the sprite appears to be standing on the air, so we can prevent
             //this weird visual effect
             if (sol.type == SOL_FULL && pl.xvel == 0) {
-                if (sol.right <= plLeft + 4 && sol.top <= plBottom + 1) {
+                if (sol.right <= plLeft + 4 && sol.top == plBottom) {
                     onLedge = true;
                     ledgeRight = sol.right;
                     ledgeTop = sol.top;
