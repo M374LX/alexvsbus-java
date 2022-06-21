@@ -722,7 +722,7 @@ public class Defs {
     static final int PLAYER_BOX_OFFSET_X = 8;
     static final int PLAYER_BOX_WIDTH = 12;
     static final int PLAYER_HEIGHT_NORMAL = 60;
-    static final int PLAYER_HEIGHT_SLIP = 37;
+    static final int PLAYER_HEIGHT_SLIP = 38;
 
     //Player character's states
     static final int PLAYER_STATE_NORMAL = 0;

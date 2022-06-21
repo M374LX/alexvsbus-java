@@ -402,6 +402,20 @@ class Renderer {
             }
         }
 
+        //When slipping, the player character is drawn in front of hole
+        //foregrounds
+        if (ctx.player.visible) {
+            int state = ctx.player.state;
+
+            if (state == PLAYER_STATE_SLIP || state == PLAYER_STATE_GETUP) {
+                spr = playerAnimSprites[ctx.player.animType];
+                x = (int)ctx.player.x;
+                y = (int)ctx.player.y;
+                frame = ctx.anims[ANIM_PLAYER].frame;
+                drawSpriteFrame(spr, x, y, frame);
+            }
+        }
+
         //Objects that use PlayCtx.objs[] and are drawn in front of the player
         //character
         for (i = 0; i < MAX_OBJS; i++) {
