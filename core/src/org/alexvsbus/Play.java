@@ -722,9 +722,7 @@ class Play {
         boolean movedDown = (pl.y > pl.oldy);
         boolean movedUp = (pl.y < pl.oldy);
 
-        boolean onLedge = false;
-        int ledgeRight = 0;
-        int ledgeTop = 0;
+        int ledgeSolid = NONE;
 
         int limit;
         int i;
@@ -783,11 +781,15 @@ class Play {
             //Detect if the player character's bounding box is on a ledge while
             //the sprite appears to be standing on the air, so we can prevent
             //this weird visual effect
-            if (sol.type == SOL_FULL && pl.xvel == 0) {
-                if (sol.right <= plLeft + 4 && sol.top == plBottom) {
-                    onLedge = true;
-                    ledgeRight = sol.right;
-                    ledgeTop = sol.top;
+            if (sol.type == SOL_FULL && pl.xvel == 0 && sol.top == plBottom) {
+                if (sol.right <= plLeft + 4) {
+                    //If this is the case, store the solid number
+                    ledgeSolid = i;
+                } else if (ledgeSolid != i && sol.left <= plRight) {
+                    //If the bottom-right point of the player character's
+                    //bounding box is on a different solid, then the player
+                    //character is not really on a ledge
+                    ledgeSolid = NONE;
                 }
             }
 
@@ -841,8 +843,8 @@ class Play {
         }
 
         if (movedDown && limit <= pl.y + pl.height) {
-            if (onLedge) {
-                pl.x = ledgeRight - PLAYER_BOX_OFFSET_X;
+            if (ledgeSolid != NONE) {
+                pl.x = ctx.solids[ledgeSolid].right - PLAYER_BOX_OFFSET_X;
             } else {
                 pl.y = limit - pl.height;
                 pl.yvel = 0;
