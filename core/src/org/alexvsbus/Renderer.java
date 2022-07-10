@@ -454,11 +454,16 @@ class Renderer {
             int h;
 
             if (obj.type == OBJ_OVERHEAD_SIGN) {
+                spr = SPR_OVERHEAD_SIGN_BASE_TOP;
+                x = obj.x + 16;
+                y = obj.y + 8;
+                drawSprite(spr, x, y);
+
                 spr = SPR_OVERHEAD_SIGN_BASE;
-                x = obj.x + 28;
-                y = obj.y + 28;
+                x = obj.x + 24;
+                y = obj.y + 32;
                 h = 272 - y;
-                drawSpritePart(spr, x, y, 0, 320 - h, 4, h);
+                drawSpritePart(spr, x, y, 0, 320 - h, 8, h);
             }
         }
 
