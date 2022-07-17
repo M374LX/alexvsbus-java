@@ -28,7 +28,6 @@ class Dialogs {
     Config config;
     int difficulty;
     boolean waitInputUp;
-    boolean useCursor; //Whether or not to highlight a dialog item in green
     int cursorDirection;
     int prevCursorDirection;
     float cursorDelay;
@@ -36,12 +35,19 @@ class Dialogs {
     float levelStartDelay;
     int cheatPos;
 
+    //If the selected item is between storeSelMin and storeSelMax (inclusive),
+    //then it is stored in storedSel; if an item's target is -2 (-1 would
+    //conflict with the constant NONE), then the item to be selected is
+    //retrieved from storedCel;
+    int storedSel;
+    int storeSelMin;
+    int storeSelMax;
+
     Dialogs(Audio audio, Config config) {
         this.audio = audio;
         this.config = config;
         difficulty = DIFFICULTY_NORMAL;
         waitInputUp = false;
-        useCursor = !config.touchEnabled;
         cursorDirection = NONE;
         prevCursorDirection = NONE;
         cheatPos = 0;
@@ -63,6 +69,7 @@ class Dialogs {
         }
 
         ctx.action = NONE;
+        ctx.useCursor = !config.touchEnabled;
         ctx.levelSelected = false;
         ctx.selectedVisible = true;
         ctx.showFrame = false;
@@ -118,17 +125,17 @@ class Dialogs {
 
             //Do not change the selection to the audio toggle item when
             //touching it
-            if ((dialogType == DLG_MAIN  && i == 3) ||
-                (dialogType == DLG_PAUSE && i == 2)) {
+            if ((dialogType == DLG_MAIN  && i == 4) ||
+                (dialogType == DLG_PAUSE && i == 3)) {
 
                 changeItem = false;
-            }
-
-            //Tapping normally disables the cursor, except when selecting a
-            //BGM track (not the "return" item) on the jukebox
-            useCursor = false;
-            if (dialogType == DLG_JUKEBOX && i < 4) {
-                useCursor = true;
+            } else {
+                //Tapping normally disables the cursor, except when selecting a
+                //BGM track (not the "return" item) on the jukebox
+                ctx.useCursor = false;
+                if (dialogType == DLG_JUKEBOX && i < 4) {
+                    ctx.useCursor = true;
+                }
             }
 
             confirm(i, changeItem);
@@ -165,8 +172,10 @@ class Dialogs {
         }
 
         if ((inputHit & INPUT_DIALOG_CONFIRM) > 0) {
-            int item = ctx.stack[ctx.stackSize - 1].selectedItem;
-            confirm(item, false);
+            if (ctx.useCursor) {
+                int item = ctx.stack[ctx.stackSize - 1].selectedItem;
+                confirm(item, true);
+            }
         }
         if ((inputHit & INPUT_DIALOG_RETURN) > 0) {
             int type = ctx.stack[ctx.stackSize - 1].type;
@@ -220,13 +229,22 @@ class Dialogs {
             int sel = ctx.stack[ctx.stackSize - 1].selectedItem;
             int prevSel = sel;
 
-            if (sel != NONE) {
+            if (ctx.useCursor) {
                 do {
                     sel = ctx.items[sel].targets[cursorDirection];
+
+                    if (sel == -2) {
+                        sel = storedSel;
+                    }
                 } while (ctx.items[sel].disabled);
             } else {
                 sel = 0;
-                useCursor = true;
+                ctx.useCursor = true;
+                audio.playSfx(SFX_DIALOG_SELECT);
+            }
+
+            if (sel >= storeSelMin && sel <= storeSelMax) {
+                storedSel = sel;
             }
 
             ctx.stack[ctx.stackSize - 1].selectedItem = sel;
@@ -446,7 +464,7 @@ class Dialogs {
 
     //Opens a specific dialog
     void open(int dialogType) {
-        int sel = useCursor ? 0 : NONE;
+        int sel = 0;
 
         ctx.stack[ctx.stackSize].type = dialogType;
         ctx.stackSize++;
@@ -470,7 +488,7 @@ class Dialogs {
 
         //By default, select the highest unlocked difficulty or the last level
         //within the selected difficulty
-        if (useCursor) {
+        if (ctx.useCursor) {
             if (dialogType == DLG_DIFFICULTY) {
                 sel = config.progressDifficulty;
             } else if (dialogType == DLG_LEVEL) {
@@ -486,6 +504,11 @@ class Dialogs {
                     sel = ctx.numItems - 2;
                 }
             }
+        }
+
+        storedSel = sel;
+        if (sel < storeSelMin || sel > storeSelMax) {
+            storedSel = storeSelMin;
         }
 
         updateAudioIcon();
@@ -512,10 +535,15 @@ class Dialogs {
 
         ctx.stackSize--;
         if (ctx.stackSize > 0) {
+            int sel;
+
             loadItemsAndText(ctx.stack[ctx.stackSize - 1].type);
 
-            if (!useCursor) {
-                ctx.stack[ctx.stackSize - 1].selectedItem = NONE;
+            sel = ctx.stack[ctx.stackSize - 1].selectedItem;
+
+            storedSel = sel;
+            if (sel < storeSelMin || sel > storeSelMax) {
+                storedSel = storeSelMin;
             }
         }
 
@@ -618,90 +646,90 @@ class Dialogs {
         //Load items
         switch (dialogType) {
             case DLG_MAIN:
-                di(0, CT,  0, 0, 14, 6, 4, 1, 4, 1, SPR_DIALOG_PLAY);
-                di(1, CT, -8, 8, 6, 6, 0, 4, 0, 2, SPR_DIALOG_JUKEBOX);
-                di(2, CT,  0, 8, 6, 6, 0, 4, 1, 3, SPR_DIALOG_ABOUT);
-                di(3, CT,  8, 8, 6, 6, 0, 4, 2, 4, SPR_DIALOG_QUIT);
-                di(4, TR, -1, 1, 5, 5, 3, 0, 3, 0, SPR_DIALOG_AUDIO_ON);
+                di(0, CT,   0,  0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
+                di(1, CT,  -8,  8,  6,  6,  0,  4,  0,  2, SPR_DIALOG_JUKEBOX);
+                di(2, CT,   0,  8,  6,  6,  0,  4,  1,  3, SPR_DIALOG_ABOUT);
+                di(3, CT,   8,  8,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
+                di(4, TR,  -1,  1,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 5;
                 break;
 
             case DLG_DIFFICULTY:
-                di(0, CT, -12, 0, 10, 5, 3, 3, 3, 1, SPR_DIALOG_NORMAL);
-                di(1, CT,   0, 0, 10, 5, 3, 3, 0, 2, SPR_DIALOG_HARD);
-                di(2, CT,  12, 0, 10, 5, 3, 3, 1, 3, SPR_DIALOG_SUPER);
-                di(3, TL,   1, 1, 5, 5, 0, 0, 2, 0, SPR_DIALOG_RETURN);
+                di(0, CT, -12,  0, 10,  5,  3,  3,  3,  1, SPR_DIALOG_NORMAL);
+                di(1, CT,   0,  0, 10,  5,  3,  3,  0,  2, SPR_DIALOG_HARD);
+                di(2, CT,  12,  0, 10,  5,  3,  3,  1,  3, SPR_DIALOG_SUPER);
+                di(3, TL,   1,  1,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 break;
 
             case DLG_LEVEL:
                 if (difficulty == DIFFICULTY_SUPER) { //3 levels
-                    di(0, CT, -8, 0, 6, 6, 3, 3, 3, 1, SPR_DIALOG_1);
-                    di(1, CT,  0, 0, 6, 6, 3, 3, 0, 2, SPR_DIALOG_2);
-                    di(2, CT,  8, 0, 6, 6, 3, 3, 1, 3, SPR_DIALOG_3);
-                    di(3, TL,  1, 1, 5, 5, 0, 0, 2, 0, SPR_DIALOG_RETURN);
+                    di(0, CT,  -8,  0,  6,  6,  3,  3,  3,  1, SPR_DIALOG_1);
+                    di(1, CT,   0,  0,  6,  6,  3,  3,  0,  2, SPR_DIALOG_2);
+                    di(2, CT,   8,  0,  6,  6,  3,  3,  1,  3, SPR_DIALOG_3);
+                    di(3, TL,   1,  1,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                     ctx.numItems = 4;
                 } else { //5 levels
-                    di(0, CT, -16, 0, 6, 6, 5, 5, 5, 1, SPR_DIALOG_1);
-                    di(1, CT, -8, 0, 6, 6, 5, 5, 0, 2, SPR_DIALOG_2);
-                    di(2, CT,  0, 0, 6, 6, 5, 5, 1, 3, SPR_DIALOG_3);
-                    di(3, CT,  8, 0, 6, 6, 5, 5, 2, 4, SPR_DIALOG_4);
-                    di(4, CT,  16, 0, 6, 6, 5, 5, 3, 5, SPR_DIALOG_5);
-                    di(5, TL,  1, 1, 5, 5, 0, 0, 4, 0, SPR_DIALOG_RETURN);
+                    di(0, CT, -16,  0,  6,  6,  5,  5,  5,  1, SPR_DIALOG_1);
+                    di(1, CT,  -8,  0,  6,  6,  5,  5,  0,  2, SPR_DIALOG_2);
+                    di(2, CT,   0,  0,  6,  6,  5,  5,  1,  3, SPR_DIALOG_3);
+                    di(3, CT,   8,  0,  6,  6,  5,  5,  2,  4, SPR_DIALOG_4);
+                    di(4, CT,  16,  0,  6,  6,  5,  5,  3,  5, SPR_DIALOG_5);
+                    di(5, TL,   1,  1,  5,  5, -2, -2,  4,  0, SPR_DIALOG_RETURN);
                     ctx.numItems = 6;
                 }
                 break;
 
             case DLG_JUKEBOX:
-                di(0, CT, -12, 0, 6, 6, 4, 4, 4, 1, SPR_DIALOG_1);
-                di(1, CT, -4, 0, 6, 6, 4, 4, 0, 2, SPR_DIALOG_2);
-                di(2, CT,  4, 0, 6, 6, 4, 4, 1, 3, SPR_DIALOG_3);
-                di(3, CT,  12, 0, 6, 6, 4, 4, 2, 4, SPR_DIALOG_4);
-                di(4, TL,  1, 1, 5, 5, 0, 0, 3, 0, SPR_DIALOG_RETURN);
+                di(0, CT, -12,  0,  6,  6,  4,  4,  4,  1, SPR_DIALOG_1);
+                di(1, CT,  -4,  0,  6,  6,  4,  4,  0,  2, SPR_DIALOG_2);
+                di(2, CT,   4,  0,  6,  6,  4,  4,  1,  3, SPR_DIALOG_3);
+                di(3, CT,  12,  0,  6,  6,  4,  4,  2,  4, SPR_DIALOG_4);
+                di(4, TL,   1,  1,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
                 break;
 
             case DLG_ABOUT:
-                di(0, CT,  0, 13, 10, 5, 1, 1, 1, 1, SPR_DIALOG_CREDITS);
-                di(1, TL,  1, 1, 5, 5, 0, 0, 0, 0, SPR_DIALOG_RETURN);
+                di(0, CT,   0, 13, 10,  5,  1,  1,  1,  1, SPR_DIALOG_CREDITS);
+                di(1, TL,   1,  1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 2;
                 break;
 
             case DLG_CREDITS:
-                di(0, TL,  1, 1, 5, 5, 0, 0, 0, 0, SPR_DIALOG_RETURN);
+                di(0, TL,   1,  1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 1;
                 break;
 
             case DLG_PAUSE:
-                di(0, CT,  0, 0, 14, 6, 3, 1, 3, 1, SPR_DIALOG_PLAY);
-                di(1, CT, -4, 8, 6, 6, 0, 3, 0, 2, SPR_DIALOG_TRYAGAIN);
-                di(2, CT,  4, 8, 6, 6, 0, 3, 1, 3, SPR_DIALOG_QUIT);
-                di(3, TR, -1, 1, 5, 5, 2, 0, 2, 0, SPR_DIALOG_AUDIO_ON);
+                di(0, CT,   0,  0, 14,  6,  3, -2,  3,  1, SPR_DIALOG_PLAY);
+                di(1, CT,  -4,  8,  6,  6,  0,  3,  0,  2, SPR_DIALOG_TRYAGAIN);
+                di(2, CT,   4,  8,  6,  6,  0,  3,  1,  3, SPR_DIALOG_QUIT);
+                di(3, TR,  -1,  1,  5,  5, -2,  0,  2,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 4;
                 break;
 
             case DLG_TRYAGAIN_PAUSE:
-                di(0, CT, -4, 8, 6, 6, 2, 2, 2, 1, SPR_DIALOG_CONFIRM);
-                di(1, CT,  4, 8, 6, 6, 2, 2, 0, 2, SPR_DIALOG_CANCEL);
-                di(2, TL,  1, 1, 5, 5, 1, 0, 1, 0, SPR_DIALOG_RETURN);
+                di(0, CT,  -4,  8,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                di(1, CT,   4,  8,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                di(2, TL,   1,  1,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
                 break;
 
             case DLG_TRYAGAIN_TIMEUP:
-                di(0, CT, -4, 8, 6, 6, 1, 1, 1, 1, SPR_DIALOG_CONFIRM);
-                di(1, CT,  4, 8, 6, 6, 0, 0, 0, 0, SPR_DIALOG_CANCEL);
+                di(0, CT,  -4,  8,  6,  6,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
+                di(1, CT,   4,  8,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
                 ctx.numItems = 2;
                 break;
 
             case DLG_QUIT:
-                di(0, CT, -4, 8, 6, 6, 2, 2, 2, 1, SPR_DIALOG_CONFIRM);
-                di(1, CT,  4, 8, 6, 6, 2, 2, 0, 2, SPR_DIALOG_CANCEL);
-                di(2, TL,  1, 1, 5, 5, 1, 0, 1, 0, SPR_DIALOG_RETURN);
+                di(0, CT,  -4,  8,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                di(1, CT,   4,  8,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                di(2, TL,   1,  1,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
                 break;
 
             case DLG_ERROR:
-                di(0, CT,  0, 8, 6, 6, 0, 0, 0, 0, SPR_DIALOG_CONFIRM);
+                di(0, CT,   0,  8,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CONFIRM);
                 ctx.numItems = 1;
         }
 
@@ -729,6 +757,14 @@ class Dialogs {
                 }
             }
         }
+
+        //Minimum and maximum item to be stored in storedSel
+        if (dialogType == DLG_MAIN || dialogType == DLG_PAUSE) {
+            storeSelMin = 1;
+        } else {
+            storeSelMin = 0;
+        }
+        storeSelMax = ctx.numItems - 2;
     }
 
     //Sets the attributes of a dialog item

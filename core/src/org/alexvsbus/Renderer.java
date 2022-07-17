@@ -609,7 +609,7 @@ class Renderer {
                     drawDialogItem(dialogCtx.items[i], false);
                 }
             } else if (dialogCtx.selectedVisible) {
-                drawDialogItem(dialogCtx.items[i], true);
+                drawDialogItem(dialogCtx.items[i], dialogCtx.useCursor);
             }
         }
     }

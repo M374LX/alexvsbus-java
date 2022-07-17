@@ -232,7 +232,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             boolean pause = (inputHit & INPUT_PAUSE) > 0;
             boolean pauseTouch = (inputHit & INPUT_PAUSE_TOUCH) > 0;
             if (playCtx.canPause && (pause || pauseTouch)) {
-                dialogs.useCursor = !pauseTouch;
+                dialogCtx.useCursor = !pauseTouch;
                 dialogs.open(DLG_PAUSE);
                 waitInputUp = true;
             }
