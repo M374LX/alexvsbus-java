@@ -329,6 +329,7 @@ public class Defs {
 
         int sequenceStep;
         float sequenceDelay;
+        boolean skipInitialSequence;
         boolean wipeToBlack;
         boolean wipeFromBlack;
     }
@@ -792,8 +793,9 @@ public class Defs {
     static final int NUM_ANIMS = 24;
 
     //Sequence types
-    static final int SEQ_NORMAL_PLAY = 0;
-    static final int SEQ_INITIAL_DELAY = 10;
+    static final int SEQ_NORMAL_PLAY_START = 0;
+    static final int SEQ_NORMAL_PLAY = 1;
+    static final int SEQ_INITIAL = 10;
     static final int SEQ_BUS_LEAVING = 20;
     static final int SEQ_TIMEUP_BUS_NEAR = 30;
     static final int SEQ_TIMEUP_BUS_FAR = 40;

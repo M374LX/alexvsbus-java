@@ -48,6 +48,7 @@ class Play {
         ctx.canPause = false;
         ctx.difficulty = DIFFICULTY_NORMAL;
         ctx.levelNum = -1;
+        ctx.skipInitialSequence = false;
 
         ctx.cam = new Camera();
         ctx.player = new Player();
@@ -139,8 +140,6 @@ class Play {
         ctx.timeUp = false;
         ctx.goalReached = false;
         ctx.countingScore = false;
-
-        ctx.busStopSignX = 440;
 
         ctx.cratePushRemaining = 0.75f;
 
@@ -248,11 +247,6 @@ class Play {
             setAnimation(ANIM_CUTSCENE_OBJECTS + i, false, false, false, 1, 0);
         }
 
-        if (ctx.levelNum != LVLNUM_ENDING) {
-            //Start with bus rear door open
-            ctx.anims[ANIM_BUS_DOOR_REAR].frame = 3;
-        }
-
         ctx.nextCoinSpark = 0;
         ctx.nextCrackParticle = 0;
 
@@ -290,7 +284,6 @@ class Play {
         beginUpdate();
         updateRemainingTime();
         updateScoreCount();
-        shiftBusToEnd();
         moveObjects();
         handleCarThrownPeel();
         movePlayer();
@@ -307,8 +300,9 @@ class Play {
         handlePlayerAnimationChange();
         updateAnimations();
         movePushArrow();
-        findLightPolePosition();
-        findBackgroundOffset();
+        positionBusStopSign();
+        positionLightPole();
+        applyBackgroundOffset();
         updateSequence();
     }
 
@@ -368,6 +362,33 @@ class Play {
         ctx.crackParticles[ctx.nextCrackParticle].grav =  200;
         ctx.nextCrackParticle++;
         ctx.nextCrackParticle %= MAX_CRACK_PARTICLES;
+    }
+
+    //Moves the bus and the bus stop sign from the start to the end of the
+    //level
+    void moveBusToEnd() {
+        ctx.bus.acc = 0;
+        ctx.bus.xvel = 0;
+        ctx.bus.x = ctx.levelSize - 456;
+
+        //Set rear door closed
+        ctx.anims[ANIM_BUS_DOOR_REAR].running = false;
+        ctx.anims[ANIM_BUS_DOOR_REAR].frame = 0;
+        ctx.anims[ANIM_BUS_DOOR_REAR].reverse = false;
+
+        //Set front door open
+        ctx.anims[ANIM_BUS_DOOR_FRONT].running = false;
+        ctx.anims[ANIM_BUS_DOOR_FRONT].frame = 3;
+        ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
+
+        //Bus route sign
+        if (ctx.levelNum == 1) {
+            ctx.bus.routeSign = 0; //First sign, which has the number 2
+        } else if (ctx.lastLevel) {
+            ctx.bus.routeSign = 4; //Finish (checkered flag) sign
+        } else {
+            ctx.bus.routeSign++;
+        }
     }
 
     void showPlayerInBus() {
@@ -443,35 +464,6 @@ class Play {
             if (ctx.time <= 0) {
                 ctx.time = 0;
                 ctx.countingScore = false;
-            }
-        }
-    }
-
-    //Shifts the position of the bus and the bus stop sign from the start to
-    //the end of the level
-    void shiftBusToEnd() {
-        if (ctx.levelNum == LVLNUM_ENDING) return;
-
-        //Nothing to do if the bus position has been already shifted
-        if (ctx.bus.x > SCREEN_WIDTH) return;
-
-        if (ctx.levelNum == 1 || ctx.cam.x > SCREEN_WIDTH * 2) {
-            ctx.bus.x = ctx.levelSize - 456;
-            ctx.busStopSignX = ctx.levelSize - 40;
-
-            //Set rear door closed
-            ctx.anims[ANIM_BUS_DOOR_REAR].frame = 0;
-            ctx.anims[ANIM_BUS_DOOR_REAR].reverse = false;
-
-            //Set front door open
-            ctx.anims[ANIM_BUS_DOOR_FRONT].frame = 3;
-            ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
-
-            //Next bus route sign
-            if (ctx.lastLevel) {
-                ctx.bus.routeSign = 4; //Finish (checkered flag) sign
-            } else {
-                ctx.bus.routeSign++;
             }
         }
     }
@@ -1588,14 +1580,27 @@ class Play {
         }
     }
 
-    //Determines the position of the light pole
-    void findLightPolePosition() {
+    //Positions the bus stop sign
+    void positionBusStopSign() {
+        if (ctx.levelNum == 1 || ctx.cam.x > SCREEN_WIDTH) {
+            //The sign is at the end of the level
+            ctx.busStopSignX = ctx.levelSize - 40;
+        } else {
+            //The sign is at the start of the level
+            ctx.busStopSignX = 440;
+        }
+    }
+
+    //Positions the first light pole (the position of the second pole is
+    //calculated later when rendering)
+    void positionLightPole() {
         int camx = (int)ctx.cam.x + (SCREEN_WIDTH / 2);
         ctx.poleX = camx - (camx % POLE_DISTANCE) + 16;
     }
 
-    //Determines the offset of the background image from camera position
-    void findBackgroundOffset() {
+    //Sets the offset of the background image based on the position of the
+    //camera
+    void applyBackgroundOffset() {
         ctx.bgOffsetX = (int)ctx.cam.x % 96;
     }
 
@@ -1626,7 +1631,18 @@ class Play {
 
         switch (ctx.sequenceStep) {
             //------------------------------------------------------------------
-            case 0: //SEQ_NORMAL_PLAY
+            case 0: //SEQ_NORMAL_PLAY_START
+                moveBusToEnd();
+                ignoreUserInput = false;
+                ctx.timeRunning = true;
+                ctx.timeDelay = 1;
+                ctx.canPause = true;
+                ctx.sequenceStep = SEQ_NORMAL_PLAY;
+                break;
+
+
+            //------------------------------------------------------------------
+            case 1: //SEQ_NORMAL_PLAY
                 if (pl.x >= levelSize - 426) {
                     ctx.goalReached = true;
                     ctx.timeUp = false;
@@ -1656,12 +1672,32 @@ class Play {
 
 
             //------------------------------------------------------------------
-            case 10: //SEQ_INITIAL_DELAY
-                ignoreUserInput = false;
-                ctx.timeRunning = true;
-                ctx.timeDelay = 1;
-                ctx.sequenceStep = SEQ_NORMAL_PLAY;
-                ctx.canPause = true;
+            case 10: //SEQ_INITIAL
+                if (ctx.levelNum != LVLNUM_ENDING) {
+                    //Start with bus rear door open
+                    ctx.anims[ANIM_BUS_DOOR_REAR].frame = 3;
+                    ctx.anims[ANIM_BUS_DOOR_REAR].reverse = true;
+                }
+
+                ignoreUserInput = true;
+                ctx.timeRunning = false;
+
+                if (ctx.levelNum == 1 || ctx.skipInitialSequence) {
+                    moveBusToEnd();
+                    ctx.sequenceStep = SEQ_NORMAL_PLAY_START;
+                } else {
+                    ctx.sequenceStep++;
+                }
+                ctx.sequenceDelay = 1;
+
+                break;
+
+            case 11:
+                startAnimation(ANIM_BUS_DOOR_REAR);
+                bus.acc = 256;
+                bus.xvel = 4;
+                ctx.sequenceDelay = 2;
+                ctx.sequenceStep = SEQ_NORMAL_PLAY_START;
                 break;
 
 

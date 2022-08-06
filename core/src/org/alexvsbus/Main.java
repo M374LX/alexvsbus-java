@@ -196,7 +196,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                 case DLGACT_PLAY:
                     dialogs.closeAll();
-                    playLevel(levelNum, difficulty);
+                    playLevel(levelNum, difficulty, false);
                     break;
 
                 case DLGACT_TRYAGAIN_WIPE:
@@ -287,7 +287,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                             startEndingSequence();
                         }
                     } else {
-                        playLevel(playCtx.levelNum + 1, playCtx.difficulty);
+                        playLevel(playCtx.levelNum + 1, playCtx.difficulty, false);
                     }
                 }
             }
@@ -301,7 +301,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 if (playCtx.difficulty == DIFFICULTY_MAX) {
                     showTitle();
                 } else {
-                    playLevel(1, playCtx.difficulty + 1);
+                    playLevel(1, playCtx.difficulty + 1, false);
                 }
             }
         }
@@ -314,7 +314,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 tryAgain = false;
                 playCtx.score = 0;
                 dialogs.closeAll();
-                playLevel(playCtx.levelNum, playCtx.difficulty);
+                playLevel(playCtx.levelNum, playCtx.difficulty, true);
             }
         }
 
@@ -442,7 +442,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         removeWipe();
     }
 
-    void playLevel(int levelNum, int difficulty) {
+    void playLevel(int levelNum, int difficulty, boolean skipInitialSequence) {
         int err;
         String filename = "level" + levelNum;
 
@@ -487,8 +487,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.difficulty = difficulty;
         playCtx.levelNum = levelNum;
         playCtx.lastLevel = (levelNum == difficultyNumLevels[difficulty]);
-        playCtx.sequenceStep = SEQ_INITIAL_DELAY;
-        playCtx.sequenceDelay = 1;
+        playCtx.sequenceStep = SEQ_INITIAL;
+        playCtx.skipInitialSequence = skipInitialSequence;
 
         switch (levelNum) {
             case 1:
