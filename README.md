@@ -5,6 +5,12 @@ Java in which Alex is just a man who depends on public transportation and needs
 to run in order to catch the bus, or else he will have to wait an eternity for
 the next bus to come.
 
+**Note: not officially on Google Play.** Someone has published the game on
+Google Play without having contacted us and charges for it. It is not official
+and we cannot ensure it is identical to the official build and up to date. At
+present, the game is officially distributed only through GitHub, where it is
+free of charge.
+
 As it is currently a pre-release, not all planned features are present yet, but
 it is already fully playable and has all planned levels.
 
