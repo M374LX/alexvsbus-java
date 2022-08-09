@@ -364,8 +364,7 @@ class Play {
         ctx.nextCrackParticle %= MAX_CRACK_PARTICLES;
     }
 
-    //Moves the bus and the bus stop sign from the start to the end of the
-    //level
+    //Moves the bus to the end of the level
     void moveBusToEnd() {
         ctx.bus.acc = 0;
         ctx.bus.xvel = 0;
