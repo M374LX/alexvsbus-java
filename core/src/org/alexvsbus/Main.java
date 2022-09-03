@@ -380,8 +380,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         try {
-            //Just in case an uncaught exception happens, stop the audio thread
-            audio.dispose();
+            //Just in case an uncaught exception happens, stop the sound
+            //effects thread
+            audio.stopSfxThread();
         } finally {
             defHandler.uncaughtException(t, e);
         }

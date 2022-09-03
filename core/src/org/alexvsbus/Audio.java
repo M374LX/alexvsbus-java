@@ -134,13 +134,17 @@ class Audio {
         sfxThread = new SfxThread(sfx);
     }
 
+    void stopSfxThread() {
+        sfxThread.quit();
+    }
+
     void dispose() {
+        stopSfxThread();
+
         if (bgm != null) {
             bgm.dispose();
             bgm = null;
         }
-
-        sfxThread.quit();
 
         for (int i = 0; i < NUM_SFX; i++) {
             if (sfx[i] != null) {
