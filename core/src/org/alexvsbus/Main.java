@@ -234,6 +234,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             if (playCtx.canPause && (pause || pauseTouch)) {
                 dialogCtx.useCursor = !pauseTouch;
                 dialogs.open(DLG_PAUSE);
+                audio.stopAllSfx();
                 waitInputUp = true;
             }
 
