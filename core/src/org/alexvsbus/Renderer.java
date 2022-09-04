@@ -810,32 +810,43 @@ class Renderer {
         }
 
         for (i = numDigits - 1; i >= 0; i--) {
-            drawSpritePart(SPR_CHARSET, x, y, digitsTemp[i] * 8, 8, 8, 8);
+            drawSpritePart(SPR_CHARSET_WHITE, x, y, digitsTemp[i] * 8, 8, 8, 8);
             x += 8;
         }
     }
 
+    //The character 0x1B (which corresponds to ASCII Escape) is used by this
+    //method to switch between white and green characters
+    //
+    //The newline (\n) also reverts to white
     void drawText(String text, int x, int y) {
         int i;
         int len = text.length();
 
+        int spr;
         int dx = x;
         int dy = y;
+
+        boolean green = false;
 
         for (i = 0; i < len; i++) {
             int c, sx, sy;
 
             c = text.charAt(i);
 
-            if (c == '\n') {
+            if (c == 0x1B) {
+                green = !green;
+            } else if (c == '\n') {
                 dy += 8;
                 dx = x;
+                green = false;
             } else {
                 c -= ' ';
                 sx = (c % 16) * 8;
                 sy = (c / 16) * 8;
+                spr = green ? SPR_CHARSET_GREEN : SPR_CHARSET_WHITE;
 
-                drawSpritePart(SPR_CHARSET, dx, dy, sx, sy, 8, 8);
+                drawSpritePart(spr, dx, dy, sx, sy, 8, 8);
 
                 dx += 8;
             }

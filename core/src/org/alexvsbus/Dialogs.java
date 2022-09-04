@@ -585,16 +585,16 @@ class Dialogs {
         switch (dialogType) {
             case DLG_ABOUT:
                 ctx.text =
-                    "Alex vs Bus: The Race\n" +
-                    "\177 2021-2022 M374LX\n" + // \177 = copyright symbol
+                    (char)0x1B + "Alex vs Bus: The Race\n" +
+                    (char)0x7F + " 2021-2022 M374LX\n" + // 0x7F = copyright symbol
                     "\n" +
-                    "Version\n" +
+                    (char)0x1B + "Version\n" +
                     " " + VERSION + "\n" +
                     "\n" +
-                    "Repository\n" +
+                    (char)0x1B + "Repository\n" +
                     " " + REPOSITORY + "\n" +
                     "\n" +
-                    "Licenses\n" +
+                    (char)0x1B + "Licenses\n" +
                     " The code is under GNU GPLv3, while the\n" +
                     " assets are under CC BY-SA 4.0.";
                 ctx.textOffsetX = -47;
@@ -605,19 +605,22 @@ class Dialogs {
 
             case DLG_CREDITS:
                 ctx.text =
-                    "M374LX (http://m374lx.users.sourceforge.net)\n" +
+                    (char)0x1B + "M374LX" + (char)0x1B +
+                            " (http://m374lx.users.sourceforge.net)\n" +
                     " Game design, programming, music, SFX, graphics\n" +
                     "\n" +
-                    "Hoton Bastos\n" +
+                    (char)0x1B + "Hoton Bastos\n" +
                     " Additional game design\n" +
                     "\n" +
-                    "Harim Pires\n" +
+                    (char)0x1B + "Harim Pires\n" +
                     " Testing\n" +
                     "\n" +
-                    "Codeman38 (https://www.zone38.net)\n" +
+                    (char)0x1B + "Codeman38" + (char)0x1B +
+                            " (https://www.zone38.net)\n" +
                     " \"Press Start 2P\" font\n" +
                     "\n" +
-                    "YoWorks (https://www.yoworks.com)\n" +
+                    (char)0x1B + "YoWorks" + (char)0x1B +
+                            " (https://www.yoworks.com)\n" +
                     " \"Telegrama\" font";
                 ctx.textOffsetX = -47;
                 ctx.textOffsetY = -14;
