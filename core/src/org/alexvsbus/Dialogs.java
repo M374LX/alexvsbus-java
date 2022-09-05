@@ -38,7 +38,7 @@ class Dialogs {
     //If the selected item is between storeSelMin and storeSelMax (inclusive),
     //then it is stored in storedSel; if an item's target is -2 (-1 would
     //conflict with the constant NONE), then the item to be selected is
-    //retrieved from storedCel;
+    //retrieved from storedSel;
     int storedSel;
     int storeSelMin;
     int storeSelMax;
@@ -191,10 +191,10 @@ class Dialogs {
     }
 
     void update(float dt) {
+        boolean selectionChanged;
+
         //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
-
-        boolean selectionChanged = false;
 
         if (ctx.levelSelected) {
             levelStartDelay -= dt;
@@ -212,7 +212,10 @@ class Dialogs {
             return;
         }
 
+        updateAudioIcon();
+
         //Handle selected item change
+        selectionChanged = false;
         if (cursorDirection != NONE) {
             cursorDelay -= dt;
 
@@ -224,6 +227,8 @@ class Dialogs {
                 selectionChanged = true;
             }
         }
+
+        prevCursorDirection = cursorDirection;
 
         if (selectionChanged) {
             int sel = ctx.stack[ctx.stackSize - 1].selectedItem;
@@ -237,6 +242,10 @@ class Dialogs {
                         sel = storedSel;
                     }
                 } while (ctx.items[sel].disabled);
+
+                if (sel != prevSel) {
+                    audio.playSfx(SFX_DIALOG_SELECT);
+                }
             } else {
                 sel = 0;
                 ctx.useCursor = true;
@@ -248,15 +257,7 @@ class Dialogs {
             }
 
             ctx.stack[ctx.stackSize - 1].selectedItem = sel;
-
-            if (sel != prevSel) {
-                audio.playSfx(SFX_DIALOG_SELECT);
-            }
         }
-
-        prevCursorDirection = cursorDirection;
-
-        updateAudioIcon();
     }
 
     //Decides whether to show the "enable audio" or "disable audio" icon
