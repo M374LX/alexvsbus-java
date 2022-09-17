@@ -35,6 +35,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //Default uncaught exception handler
     Thread.UncaughtExceptionHandler defHandler;
 
+    //Delta time (seconds since the previous frame)
+    float dt;
+
     //Configuration
     Config config;
     int oldWindowMode;
@@ -51,12 +54,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     Play play;
     LevelLoad levelLoad;
 
-    //Delay on final score screen and when the player selects "Try again" on
-    //the pause dialog
-    float screenDelay;
-
-    //True if the player has selected "Try again"
-    boolean tryAgain;
+    //Delayed action
+    int delayedActionType;
+    float actionDelay;
 
     //Dialogs
     DialogCtx dialogCtx;
@@ -68,11 +68,14 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //Input
     Input input;
+    int inputHit;
+    int inputHeld;
     int oldInputHeld;
     boolean waitInputUp;
     boolean wasTouching;
 
     //Screen wiping effects
+    int wipeCmd;
     int wipeValue;
     int wipeDelta;
     float wipeDelay;
@@ -107,10 +110,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         oldInputHeld = 0;
         waitInputUp = false;
         wasTouching = false;
-        config.hideTouchControls = true;
+        config.showTouchControls = false;
 
-        tryAgain = false;
+        delayedActionType = NONE;
 
+        wipeCmd = NONE;
         wipeValue = 0;
         wipeDelta = 0;
         wipeDelay = 0;
@@ -131,215 +135,34 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void render() {
-        int inputHeld, inputHit;
-        boolean playing = (screenType == SCR_PLAY);
-        boolean dialogOpen = (dialogCtx.stackSize > 0);
-        float dt = Gdx.graphics.getDeltaTime();
+        getDeltaTime();
+        handleInput();
 
-        //Limit delta time to prevent problems with collision detection
-        if (dt > MAX_DT) dt = MAX_DT;
-
-        //Decide whether to show or hide touchscreen game controls
-        config.hideTouchControls = false;
-        if (!config.touchEnabled || dialogOpen || !playing) {
-            config.hideTouchControls = true;
-        }
-
-        //Handle user input
-        handleTouch();
-        inputHeld = input.read();
-        if (waitInputUp) {
-            if (inputHeld == 0) {
-                waitInputUp = false;
-            } else {
-                inputHeld = 0;
-            }
-        }
-
-        inputHit = inputHeld & (~oldInputHeld);
-
-        //Handle keys that change configuration
-        if (config.windowMode != WM_UNSUPPORTED) {
-            if ((inputHit & INPUT_CFG_WINDOW_MODE) > 0) {
-                config.windowMode++;
-                if (config.windowMode > WM_FULLSCREEN) {
-                    config.windowMode = WM_1X;
-                }
-            }
-        }
-        if ((inputHit & INPUT_CFG_AUDIO_TOGGLE) > 0) {
-            config.audioEnabled = !config.audioEnabled;
-        }
-
-        //Handle dialogs
-        if (dialogOpen) {
+        if (dialogCtx.stackSize > 0) { //If a dialog is open
             dialogs.handleKeys(inputHeld, inputHit);
             dialogs.update(dt);
-
-            int param = dialogCtx.actionParam;
-            int levelNum = (param & 0xF);
-            int difficulty = (param >> 4);
-
-            switch (dialogCtx.action) {
-                case DLGACT_QUIT:
-                    if (playing) {
-                        showTitle();
-                    } else {
-                        dialogs.closeAll();
-                        Gdx.app.exit();
-                    }
-                    break;
-
-                case DLGACT_TITLE:
-                    showTitle();
-                    break;
-
-                case DLGACT_PLAY:
-                    dialogs.closeAll();
-                    playLevel(levelNum, difficulty, false);
-                    break;
-
-                case DLGACT_TRYAGAIN_WIPE:
-                    dialogs.closeAll();
-                    wipeToBlack();
-                    tryAgain = true;
-                    screenDelay = 1.0f;
-                    break;
-
-                case DLGACT_TRYAGAIN_IMMEDIATE:
-                    tryAgain = true;
-                    screenDelay = 0;
-                    break;
-            }
-
-            dialogCtx.action = NONE;
+            handleDialogAction();
 
             //Dialog just closed
             if (dialogCtx.stackSize == 0) {
                 waitInputUp = true;
-                inputHeld = 0;
-                inputHit = 0;
             }
+        } else if (screenType == SCR_PLAY) {
+            play.setInput(inputHeld);
+            play.update(dt);
+            handlePause();
+            checkGameProgress();
+            handleLevelEnd();
         }
 
         handleConfigChange();
-
-        if (playing && !dialogOpen && !tryAgain) {
-            play.setInput(inputHeld);
-            play.update(dt);
-
-            //Handle pause
-            boolean pause = (inputHit & INPUT_PAUSE) > 0;
-            boolean pauseTouch = (inputHit & INPUT_PAUSE_TOUCH) > 0;
-            if (playCtx.canPause && (pause || pauseTouch)) {
-                dialogCtx.useCursor = !pauseTouch;
-                dialogs.open(DLG_PAUSE);
-                audio.stopAllSfx();
-                waitInputUp = true;
-            }
-
-            //Check start of screen wipe effect
-            if (playCtx.wipeToBlack) {
-                wipeToBlack();
-                playCtx.wipeToBlack = false;
-            }
-            if (playCtx.wipeFromBlack) {
-                wipeFromBlack();
-                playCtx.wipeFromBlack = false;
-            }
-
-            //Check for advances in game progress
-            if (!progressChecked && playCtx.goalReached && !config.progressCheat) {
-                if (playCtx.levelNum   == config.progressLevel &&
-                    playCtx.difficulty == config.progressDifficulty) {
-
-                    int numLevels = difficultyNumLevels[playCtx.difficulty];
-
-                    config.progressLevel++;
-                    if (config.progressLevel > numLevels) {
-                        if (config.progressDifficulty < DIFFICULTY_MAX) {
-                            config.progressLevel = 1;
-                            config.progressDifficulty++;
-                        } else {
-                            config.progressLevel = numLevels;
-                        }
-                    }
-
-                    platDep.saveConfig();
-                }
-
-                progressChecked = true;
-            }
-
-            //Handle end of level
-            if (playCtx.sequenceStep == SEQ_FINISHED) {
-                if (playCtx.levelNum == LVLNUM_ENDING) {
-                    showFinalScore();
-                } else if (playCtx.timeUp) {
-                    screenType = SCR_BLANK;
-                    removeWipe();
-                    audio.stopBgm();
-                    dialogs.open(DLG_TRYAGAIN_TIMEUP);
-                } else if (playCtx.goalReached) {
-                    if (playCtx.lastLevel) {
-                        if (playCtx.difficulty == DIFFICULTY_MAX) {
-                            showFinalScore();
-                        } else {
-                            startEndingSequence();
-                        }
-                    } else {
-                        playLevel(playCtx.levelNum + 1, playCtx.difficulty, false);
-                    }
-                }
-            }
-        }
-
-        //Handle final score screen
-        if (screenType == SCR_FINALSCORE) {
-            screenDelay -= dt;
-
-            if (screenDelay <= 0) {
-                if (playCtx.difficulty == DIFFICULTY_MAX) {
-                    showTitle();
-                } else {
-                    playLevel(1, playCtx.difficulty + 1, false);
-                }
-            }
-        }
-
-        //Act if the player has selected "Try again"
-        if (tryAgain) {
-            screenDelay -= dt;
-
-            if (screenDelay <= 0) {
-                tryAgain = false;
-                playCtx.score = 0;
-                dialogs.closeAll();
-                playLevel(playCtx.levelNum, playCtx.difficulty, true);
-            }
-        }
-
-        //Update screen wipe effects
-        wipeDelay -= dt;
-        if (wipeDelay <= 0) {
-            wipeDelay = WIPE_DELAY;
-            wipeValue += wipeDelta;
-
-            if (wipeValue <= 0) {
-                wipeValue = 0;
-                wipeDelta = 0;
-            } else if (wipeValue >= WIPE_MAX_VALUE) {
-                wipeValue = WIPE_MAX_VALUE;
-                wipeDelta = 0;
-            }
-        }
-
-        //Draw graphics
-        renderer.draw(screenType, config.touchEnabled, inputHeld, wipeValue);
-
-        oldInputHeld = inputHeld;
+        handleDelayedAction();
+        updateScreenWipe();
+        renderer.draw(screenType, config.showTouchControls, inputHeld, wipeValue);
     }
 
+    //Unlike the similarly named method handlePause(), this one is called by
+    //libGDX when the app loses focus on Android
     @Override
     public void pause() {
         boolean dialogOpen = dialogCtx.stackSize > 0;
@@ -391,37 +214,296 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //--------------------------------------------------------------------------
 
-    void handleTouch() {
-        boolean touching = false;
-        int i;
+    void getDeltaTime() {
+        dt = Gdx.graphics.getDeltaTime();
 
-        if (!config.touchEnabled) return;
+        //Limit delta time to prevent problems with collision detection
+        if (dt > MAX_DT) dt = MAX_DT;
+    }
 
-        for (i = 0; i < 10; i++) {
-            float x, y;
+    void handleInput() {
+        config.showTouchControls = false;
 
-            if (!Gdx.input.isTouched(i)) continue;
+        if (config.touchEnabled) {
+            boolean touching = false;
+            boolean playing = (screenType == SCR_PLAY);
+            boolean dialogOpen = (dialogCtx.stackSize > 0);
+            int i;
 
-            touching = true;
+            if (!dialogOpen && playing && playCtx.levelNum != LVLNUM_ENDING) {
+                config.showTouchControls = true;
+            }
 
-            //Convert coordinates from physical screen to projection
-            x = Gdx.input.getX(i);
-            x -= viewportX;
-            x /= viewportWidth;
-            x *= SCREEN_WIDTH;
+            for (i = 0; i < 10; i++) {
+                float x, y;
 
-            y = Gdx.input.getY(i);
-            y /= viewportHeight;
-            y *= projectionHeight;
+                if (!Gdx.input.isTouched(i)) continue;
 
-            input.onTouch(x, y, projectionHeight);
-            if (!wasTouching) {
-                dialogs.onTap((int)x, (int)y, projectionHeight);
+                touching = true;
+
+                //Convert coordinates from physical screen to projection
+                x = Gdx.input.getX(i);
+                x -= viewportX;
+                x /= viewportWidth;
+                x *= SCREEN_WIDTH;
+
+                y = Gdx.input.getY(i);
+                y /= viewportHeight;
+                y *= projectionHeight;
+
+                input.onTouch(x, y, projectionHeight);
+                if (!wasTouching) {
+                    dialogs.onTap((int)x, (int)y, projectionHeight);
+                }
+            }
+
+            wasTouching = touching;
+        }
+
+        inputHeld = input.read();
+        if (waitInputUp) {
+            if (inputHeld == 0) {
+                waitInputUp = false;
+            } else {
+                inputHeld = 0;
             }
         }
 
-        wasTouching = touching;
+        inputHit = inputHeld & (~oldInputHeld);
+        oldInputHeld = inputHeld;
+
+        //Handle keys that change configuration
+        if ((inputHit & INPUT_CFG_WINDOW_MODE) > 0) {
+            if (config.windowMode != WM_UNSUPPORTED) {
+                config.windowMode++;
+                if (config.windowMode > WM_FULLSCREEN) {
+                    config.windowMode = WM_1X;
+                }
+            }
+        }
+        if ((inputHit & INPUT_CFG_AUDIO_TOGGLE) > 0) {
+            config.audioEnabled = !config.audioEnabled;
+        }
     }
+
+    void handleDialogAction() {
+        int param = dialogCtx.actionParam;
+        int levelNum = (param & 0xF);
+        int difficulty = (param >> 4);
+
+        switch (dialogCtx.action) {
+            case DLGACT_QUIT:
+                if (screenType == SCR_PLAY) {
+                    showTitle();
+                } else {
+                    dialogs.closeAll();
+                    Gdx.app.exit();
+                }
+                break;
+
+            case DLGACT_TITLE:
+                showTitle();
+                break;
+
+            case DLGACT_PLAY:
+                dialogs.closeAll();
+                startLevel(levelNum, difficulty, false);
+                break;
+
+            case DLGACT_TRYAGAIN_WIPE:
+                dialogs.closeAll();
+                screenType = SCR_PLAY_FREEZE;
+                wipeCmd = WIPECMD_OUT;
+                delayedActionType = DELACT_TRY_AGAIN;
+                actionDelay = 1.0f;
+                break;
+
+            case DLGACT_TRYAGAIN_IMMEDIATE:
+                dialogs.closeAll();
+                delayedActionType = DELACT_TRY_AGAIN;
+                actionDelay = 0;
+                break;
+        }
+
+        dialogCtx.action = NONE;
+    }
+
+    //Unlike the similarly named method pause(), this one checks if the user
+    //has paused the game and acts accordingly
+    void handlePause() {
+        boolean pause = (inputHit & INPUT_PAUSE) > 0;
+        boolean pauseTouch = (inputHit & INPUT_PAUSE_TOUCH) > 0;
+
+        if (playCtx.canPause && (pause || pauseTouch)) {
+            dialogCtx.useCursor = !pauseTouch;
+            dialogs.open(DLG_PAUSE);
+            audio.stopAllSfx();
+            waitInputUp = true;
+        }
+    }
+
+    void checkGameProgress() {
+        int numLevels = difficultyNumLevels[playCtx.difficulty];
+
+        if (progressChecked) return;
+        if (!playCtx.goalReached) return;
+
+        progressChecked = true;
+
+        if (config.progressCheat) return;
+        if (playCtx.levelNum != config.progressLevel) return;
+        if (playCtx.difficulty != config.progressDifficulty) return;
+
+        config.progressLevel++;
+        if (config.progressLevel > numLevels) {
+            if (config.progressDifficulty < DIFFICULTY_MAX) {
+                config.progressLevel = 1;
+                config.progressDifficulty++;
+            } else {
+                config.progressLevel = numLevels;
+            }
+        }
+
+        platDep.saveConfig();
+    }
+
+    void handleLevelEnd() {
+        if (playCtx.sequenceStep != SEQ_FINISHED) return;
+
+        if (playCtx.levelNum == LVLNUM_ENDING) {
+            showFinalScore();
+        } else if (playCtx.timeUp) {
+            screenType = SCR_BLANK;
+            wipeCmd = WIPECMD_CLEAR;
+            audio.stopBgm();
+            dialogs.open(DLG_TRYAGAIN_TIMEUP);
+        } else if (playCtx.goalReached) {
+            if (!playCtx.lastLevel) {
+                startLevel(playCtx.levelNum + 1, playCtx.difficulty, false);
+            } else if (playCtx.difficulty == DIFFICULTY_MAX) {
+                showFinalScore();
+            } else {
+                startEndingSequence();
+            }
+        }
+    }
+
+    void handleConfigChange() {
+        //Window mode change
+        if (config.windowMode != WM_UNSUPPORTED && config.windowMode != oldWindowMode) {
+            boolean modeChanged = false;
+
+            if (config.windowMode == WM_FULLSCREEN) {
+                Monitor m = Gdx.graphics.getMonitor();
+                DisplayMode dm = Gdx.graphics.getDisplayMode(m);
+
+                modeChanged = Gdx.graphics.setFullscreenMode(dm);
+            } else {
+                int width  = SCREEN_WIDTH;
+                int height = SCREEN_MIN_HEIGHT;
+
+                if (config.windowMode == WM_2X) {
+                    width  *= 2;
+                    height *= 2;
+                } else if (config.windowMode == WM_3X) {
+                    width  *= 3;
+                    height *= 3;
+                }
+
+                modeChanged = Gdx.graphics.setWindowedMode(width, height);
+            }
+
+            if (modeChanged) {
+                oldWindowMode = config.windowMode;
+            } else {
+                config.windowMode = oldWindowMode;
+            }
+
+            if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
+                Gdx.input.setCursorCatched(true);
+            } else {
+                Gdx.input.setCursorCatched(false);
+            }
+        }
+
+        //Audio toggle
+        if (config.audioEnabled != oldAudioEnabled) {
+            audio.enable(config.audioEnabled);
+            oldAudioEnabled = config.audioEnabled;
+        }
+    }
+
+    void handleDelayedAction() {
+        if (delayedActionType == NONE) return;
+
+        actionDelay -= dt;
+        if (actionDelay > 0) return;
+
+        switch (delayedActionType) {
+            case DELACT_TITLE:
+                showTitle();
+                break;
+
+            case DELACT_NEXT_DIFFICULTY:
+                startLevel(1, playCtx.difficulty + 1, false);
+                break;
+
+            case DELACT_TRY_AGAIN:
+                playCtx.score = 0;
+                startLevel(playCtx.levelNum, playCtx.difficulty, true);
+                break;
+        }
+
+        delayedActionType = NONE;
+    }
+
+    void updateScreenWipe() {
+        if (playCtx.wipeIn) {
+            wipeCmd = WIPECMD_IN;
+            playCtx.wipeIn = false;
+        }
+        if (playCtx.wipeOut) {
+            wipeCmd = WIPECMD_OUT;
+            playCtx.wipeOut = false;
+        }
+
+        switch (wipeCmd) {
+            case WIPECMD_IN:
+                wipeDelay = WIPE_MAX_DELAY;
+                wipeValue = WIPE_MAX_VALUE;
+                wipeDelta = -WIPE_DELTA;
+                break;
+
+            case WIPECMD_OUT:
+                wipeDelay = WIPE_MAX_DELAY;
+                wipeValue = 0;
+                wipeDelta = WIPE_DELTA;
+                break;
+
+            case WIPECMD_CLEAR:
+                wipeValue = 0;
+                wipeDelta = 0;
+                break;
+        }
+        wipeCmd = NONE;
+
+
+        wipeDelay -= dt;
+        if (wipeDelay > 0) return;
+
+        wipeDelay = WIPE_MAX_DELAY;
+        wipeValue += wipeDelta;
+
+        if (wipeValue <= 0) {
+            wipeValue = 0;
+            wipeDelta = 0;
+        } else if (wipeValue >= WIPE_MAX_VALUE) {
+            wipeValue = WIPE_MAX_VALUE;
+            wipeDelta = 0;
+        }
+    }
+
+    //--------------------------------------------------------------------------
 
     void showTitle() {
         screenType = SCR_LOGO;
@@ -435,16 +517,23 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         dialogs.closeAll();
         dialogs.open(DLG_MAIN);
 
-        removeWipe();
+        wipeCmd = WIPECMD_CLEAR;
     }
 
     void showFinalScore() {
         screenType = SCR_FINALSCORE;
-        screenDelay = 4.0f;
-        removeWipe();
+
+        if (playCtx.difficulty == DIFFICULTY_MAX) {
+            delayedActionType = DELACT_TITLE;
+        } else {
+            delayedActionType = DELACT_NEXT_DIFFICULTY;
+        }
+        actionDelay = 4.0f;
+
+        wipeCmd = WIPECMD_CLEAR;
     }
 
-    void playLevel(int levelNum, int difficulty, boolean skipInitialSequence) {
+    void startLevel(int levelNum, int difficulty, boolean skipInitialSequence) {
         int err;
         String filename = "level" + levelNum;
 
@@ -476,8 +565,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             msg += ":\n" + filename;
 
-            removeWipe();
             screenType = SCR_BLANK;
+            wipeCmd = WIPECMD_CLEAR;
             dialogs.showError(msg);
 
             return;
@@ -524,10 +613,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         audio.playBgm(playCtx.bgm);
-        wipeFromBlack();
+        wipeCmd = WIPECMD_IN;
     }
 
     void startEndingSequence() {
+        play.clear();
+
+        progressChecked = false;
         screenType = SCR_PLAY;
 
         playCtx.levelNum = LVLNUM_ENDING;
@@ -540,72 +632,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.sequenceStep = SEQ_ENDING;
         playCtx.sequenceDelay = 0;
 
-        play.clear();
-
         audio.playBgm(playCtx.bgm);
-        wipeFromBlack();
-    }
-
-    void wipeToBlack() {
-        wipeDelay = WIPE_DELAY;
-        wipeValue = 0;
-        wipeDelta = WIPE_DELTA;
-    }
-
-    void wipeFromBlack() {
-        wipeDelay = WIPE_DELAY;
-        wipeValue = WIPE_MAX_VALUE;
-        wipeDelta = -WIPE_DELTA;
-    }
-
-    void removeWipe() {
-        wipeValue = 0;
-        wipeDelta = 0;
-    }
-
-    void handleConfigChange() {
-        //Window mode change
-        if (config.windowMode != WM_UNSUPPORTED && config.windowMode != oldWindowMode) {
-            boolean modeChanged = false;
-
-            if (config.windowMode == WM_FULLSCREEN) {
-                Monitor m = Gdx.graphics.getMonitor();
-                DisplayMode dm = Gdx.graphics.getDisplayMode(m);
-
-                modeChanged = Gdx.graphics.setFullscreenMode(dm);
-            } else {
-                int width  = SCREEN_WIDTH;
-                int height = SCREEN_MIN_HEIGHT;
-
-                if (config.windowMode == WM_2X) {
-                    width  *= 2;
-                    height *= 2;
-                } else if (config.windowMode == WM_3X) {
-                    width  *= 3;
-                    height *= 3;
-                }
-
-                modeChanged = Gdx.graphics.setWindowedMode(width, height);
-            }
-
-            if (modeChanged) {
-                oldWindowMode = config.windowMode;
-            } else {
-                config.windowMode = oldWindowMode;
-            }
-
-            if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
-                Gdx.input.setCursorCatched(true);
-            } else {
-                Gdx.input.setCursorCatched(false);
-            }
-        }
-
-        //Audio toggle
-        if (config.audioEnabled != oldAudioEnabled) {
-            audio.enable(config.audioEnabled);
-            oldAudioEnabled = config.audioEnabled;
-        }
+        wipeCmd = WIPECMD_IN;
     }
 }
 

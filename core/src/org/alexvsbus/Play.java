@@ -258,8 +258,8 @@ class Play {
         ctx.henReachedFlagman = false;
         ctx.busReachedFlagman = false;
 
-        ctx.wipeToBlack = false;
-        ctx.wipeFromBlack = false;
+        ctx.wipeIn = false;
+        ctx.wipeOut = false;
     }
 
     void setInput(int inputState) {
@@ -1712,7 +1712,7 @@ class Play {
 
             case 21:
                 //Screen wipes to black
-                ctx.wipeToBlack = true;
+                ctx.wipeOut = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
                 break;
@@ -1752,7 +1752,7 @@ class Play {
                 cam.yvel = 0;
                 ctx.car.x = NONE;
                 ctx.hen.x = NONE;
-                ctx.wipeToBlack = true;
+                ctx.wipeOut = true;
                 ctx.sequenceDelay = 0.6f;
                 ctx.sequenceStep++;
                 break;
@@ -1763,7 +1763,7 @@ class Play {
                 pl.state = PLAYER_STATE_INACTIVE;
                 cam.x = levelSize - SCREEN_WIDTH;
                 cam.y = 0;
-                ctx.wipeFromBlack = true;
+                ctx.wipeIn = true;
                 ctx.sequenceDelay = 0.6f;
                 ctx.sequenceStep++;
                 break;
@@ -2152,7 +2152,7 @@ class Play {
 
             case 504:
                 //Screen wipes to black
-                ctx.wipeToBlack = true;
+                ctx.wipeOut = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
                 break;
@@ -2357,7 +2357,7 @@ class Play {
 
             case 814:
                 //Screen wipes to black
-                ctx.wipeToBlack = true;
+                ctx.wipeOut = true;
                 ctx.sequenceDelay = 1;
                 ctx.sequenceStep++;
                 break;

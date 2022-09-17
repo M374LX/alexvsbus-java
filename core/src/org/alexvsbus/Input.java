@@ -102,7 +102,7 @@ public class Input extends ControllerAdapter {
     }
 
     void onTouch(float x, float y, float projectionHeight) {
-        if (!config.touchEnabled || config.hideTouchControls) return;
+        if (!config.touchEnabled || !config.showTouchControls) return;
 
         //Pause
         if (x >= SCREEN_WIDTH - 32 && y <= 32) {
@@ -269,7 +269,7 @@ public class Input extends ControllerAdapter {
     }
 
     int readTouch() {
-        if (!config.touchEnabled || config.hideTouchControls) return 0;
+        if (!config.touchEnabled || !config.showTouchControls) return 0;
 
         int actionsHeld = 0;
 

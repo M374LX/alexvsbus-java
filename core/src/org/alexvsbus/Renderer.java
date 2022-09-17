@@ -102,6 +102,7 @@ class Renderer {
                 break;
 
             case SCR_PLAY:
+            case SCR_PLAY_FREEZE:
                 drawPlay();
                 drawHud();
                 if (touchButtons) drawTouchButtons(inputState);

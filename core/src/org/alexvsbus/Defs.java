@@ -43,7 +43,7 @@ public class Defs {
         public boolean audioEnabled;
 
         public boolean touchEnabled;
-        public boolean hideTouchControls;
+        public boolean showTouchControls;
         public boolean useBackKey;
 
         public int progressLevel;
@@ -330,8 +330,8 @@ public class Defs {
         int sequenceStep;
         float sequenceDelay;
         boolean skipInitialSequence;
-        boolean wipeToBlack;
-        boolean wipeFromBlack;
+        boolean wipeIn;
+        boolean wipeOut;
     }
 
 
@@ -351,7 +351,13 @@ public class Defs {
     static final int SCR_BLANK = 0;
     static final int SCR_LOGO = 1;
     static final int SCR_PLAY = 2;
-    static final int SCR_FINALSCORE = 3;
+    static final int SCR_PLAY_FREEZE = 3; //Render a play session without upating it
+    static final int SCR_FINALSCORE = 4;
+
+    //Delayed actions
+    static final int DELACT_TITLE = 0;
+    static final int DELACT_NEXT_DIFFICULTY = 1;
+    static final int DELACT_TRY_AGAIN = 2;
 
     //Difficulty
     public static final int DIFFICULTY_NORMAL = 0;
@@ -370,10 +376,15 @@ public class Defs {
     public static final int SCREEN_MIN_HEIGHT = 270;
     static final float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
 
-    //Screen wiping effects
+    //Screen wiping commands
+    static final int WIPECMD_IN = 0;
+    static final int WIPECMD_OUT = 1;
+    static final int WIPECMD_CLEAR = 2;
+
+    //Other screen wiping constants
     static final int WIPE_MAX_VALUE = SCREEN_WIDTH;
     static final int WIPE_DELTA = 16;
-    static final float WIPE_DELAY = 0.0005f;
+    static final float WIPE_MAX_DELAY = 0.0005f;
 
     //Like in many retro games, 8x8 tiles are commonly used as the basic unit
     //for positioning and size
