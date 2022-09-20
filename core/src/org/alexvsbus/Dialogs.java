@@ -597,11 +597,14 @@ class Dialogs {
                     "\n" +
                     (char)0x1B + "Licenses\n" +
                     " The code is under GNU GPLv3, while the\n" +
-                    " assets are under CC BY-SA 4.0.";
+                    " assets are under CC BY-SA 4.0.\n" +
+                    "\n" +
+                    " https://www.gnu.org/licenses/gpl-3.0.en.html\n" +
+                    " https://creativecommons.org/licenses/by-sa/4.0";
                 ctx.textOffsetX = -47;
                 ctx.textOffsetY = -14;
                 ctx.textWidth = 47;
-                ctx.textHeight = 14;
+                ctx.textHeight = 15;
                 break;
 
             case DLG_CREDITS:
@@ -626,7 +629,7 @@ class Dialogs {
                 ctx.textOffsetX = -47;
                 ctx.textOffsetY = -14;
                 ctx.textWidth = 47;
-                ctx.textHeight = 14;
+                ctx.textHeight = 15;
                 break;
 
             case DLG_TRYAGAIN_PAUSE:
