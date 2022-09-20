@@ -558,7 +558,8 @@ class LevelLoad {
         int i;
 
         if (numCrateBlocks >= MAX_CRATE_BLOCKS
-            || x > xMax - 2 || y > 15
+            || x > xMax - 2
+            || y < 1 || y > 15
             || w < 1 || w > 8
             || h < 1 || h > 8) {
 
@@ -598,6 +599,7 @@ class LevelLoad {
         numCrateBlocks++;
     }
 
+    //Adds a deep hole or a passageway
     void addHole(int type, int x, int w) {
         int x2 = x + w - 1;
         int maxWidth = (type == HOLE_DEEP) ? 16 : 32;
@@ -652,17 +654,18 @@ class LevelLoad {
         int i;
 
         if (numRespawnPoints >= MAX_RESPAWN_POINTS
-            || x > xMax || y > 16) {
+            || x > xMax
+            || y < 1 || y > 15) {
 
             invalid = true;
             return;
         }
 
-        //Check respawn point repetition
+        //An X position cannot be shared by two or more respawn points
         for (i = 0; i < numRespawnPoints; i++) {
             RespawnPoint rp = ctx.respawnPoints[i];
 
-            if (rp.x == x && rp.y == y) {
+            if (rp.x == x) {
                 invalid = true;
                 return;
             }
