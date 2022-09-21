@@ -487,7 +487,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
         wipeCmd = NONE;
 
-
         wipeDelay -= dt;
         if (wipeDelay > 0) return;
 

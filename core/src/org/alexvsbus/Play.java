@@ -2214,7 +2214,9 @@ class Play {
             case 803:
                 if (ctx.car.x >= SCREEN_WIDTH + 144) {
                     //Traffic jam stops
+                    ctx.car.x = SCREEN_WIDTH + 144;
                     ctx.car.xvel = 0;
+                    ctx.bus.x = ctx.car.x - 408;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
@@ -2284,7 +2286,9 @@ class Play {
             case 808:
                 if (ctx.car.x >= SCREEN_WIDTH + 416) {
                     //Traffic jam stops
+                    ctx.car.x = SCREEN_WIDTH + 416;
                     ctx.car.xvel = 0;
+                    ctx.bus.x = ctx.car.x - 408;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
@@ -2345,7 +2349,9 @@ class Play {
                     flagmanAnim.running = true;
 
                     //Traffic jam stops
+                    ctx.car.x = ctx.cam.x + 8 + 408;
                     ctx.car.xvel = 0;
+                    ctx.bus.x = ctx.cam.x + 8;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
