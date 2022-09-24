@@ -1954,13 +1954,13 @@ class Play {
                 break;
 
             case 207:
-                if (beardedMan.y > 163 && beardedMan.yvel > 0) {
+                if (beardedMan.y >= BUS_Y + 35 && beardedMan.yvel > 0) {
                     //Bearded man is now in the bus
                     beardedMan.sprite = SPR_BEARDED_MAN_STAND;
                     beardedMan.grav = 0;
                     beardedMan.yvel = 0;
                     beardedMan.x -= bus.x; //Make position relative to the bus
-                    beardedMan.y = 163;
+                    beardedMan.y = BUS_Y + 35;
                     beardedMan.inBus = true;
                     ctx.sequenceDelay = 0.25f;
                     ctx.sequenceStep++;
