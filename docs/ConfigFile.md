@@ -43,12 +43,14 @@ property value. The value can be either a string or a number.
 * progress-difficulty
 
   The highest difficulty the player has unlocked. The allowed values are
-  ``normal`` and ``hard``.
+  ``normal``, ``hard``, and ``super``.
 
 * progress-level
 
   The highest level number the player has unlocked within the highest unlocked
-  difficulty. The allowed values range from 1 to 5.
+  difficulty. The allowed values range from 1 to 5 (if ``progress-difficulty``
+  is set to ``normal`` or ``hard``) or 1 to 3 (if ``progress-difficulty`` is
+  set to ``super``).
 
 ## Example file
 

@@ -6,7 +6,8 @@ This document briefly describes the basic concepts of the game engine.
 On the ``Main`` class (file: ``Main.java``), the member variable ``screenType``
 keeps track of the current screen type (blank, logo, play, or final score). The
 different screen types are identified by constants defined in ``Defs.java``:
-``SCR_BLANK``, ``SCR_LOGO``, ``SCR_PLAY``, and ``SCR_FINALSCORE``.
+``SCR_BLANK``, ``SCR_LOGO``, ``SCR_PLAY``, ``SCR_PLAY_FREEZE``, and
+``SCR_FINALSCORE``.
 
 The dialogs, which enable the player to select the difficulty, the level to
 play and so on, are handled by the file ``Dialogs.java`` independently of the

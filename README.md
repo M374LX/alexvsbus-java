@@ -34,14 +34,30 @@ banana peels, crates, and other obstacles.
 
 ## Controls
 
-On PC, the left and right arrow keys move the character, while Ctrl or the
-spacebar causes him to jump. F5 changes the window size and F6 toggles the
-audio on/off.
+The game can be controlled by using a keyboard, gamepad/joystick, or touchscreen
+buttons.
 
-On Android, the character is controlled by touchscreen buttons.
+When using a keyboard, the controls are:
 
-Game controllers, like gamepads and joysticks, are also supported on both PC and
-Android.
+**Arrow keys/WASD:** Move character; select dialog item
+
+**Ctrl/Spacebar:** Jump; confirm selected dialog item
+
+**Enter (aka Return):** Confirm selected dialog item
+
+**Escape:** Pause; close dialog
+
+**F5:** Change window size (PC only)
+
+**F6:** Toggle audio
+
+On French (AZERTY) keyboards, W becomes Z and A becomes Q.
+
+On Android, the Back button has the same effect as Escape.
+
+Touchscreen buttons always appear on Android, while these can be enabled on PC
+by using the command line option ``--touch``. Dialog items can also be selected
+by touching them.
 
 
 ## Downloading
