@@ -1,3 +1,12 @@
+## Pre-release: pre5 (2022/09/24)
+
+Fifth pre-release, which includes:
+
+* New "Try again" item on pause dialog
+* Fix for the weird "standing on air" visual effects
+* Bus movement at level start
+
+
 ## Pre-release: pre4 (2022/04/14)
 
 Fourth pre-release, which includes:
