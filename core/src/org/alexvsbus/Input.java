@@ -231,8 +231,9 @@ public class Input extends ControllerAdapter {
         boolean a         = Gdx.input.isKeyPressed(Keys.A);
         boolean d         = Gdx.input.isKeyPressed(Keys.D);
 
-        boolean cfgWindowMode  = Gdx.input.isKeyPressed(Keys.F5);
-        boolean cfgAudioToggle = Gdx.input.isKeyPressed(Keys.F6);
+        boolean cfgWindowMode      = Gdx.input.isKeyPressed(Keys.F5);
+        boolean cfgAudioToggle     = Gdx.input.isKeyPressed(Keys.F6);
+        boolean cfgScanlinesToggle = Gdx.input.isKeyPressed(Keys.F7);
 
         if (ctrlLeft || ctrlRight || space) {
             actionsHeld |= INPUT_JUMP;
@@ -263,6 +264,9 @@ public class Input extends ControllerAdapter {
         }
         if (cfgAudioToggle) {
             actionsHeld |= INPUT_CFG_AUDIO_TOGGLE;
+        }
+        if (cfgScanlinesToggle) {
+            actionsHeld |= INPUT_CFG_SCANLINES_TOGGLE;
         }
 
         return actionsHeld;

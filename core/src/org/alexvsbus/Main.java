@@ -102,7 +102,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         dialogs = new Dialogs(audio, config);
         dialogCtx = dialogs.newCtx();
         levelLoad = new LevelLoad(playCtx);
-        renderer = new Renderer(playCtx, dialogCtx);
+        renderer = new Renderer(config, playCtx, dialogCtx);
 
         defHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.currentThread().setDefaultUncaughtExceptionHandler(this);
@@ -158,7 +158,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         handleConfigChange();
         handleDelayedAction();
         updateScreenWipe();
-        renderer.draw(screenType, config.showTouchControls, inputHeld, wipeValue);
+        renderer.draw(screenType, inputHeld, wipeValue);
     }
 
     //Unlike the similarly named method handlePause(), this one is called by
@@ -283,6 +283,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
         if ((inputHit & INPUT_CFG_AUDIO_TOGGLE) > 0) {
             config.audioEnabled = !config.audioEnabled;
+        }
+        if ((inputHit & INPUT_CFG_SCANLINES_TOGGLE) > 0) {
+            config.scanlinesEnabled = !config.scanlinesEnabled;
         }
     }
 

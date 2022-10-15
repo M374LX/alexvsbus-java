@@ -41,6 +41,7 @@ public class Defs {
     public static class Config {
         public int windowMode;
         public boolean audioEnabled;
+        public boolean scanlinesEnabled;
 
         public boolean touchEnabled;
         public boolean showTouchControls;
@@ -429,6 +430,7 @@ public class Defs {
     static final int INPUT_DIALOG_RETURN = (1 << 8);
     static final int INPUT_CFG_WINDOW_MODE = (1 << 9);
     static final int INPUT_CFG_AUDIO_TOGGLE = (1 << 10);
+    static final int INPUT_CFG_SCANLINES_TOGGLE = (1 << 11);
 
     //Input actions from game controller (joystick, joypad, ...) buttons
     static final int JOY_A = 0;
@@ -621,6 +623,7 @@ public class Defs {
     static final int SPR_DIALOG_BORDER_LEFT = 129;
     static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 130;
     static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 131;
+    static final int SPR_SCANLINE = 132;
 
     static final int LOGO_WIDTH = 296;
 
@@ -974,6 +977,7 @@ public class Defs {
         40,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT
         88,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_SELECTED
         136,  696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_DISABLED
+        680,  520,  0,   0,   //SPR_SCANLINE
     };
 
     //Sprite corresponding to each player character animation type

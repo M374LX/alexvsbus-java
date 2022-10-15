@@ -40,6 +40,11 @@ property value. The value can be either a string or a number.
   The value ``true`` enables audio output, while the value ``false`` disables
   audio output.
 
+* scanlines-enabled
+
+  The value ``true`` enables a scanlines visual effect, while the value
+  ``false`` disables the effect.
+
 * progress-difficulty
 
   The highest difficulty the player has unlocked. The allowed values are

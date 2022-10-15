@@ -49,6 +49,7 @@ class DesktopPlatDep implements PlatDep {
     boolean touchEnabled;
     int cliWindowMode;
     int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
 
     DesktopPlatDep() {
         config = new Config();
@@ -70,6 +71,7 @@ class DesktopPlatDep implements PlatDep {
 
         cliWindowMode = WM_UNSET;
         cliAudioEnabled = 0;
+        cliScanlinesEnabled = 0;
 
         for (i = 0; i < argc; i++) {
             String a = args[i];
@@ -104,6 +106,10 @@ class DesktopPlatDep implements PlatDep {
                 cliAudioEnabled = 1;
             } else if (a.equals("--audio-off")) {
                 cliAudioEnabled = -1;
+            } else if (a.equals("--scanlines-on")) {
+                cliScanlinesEnabled = 1;
+            } else if (a.equals("--scanlines-off")) {
+                cliScanlinesEnabled = -1;
             } else if (a.equals("--resizable")) {
                 resizable = true;
             } else if (a.equals("--touch")) {
@@ -124,6 +130,7 @@ class DesktopPlatDep implements PlatDep {
         config.touchEnabled = false;
         config.windowMode = WM_FULLSCREEN;
         config.audioEnabled = true;
+        config.scanlinesEnabled = false;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 
@@ -138,6 +145,9 @@ class DesktopPlatDep implements PlatDep {
         }
         if (cliAudioEnabled != 0) {
             config.audioEnabled = (cliAudioEnabled == -1) ? false : true;
+        }
+        if (cliScanlinesEnabled != 0) {
+            config.scanlinesEnabled = (cliScanlinesEnabled == -1) ? false : true;
         }
         if (touchEnabled) {
             config.touchEnabled = true;
@@ -212,6 +222,18 @@ class DesktopPlatDep implements PlatDep {
                 } else if (tokens[1].equals("false")) {
                     config.audioEnabled = false;
                 }
+             } else if (tokens[0].equals("scanlines-enabled")) {
+                //If the scanlines were enabled or disabled from CLI, do not
+                //load the configuration from the config file
+                if (cliScanlinesEnabled != 0) {
+                    continue;
+                }
+
+                if (tokens[1].equals("true")) {
+                    config.scanlinesEnabled = true;
+                } else if (tokens[1].equals("false")) {
+                    config.scanlinesEnabled = false;
+                }
             } else if (tokens[0].equals("progress-difficulty")) {
                 if (tokens[1].equals("normal")) {
                     config.progressDifficulty = DIFFICULTY_NORMAL;
@@ -256,7 +278,12 @@ class DesktopPlatDep implements PlatDep {
         data += "\n";
 
         //Audio enabled
-        data += "audio-enabled " + (config.audioEnabled ? "true" : "false") + "\n";
+        data += "audio-enabled " +
+            (config.audioEnabled ? "true" : "false") + "\n";
+
+        //Scanlines enabled
+        data += "scanlines-enabled " +
+            (config.scanlinesEnabled ? "true" : "false") + "\n";
 
         //Game progress
         data += "progress-difficulty ";

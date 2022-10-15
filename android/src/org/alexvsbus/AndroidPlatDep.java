@@ -54,6 +54,7 @@ class AndroidPlatDep implements PlatDep {
         config.touchEnabled = true;
         config.windowMode = WM_UNSUPPORTED;
         config.audioEnabled = true;
+        config.scanlinesEnabled = false;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 
@@ -66,6 +67,12 @@ class AndroidPlatDep implements PlatDep {
             config.audioEnabled = prefs.getBoolean("audio-enabled", true);
         } catch (Exception e) {
             config.audioEnabled = true;
+        }
+
+        try {
+            config.scanlinesEnabled = prefs.getBoolean("scanlines-enabled", false);
+        } catch (Exception e) {
+            config.scanlinesEnabled = false;
         }
 
         try {
@@ -101,6 +108,7 @@ class AndroidPlatDep implements PlatDep {
     public void saveConfig() {
         editor = prefs.edit();
         editor.putBoolean("audio-enabled", config.audioEnabled);
+        editor.putBoolean("scanlines-enabled", config.scanlinesEnabled);
         editor.putInt("progress-level", config.progressLevel);
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();

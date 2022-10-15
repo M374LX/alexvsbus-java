@@ -84,6 +84,8 @@ public class DesktopLauncher {
         "                    1 for 1x window size, 2 for 2x, and 3 for 3x\n" +
         "--audio-on          Enable audio output\n" +
         "--audio-off         Disable audio output\n" +
+        "--scanlines-on      Enable scanlines visual effect\n" +
+        "--scanlines-off     Disable scanlines visual effect\n" +
         "--resizable         Make the window resizable\n" +
         "--touch             Enable touchscreen controls, which can also be simulated\n" +
         "                    by using the mouse"
@@ -95,7 +97,7 @@ public class DesktopLauncher {
         "Alex vs Bus: The Race\n" +
         "Version " + VERSION + "\n" +
         "\n" +
-        "Copyright (C) 2021 M374LX\n" +
+        "Copyright (C) 2021-2022 M374LX\n" +
         "\n" +
         "This program is free software: you can redistribute it and/or modify\n" +
         "it under the terms of the GNU General Public License as published by\n" +

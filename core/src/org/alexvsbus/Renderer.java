@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 
 class Renderer {
+    Config config;
     PlayCtx playCtx;
     DialogCtx dialogCtx;
 
@@ -44,6 +45,9 @@ class Renderer {
     int projectionWidth;
     int projectionHeight;
 
+    int viewportWidth;
+    int viewportHeight;
+
     //Temporary location for drawDigits()
     //
     //To prevent an instantiation each time the method is called and the
@@ -56,7 +60,8 @@ class Renderer {
 
     //--------------------------------------------------------------------------
 
-    Renderer(PlayCtx playCtx, DialogCtx dialogCtx) {
+    Renderer(Config config, PlayCtx playCtx, DialogCtx dialogCtx) {
+        this.config = config;
         this.playCtx = playCtx;
         this.dialogCtx = dialogCtx;
 
@@ -80,7 +85,7 @@ class Renderer {
         gfx = new Texture(Gdx.files.internal("gfx.png"));
     }
 
-    void draw(int screenType, boolean touchButtons, int inputState, int wipeValue) {
+    void draw(int screenType, int inputState, int wipeValue) {
         //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -105,7 +110,7 @@ class Renderer {
             case SCR_PLAY_FREEZE:
                 drawPlay();
                 drawHud();
-                if (touchButtons) drawTouchButtons(inputState);
+                if (config.touchEnabled) drawTouchButtons(inputState);
                 break;
 
             case SCR_FINALSCORE:
@@ -120,10 +125,15 @@ class Renderer {
         //Draw screen wiping effects
         drawSpriteStretch(SPR_BG_BLACK, 0, 0, wipeValue, projectionHeight);
 
+        drawScanlines();
+
         spriteBatch.end();
     }
 
     void setViewport(int x, int y, int width, int height) {
+        viewportWidth = width;
+        viewportHeight = height;
+
         Gdx.gl.glViewport(x, y, width, height);
     }
 
@@ -701,6 +711,25 @@ class Renderer {
                 drawSpriteFlip(spr, x + i * 8, y + j * 8, hflip, vflip);
             }
         }
+    }
+
+    void drawScanlines() {
+        Color c = spriteBatch.getColor();
+        int line;
+
+        if (!config.scanlinesEnabled) return;
+        if (viewportHeight < SCREEN_MIN_HEIGHT * 2) return;
+
+        mat.setToOrtho(0, projectionWidth * 2, projectionHeight * 2, 0, 0, 1);
+        spriteBatch.setProjectionMatrix(mat);
+        spriteBatch.setColor(c.r, c.g, c.b, 0.45f);
+
+        for (line = 0; line < projectionHeight * 2; line++) {
+            drawRegion(0, line, viewportWidth, 1, 680, 520, 8, 1, false, false);
+            line += 2;
+        }
+
+        spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
     }
 
     //--------------------------------------------------------------------------

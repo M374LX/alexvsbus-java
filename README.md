@@ -51,6 +51,10 @@ When using a keyboard, the controls are:
 
 **F6:** Toggle audio
 
+**F7:** Toggle scanlines*
+
+*Scanlines are not yet available in a release, only in the main Git branch.
+
 On French (AZERTY) keyboards, W becomes Z and A becomes Q.
 
 On Android, the Back button has the same effect as Escape.
@@ -100,10 +104,15 @@ The options are:
                     1 for 1x window size, 2 for 2x, and 3 for 3x
 --audio-on          Enable audio output
 --audio-off         Disable audio output
+--scanlines-on      Enable scanlines visual effect
+--scanlines-off     Disable scanlines visual effect
 --resizable         Make the window resizable
---touch             Enable touchscreen controls, which can also be simulated by
-                    using the mouse
+--touch             Enable touchscreen controls, which can also be simulated
+                    by using the mouse
 ```
+
+*Note that scanlines are not yet available in a release, only in the main Git
+branch.
 
 
 ## Building from source
