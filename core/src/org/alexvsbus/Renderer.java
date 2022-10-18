@@ -722,11 +722,13 @@ class Renderer {
 
         mat.setToOrtho(0, projectionWidth * 2, projectionHeight * 2, 0, 0, 1);
         spriteBatch.setProjectionMatrix(mat);
-        spriteBatch.setColor(c.r, c.g, c.b, 0.45f);
+        spriteBatch.setColor(c.r, c.g, c.b, 0.5f);
 
-        for (line = 0; line < projectionHeight * 2; line++) {
-            drawRegion(0, line, viewportWidth, 1, 680, 520, 8, 1, false, false);
-            line += 2;
+        for (line = 0; line < projectionHeight * 2; line += 2) {
+            int sx = sprites[SPR_SCANLINE * 4 + 0];
+            int sy = sprites[SPR_SCANLINE * 4 + 1];
+
+            drawRegion(0, line + 1, viewportWidth, 1, sx, sy, 8, 1, false, false);
         }
 
         spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
