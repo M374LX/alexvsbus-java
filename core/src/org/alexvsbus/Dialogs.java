@@ -214,6 +214,42 @@ class Dialogs {
 
         updateAudioIcon();
 
+        //Update the values of the settings dialog
+        if (ctx.stack[ctx.stackSize - 1].type == DLG_SETTINGS) {
+            String windowMode = "";
+
+            switch (config.windowMode) {
+                case WM_1X:
+                    windowMode = "1X";
+                    break;
+
+                case WM_2X:
+                    windowMode = "2X";
+                    break;
+
+                case WM_3X:
+                    windowMode = "3X";
+                    break;
+
+                case WM_FULLSCREEN:
+                    windowMode = "FULLSCREEN";
+                    break;
+
+                default:
+                    windowMode = "---";
+                    break;
+            }
+
+            ctx.items[0].value = windowMode;
+            ctx.items[1].value = (config.scanlinesEnabled) ? "ON" : "OFF";
+            ctx.items[2].value = (config.audioEnabled) ? "ON" : "OFF";
+            ctx.items[3].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
+
+            if (!config.touchEnabled) {
+                ctx.items[3].value = "---";
+            }
+        }
+
         //Handle selected item change
         selectionChanged = false;
         if (cursorDirection != NONE) {
@@ -266,9 +302,9 @@ class Dialogs {
         int type = ctx.stack[ctx.stackSize - 1].type;
 
         if (type == DLG_MAIN) {
-            ctx.items[4].iconSprite = spr;
+            ctx.items[5].iconSprite = spr;
         } else if (type == DLG_PAUSE) {
-            ctx.items[3].iconSprite = spr;
+            ctx.items[4].iconSprite = spr;
         }
     }
 
@@ -292,14 +328,18 @@ class Dialogs {
                         break;
 
                     case 2:
-                        open(DLG_ABOUT);
+                        open(DLG_SETTINGS);
                         break;
 
                     case 3:
-                        open(DLG_QUIT);
+                        open(DLG_ABOUT);
                         break;
 
                     case 4:
+                        open(DLG_QUIT);
+                        break;
+
+                    case 5:
                         config.audioEnabled = !config.audioEnabled;
                         break;
                 }
@@ -377,6 +417,58 @@ class Dialogs {
 
                 break;
 
+            case DLG_SETTINGS:
+                switch (item) {
+                    case 0:
+                        if (config.windowMode != WM_UNSUPPORTED) {
+                            open(DLG_WINDOW_MODE);
+                        }
+                        break;
+
+                    case 1:
+                        config.scanlinesEnabled = !config.scanlinesEnabled;
+                        break;
+
+                    case 2:
+                        config.audioEnabled = !config.audioEnabled;
+                        break;
+
+                    case 3:
+                        if (config.touchEnabled) {
+                            config.touchButtonsEnabled = !config.touchButtonsEnabled;
+                        }
+                        break;
+
+                    case 4:
+                        close();
+                        break;
+                }
+                break;
+
+            case DLG_WINDOW_MODE:
+                switch (item) {
+                    case 0:
+                        config.windowMode = WM_1X;
+                        break;
+
+                    case 1:
+                        config.windowMode = WM_2X;
+                        break;
+
+                    case 2:
+                        config.windowMode = WM_3X;
+                        break;
+
+                    case 3:
+                        config.windowMode = WM_FULLSCREEN;
+                        break;
+
+                    case 4:
+                        break;
+                }
+                close();
+                break;
+
             case DLG_ABOUT:
                 switch (item) {
                     case 0:
@@ -404,10 +496,14 @@ class Dialogs {
                         break;
 
                     case 2:
-                        open(DLG_QUIT);
+                        open(DLG_SETTINGS);
                         break;
 
                     case 3:
+                        open(DLG_QUIT);
+                        break;
+
+                    case 4:
                         config.audioEnabled = !config.audioEnabled;
                         break;
                 }
@@ -504,6 +600,13 @@ class Dialogs {
                 if (config.progressLevel > ctx.numItems - 2) {
                     sel = ctx.numItems - 2;
                 }
+            } else if (dialogType == DLG_WINDOW_MODE) {
+                switch (config.windowMode) {
+                    case WM_1X: sel = 0; break;
+                    case WM_2X: sel = 1; break;
+                    case WM_3X: sel = 2; break;
+                    case WM_FULLSCREEN: sel = 3; break;
+                }
             }
         }
 
@@ -582,6 +685,8 @@ class Dialogs {
         final int TR = ALIGN_TOPRIGHT;
         final int CT = ALIGN_CENTER;
 
+        int i;
+
         //Load text
         switch (dialogType) {
             case DLG_ABOUT:
@@ -650,15 +755,24 @@ class Dialogs {
                 break;
         }
 
+        //Clear items
+        for (i = 0; i < DIALOG_MAX_ITEMS; i++) {
+            DialogItem it = ctx.items[i];
+            it.caption = "";
+            it.value = "";
+            it.iconSprite = NONE;
+        }
+
         //Load items
         switch (dialogType) {
             case DLG_MAIN:
-                di(0, CT,   0,  0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
-                di(1, CT,  -8,  8,  6,  6,  0,  4,  0,  2, SPR_DIALOG_JUKEBOX);
-                di(2, CT,   0,  8,  6,  6,  0,  4,  1,  3, SPR_DIALOG_ABOUT);
-                di(3, CT,   8,  8,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
-                di(4, TR,  -1,  1,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
-                ctx.numItems = 5;
+                di(0, CT,   0,  0, 14,  6,  5, -2,  5,  1, SPR_DIALOG_PLAY);
+                di(1, CT, -12,  8,  6,  6,  0,  5,  0,  2, SPR_DIALOG_JUKEBOX);
+                di(2, CT,  -4,  8,  6,  6,  0,  5,  1,  3, SPR_DIALOG_SETTINGS);
+                di(3, CT,   4,  8,  6,  6,  0,  5,  2,  4, SPR_DIALOG_ABOUT);
+                di(4, CT,  12,  8,  6,  6,  0,  5,  3,  5, SPR_DIALOG_QUIT);
+                di(5, TR,  -1,  1,  5,  5, -2,  0,  4,  0, SPR_DIALOG_AUDIO_ON);
+                ctx.numItems = 6;
                 break;
 
             case DLG_DIFFICULTY:
@@ -696,10 +810,37 @@ class Dialogs {
                 ctx.numItems = 5;
                 break;
 
+            case DLG_SETTINGS:
+                di(0, CT,   0, -6, 32,  3,  4,  1,  4,  4, NONE);
+                di(1, CT,   0, -2, 32,  3,  0,  2,  4,  4, NONE);
+                di(2, CT,   0,  2, 32,  3,  1,  3,  4,  4, NONE);
+                di(3, CT,   0,  6, 32,  3,  2,  4,  4,  4, NONE);
+                di(4, TL,   1,  1,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 5;
+                ctx.items[0].caption = "WINDOW MODE";
+                ctx.items[1].caption = "SCANLINES";
+                ctx.items[2].caption = "AUDIO";
+                ctx.items[3].caption = "TOUCHSCREEN BUTTONS";
+                break;
+
+            case DLG_WINDOW_MODE:
+                di(0, CT,   0, -6, 16,  3,  4,  1,  4,  4, NONE);
+                di(1, CT,   0, -2, 16,  3,  0,  2,  4,  4, NONE);
+                di(2, CT,   0,  2, 16,  3,  1,  3,  4,  4, NONE);
+                di(3, CT,   0,  6, 16,  3,  2,  4,  4,  4, NONE);
+                di(4, TL,   1,  1,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 5;
+                ctx.items[0].caption = "1X";
+                ctx.items[1].caption = "2X";
+                ctx.items[2].caption = "3X";
+                ctx.items[3].caption = "FULLSCREEN";
+                break;
+
             case DLG_ABOUT:
-                di(0, CT,   0, 13, 10,  5,  1,  1,  1,  1, SPR_DIALOG_CREDITS);
+                di(0, CT,   0, 13, 10,  5,  1,  1,  1,  1, NONE);
                 di(1, TL,   1,  1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 2;
+                ctx.items[0].caption = "CREDITS";
                 break;
 
             case DLG_CREDITS:
@@ -708,11 +849,12 @@ class Dialogs {
                 break;
 
             case DLG_PAUSE:
-                di(0, CT,   0,  0, 14,  6,  3, -2,  3,  1, SPR_DIALOG_PLAY);
-                di(1, CT,  -4,  8,  6,  6,  0,  3,  0,  2, SPR_DIALOG_TRYAGAIN);
-                di(2, CT,   4,  8,  6,  6,  0,  3,  1,  3, SPR_DIALOG_QUIT);
-                di(3, TR,  -1,  1,  5,  5, -2,  0,  2,  0, SPR_DIALOG_AUDIO_ON);
-                ctx.numItems = 4;
+                di(0, CT,   0,  0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
+                di(1, CT,  -8,  8,  6,  6,  0,  4,  0,  2, SPR_DIALOG_TRYAGAIN);
+                di(2, CT,   0,  8,  6,  6,  0,  4,  1,  3, SPR_DIALOG_SETTINGS);
+                di(3, CT,   8,  8,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
+                di(4, TR,  -1,  1,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
+                ctx.numItems = 5;
                 break;
 
             case DLG_TRYAGAIN_PAUSE:
@@ -758,7 +900,7 @@ class Dialogs {
                 int numLevels = difficultyNumLevels[difficulty];
 
                 //Disable selection of locked levels
-                for (int i = config.progressLevel; i <= numLevels - 1; i++) {
+                for (i = config.progressLevel; i <= numLevels - 1; i++) {
                     ctx.items[i].iconSprite = SPR_DIALOG_LOCKED;
                     ctx.items[i].disabled = true;
                 }

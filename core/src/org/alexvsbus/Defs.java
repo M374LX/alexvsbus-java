@@ -43,8 +43,11 @@ public class Defs {
         public boolean audioEnabled;
         public boolean scanlinesEnabled;
 
+        //Touchscreen
         public boolean touchEnabled;
+        public boolean touchButtonsEnabled; //Left, Right, and Jump buttons
         public boolean showTouchControls;
+
         public boolean useBackKey;
 
         public int progressLevel;
@@ -62,6 +65,8 @@ public class Defs {
         int align;
         int offsetX, offsetY;
         int width, height;
+        String caption;
+        String value;
         int iconSprite;
         int targets[]; //One target for each of the four directions
         boolean disabled;
@@ -573,8 +578,8 @@ public class Defs {
     static final int SPR_DIALOG_PLAY_SELECTED = 79;
     static final int SPR_DIALOG_JUKEBOX = 80;
     static final int SPR_DIALOG_JUKEBOX_SELECTED = 81;
-    static final int SPR_DIALOG_OPTIONS = 82;
-    static final int SPR_DIALOG_OPTIONS_SELECTED = 83;
+    static final int SPR_DIALOG_SETTINGS = 82;
+    static final int SPR_DIALOG_SETTINGS_SELECTED = 83;
     static final int SPR_DIALOG_ABOUT = 84;
     static final int SPR_DIALOG_ABOUT_SELECTED = 85;
     static final int SPR_DIALOG_QUIT = 86;
@@ -652,13 +657,15 @@ public class Defs {
     static final int DLG_DIFFICULTY = 1;
     static final int DLG_LEVEL = 2;
     static final int DLG_JUKEBOX = 3;
-    static final int DLG_ABOUT = 4;
-    static final int DLG_CREDITS = 5;
-    static final int DLG_PAUSE = 6;
-    static final int DLG_TRYAGAIN_PAUSE = 7;
-    static final int DLG_TRYAGAIN_TIMEUP = 8;
-    static final int DLG_QUIT = 9;
-    static final int DLG_ERROR = 10;
+    static final int DLG_SETTINGS = 4;
+    static final int DLG_WINDOW_MODE = 5;
+    static final int DLG_ABOUT = 6;
+    static final int DLG_CREDITS = 7;
+    static final int DLG_PAUSE = 8;
+    static final int DLG_TRYAGAIN_PAUSE = 9;
+    static final int DLG_TRYAGAIN_TIMEUP = 10;
+    static final int DLG_QUIT = 11;
+    static final int DLG_ERROR = 12;
 
     //Dialog actions
     static final int DLGACT_QUIT = 0;
@@ -927,8 +934,8 @@ public class Defs {
         296,  512,  96,  32,  //SPR_DIALOG_PLAY_SELECTED
         112,  512,  32,  32,  //SPR_DIALOG_JUKEBOX
         400,  512,  32,  32,  //SPR_DIALOG_JUKEBOX_SELECTED
-        152,  512,  32,  32,  //SPR_DIALOG_OPTIONS
-        440,  512,  32,  32,  //SPR_DIALOG_OPTIONS_SELECTED
+        152,  512,  32,  32,  //SPR_DIALOG_SETTINGS
+        440,  512,  32,  32,  //SPR_DIALOG_SETTINGS_SELECTED
         192,  512,  32,  32,  //SPR_DIALOG_ABOUT
         480,  512,  32,  32,  //SPR_DIALOG_ABOUT_SELECTED
         232,  512,  32,  32,  //SPR_DIALOG_QUIT

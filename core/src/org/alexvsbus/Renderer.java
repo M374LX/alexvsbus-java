@@ -110,7 +110,7 @@ class Renderer {
             case SCR_PLAY_FREEZE:
                 drawPlay();
                 drawHud();
-                if (config.touchEnabled) drawTouchButtons(inputState);
+                drawTouchButtons(inputState);
                 break;
 
             case SCR_FINALSCORE:
@@ -515,7 +515,7 @@ class Renderer {
 
         drawSprite(SPR_HUD_TIME, 225, 1);
         if (playCtx.levelNum == LVLNUM_ENDING) {
-            drawText("--", 233, 9);
+            drawText("--", false, 233, 9);
         } else {
             drawDigits(playCtx.time, 2, 233, 9);
         }
@@ -523,12 +523,18 @@ class Renderer {
 
     void drawTouchButtons(int inputState) {
         int x, y, spr;
-        boolean dialogOpen = (dialogCtx.stackSize > 0);
+        boolean dialogOpen;
+
+        if (!config.touchEnabled) return;
+
+       dialogOpen = (dialogCtx.stackSize > 0);
 
         //Pause
         if (playCtx.canPause && !dialogOpen) {
             drawSprite(SPR_PAUSE, SCREEN_WIDTH - 24, 0);
         }
+
+        if (!config.touchButtonsEnabled) return;
 
         //Left
         x = TOUCH_LEFT_X;
@@ -564,7 +570,7 @@ class Renderer {
         int x = 0;
         String msg = "";
 
-        drawText("SCORE:", cx - 7 * TILE_SIZE, cy - TILE_SIZE);
+        drawText("SCORE:", false, cx - 7 * TILE_SIZE, cy - TILE_SIZE);
         drawDigits(playCtx.score, 6, cx + 1 * TILE_SIZE, cy - TILE_SIZE);
 
         switch (playCtx.difficulty) {
@@ -585,7 +591,7 @@ class Renderer {
         }
 
 
-        drawText(msg, x, cy + TILE_SIZE);
+        drawText(msg, false, x, cy + TILE_SIZE);
     }
 
     void drawDialog() {
@@ -593,8 +599,8 @@ class Renderer {
         int i;
 
         if (dialogCtx.showFrame) {
-            int y = ((projectionHeight / TILE_SIZE) - 10) / 2 * TILE_SIZE;
-            drawSpriteStretch(SPR_BG_BLACK, 168, y, 144, 144);
+            int y = ((projectionHeight / TILE_SIZE) - 18) / 2 * TILE_SIZE;
+            drawSpriteStretch(SPR_BG_BLACK, 96, y, 288, 192);
         }
 
         if (dialogCtx.text.length() > 0) {
@@ -607,7 +613,7 @@ class Renderer {
             int h = dialogCtx.textHeight;
 
             drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
-            drawText(dialogCtx.text, x, y);
+            drawText(dialogCtx.text, false, x, y);
 
             if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
                 drawSprite(SPR_ERROR, x, y);
@@ -626,7 +632,6 @@ class Renderer {
     }
 
     void drawDialogItem(DialogItem item, boolean selected) {
-        int spr;
         int i, j;
         int x, y;
         int w = item.width;
@@ -637,13 +642,31 @@ class Renderer {
 
         drawDialogBorder(x, y, w, h, selected, item.disabled);
 
-        spr = item.iconSprite;
-        if (selected) spr++;
+        if (item.caption.length() > 0) {
+            String caption = item.caption.copyValueOf(item.caption.toCharArray());
+            int xoffs = TILE_SIZE;
+            int yoffs = TILE_SIZE * (item.height / 2);
 
-        x = Dialogs.itemX(item) + TILE_SIZE;
-        y = Dialogs.itemY(item, projectionHeight) + TILE_SIZE;
+            drawText(caption, selected, x + xoffs, y + yoffs);
+        }
 
-        drawSprite(spr, x, y);
+        if (item.value.length() > 0) {
+            String value = item.value.copyValueOf(item.value.toCharArray());
+            int xoffs = ((w - 1) * TILE_SIZE) - (value.length() * TILE_SIZE);
+            int yoffs = TILE_SIZE * (item.height / 2);
+
+            drawText(value, selected, x + xoffs, y + yoffs);
+        }
+
+        if (item.iconSprite != NONE) {
+            int spr = item.iconSprite;
+            if (selected) spr++;
+
+            x = Dialogs.itemX(item) + TILE_SIZE;
+            y = Dialogs.itemY(item, projectionHeight) + TILE_SIZE;
+
+            drawSprite(spr, x, y);
+        }
     }
 
     void drawDialogBorder(int x, int y, int width, int height, boolean selected,
@@ -850,16 +873,18 @@ class Renderer {
     //The character 0x1B (which corresponds to ASCII Escape) is used by this
     //method to switch between white and green characters
     //
-    //The newline (\n) also reverts to white
-    void drawText(String text, int x, int y) {
+    //The argument "green" specifies the initial color: false for white and
+    //obviously true for green
+    //
+    //The newline (\n) character also reverts to the initial color
+    void drawText(String text, boolean green, int x, int y) {
         int i;
         int len = text.length();
+        boolean initialGreen = green;
 
         int spr;
         int dx = x;
         int dy = y;
-
-        boolean green = false;
 
         for (i = 0; i < len; i++) {
             int c, sx, sy;
@@ -871,7 +896,7 @@ class Renderer {
             } else if (c == '\n') {
                 dy += 8;
                 dx = x;
-                green = false;
+                green = initialGreen;
             } else {
                 c -= ' ';
                 sx = (c % 16) * 8;

@@ -76,6 +76,13 @@ class AndroidPlatDep implements PlatDep {
         }
 
         try {
+            config.touchButtonsEnabled =
+                prefs.getBoolean("touch-buttons-enabled", true);
+        } catch (Exception e) {
+            config.touchButtonsEnabled = true;
+        }
+
+        try {
             int val = prefs.getInt("progress-difficulty", DIFFICULTY_NORMAL);
             if (val < DIFFICULTY_NORMAL || val > DIFFICULTY_MAX) {
                 val = DIFFICULTY_NORMAL;
@@ -109,6 +116,7 @@ class AndroidPlatDep implements PlatDep {
         editor = prefs.edit();
         editor.putBoolean("audio-enabled", config.audioEnabled);
         editor.putBoolean("scanlines-enabled", config.scanlinesEnabled);
+        editor.putBoolean("touch-buttons-enabled", config.touchButtonsEnabled);
         editor.putInt("progress-level", config.progressLevel);
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();

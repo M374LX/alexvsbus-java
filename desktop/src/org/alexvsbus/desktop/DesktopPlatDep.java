@@ -128,6 +128,7 @@ class DesktopPlatDep implements PlatDep {
 
         //Defaults
         config.touchEnabled = false;
+        config.touchButtonsEnabled = true;
         config.windowMode = WM_FULLSCREEN;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
@@ -234,6 +235,12 @@ class DesktopPlatDep implements PlatDep {
                 } else if (tokens[1].equals("false")) {
                     config.scanlinesEnabled = false;
                 }
+            } else if (tokens[0].equals("touch-buttons-enabled")) {
+                if (tokens[1].equals("true")) {
+                    config.touchButtonsEnabled = true;
+                } else if (tokens[1].equals("false")) {
+                    config.touchButtonsEnabled = false;
+                }
             } else if (tokens[0].equals("progress-difficulty")) {
                 if (tokens[1].equals("normal")) {
                     config.progressDifficulty = DIFFICULTY_NORMAL;
@@ -284,6 +291,10 @@ class DesktopPlatDep implements PlatDep {
         //Scanlines enabled
         data += "scanlines-enabled " +
             (config.scanlinesEnabled ? "true" : "false") + "\n";
+
+        //Touchscreen buttons enabled
+        data += "touch-buttons-enabled " +
+            (config.touchButtonsEnabled ? "true" : "false") + "\n";
 
         //Game progress
         data += "progress-difficulty ";

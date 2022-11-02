@@ -45,6 +45,12 @@ property value. The value can be either a string or a number.
   The value ``true`` enables a scanlines visual effect, while the value
   ``false`` disables the effect.
 
+* touch-buttons-enabled
+
+  The value ``true`` causes the left, right, and jump buttons to be displayed
+  if the touchscreen is enabled. The player might want to disable the buttons
+  when using a phone with a physical game controller.
+
 * progress-difficulty
 
   The highest difficulty the player has unlocked. The allowed values are

@@ -110,6 +110,8 @@ public class Input extends ControllerAdapter {
             return;
         }
 
+        if (!config.touchButtonsEnabled) return;
+
         //If the Y position is above all buttons (other than pause), nothing
         //to do
         if (y < projectionHeight - 70) return;
