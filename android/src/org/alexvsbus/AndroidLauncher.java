@@ -36,6 +36,7 @@ public class AndroidLauncher extends AndroidApplication {
         appConfig.useAccelerometer = false;
         appConfig.useCompass = false;
         appConfig.useGyroscope = false;
+        appConfig.useImmersiveMode = true;
         appConfig.useWakelock = true;
 
         SharedPreferences prefs = getSharedPreferences("alexvsbus", Context.MODE_PRIVATE);
