@@ -315,6 +315,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             case DLGACT_TRYAGAIN_WIPE:
                 dialogs.closeAll();
+                playCtx.canPause = false;
                 screenType = SCR_PLAY_FREEZE;
                 wipeCmd = WIPECMD_OUT;
                 delayedActionType = DELACT_TRY_AGAIN;
