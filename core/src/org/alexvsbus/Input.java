@@ -79,7 +79,7 @@ public class Input extends ControllerAdapter {
         actionsHeld |= readTouch();
 
         if (config.useBackKey && Gdx.input.isKeyPressed(Keys.BACK)) {
-            actionsHeld |= INPUT_PAUSE;
+            actionsHeld |= INPUT_PAUSE_TOUCH;
             actionsHeld |= INPUT_DIALOG_RETURN;
         }
 
