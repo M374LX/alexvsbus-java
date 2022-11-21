@@ -122,6 +122,7 @@ class Dialogs {
             if (y > iy + (h * TILE_SIZE)) continue;
 
             if (ctx.items[i].disabled) continue;
+            if (ctx.items[i].hidden) continue;
 
             //Do not change the selection to the audio toggle item when
             //touching it
@@ -219,35 +220,16 @@ class Dialogs {
             String windowMode = "";
 
             switch (config.windowMode) {
-                case WM_1X:
-                    windowMode = "1X";
-                    break;
-
-                case WM_2X:
-                    windowMode = "2X";
-                    break;
-
-                case WM_3X:
-                    windowMode = "3X";
-                    break;
-
-                case WM_FULLSCREEN:
-                    windowMode = "FULLSCREEN";
-                    break;
-
-                default:
-                    windowMode = "---";
-                    break;
+                case WM_1X: windowMode = "1X"; break;
+                case WM_2X: windowMode = "2X"; break;
+                case WM_3X: windowMode = "3X"; break;
+                case WM_FULLSCREEN: windowMode = "FULLSCREEN"; break;
             }
 
             ctx.items[0].value = windowMode;
             ctx.items[1].value = (config.scanlinesEnabled) ? "ON" : "OFF";
             ctx.items[2].value = (config.audioEnabled) ? "ON" : "OFF";
             ctx.items[3].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
-
-            if (!config.touchEnabled) {
-                ctx.items[3].value = "---";
-            }
         }
 
         //Handle selected item change
@@ -277,7 +259,7 @@ class Dialogs {
                     if (sel == -2) {
                         sel = storedSel;
                     }
-                } while (ctx.items[sel].disabled);
+                } while (ctx.items[sel].disabled || ctx.items[sel].hidden);
 
                 if (sel != prevSel) {
                     audio.playSfx(SFX_DIALOG_SELECT);
@@ -583,12 +565,12 @@ class Dialogs {
                 break;
         }
 
-        //By default, select the highest unlocked difficulty or the last level
-        //within the selected difficulty
         if (ctx.useCursor) {
             if (dialogType == DLG_DIFFICULTY) {
+                //Default selection to highest unlocked difficulty
                 sel = config.progressDifficulty;
             } else if (dialogType == DLG_LEVEL) {
+                //Default selection to highest unlocked level
                 sel = config.progressLevel - 1;
 
                 if (difficulty < config.progressDifficulty) {
@@ -601,6 +583,7 @@ class Dialogs {
                     sel = ctx.numItems - 2;
                 }
             } else if (dialogType == DLG_WINDOW_MODE) {
+                //Default selection to current window mode
                 switch (config.windowMode) {
                     case WM_1X: sel = 0; break;
                     case WM_2X: sel = 1; break;
@@ -608,6 +591,9 @@ class Dialogs {
                     case WM_FULLSCREEN: sel = 3; break;
                 }
             }
+
+            //Do not select a hidden item
+            while (ctx.items[sel].hidden) sel++;
         }
 
         storedSel = sel;
@@ -681,10 +667,6 @@ class Dialogs {
 
     //Loads the items and text corresponding to a specific dialog
     void loadItemsAndText(int dialogType) {
-        final int TL = ALIGN_TOPLEFT;
-        final int TR = ALIGN_TOPRIGHT;
-        final int CT = ALIGN_CENTER;
-
         int i;
 
         //Load text
@@ -756,67 +738,75 @@ class Dialogs {
         }
 
         //Clear items
+        ctx.numItems = 0;
         for (i = 0; i < DIALOG_MAX_ITEMS; i++) {
             DialogItem it = ctx.items[i];
+            it.offsetX = 0;
+            it.offsetY = 0;
             it.caption = "";
             it.value = "";
             it.iconSprite = NONE;
+            it.disabled = false;
+            it.hidden = false;
         }
 
         //Load items
         switch (dialogType) {
             case DLG_MAIN:
-                di(0, CT,   0,  0, 14,  6,  5, -2,  5,  1, SPR_DIALOG_PLAY);
-                di(1, CT, -12,  8,  6,  6,  0,  5,  0,  2, SPR_DIALOG_JUKEBOX);
-                di(2, CT,  -4,  8,  6,  6,  0,  5,  1,  3, SPR_DIALOG_SETTINGS);
-                di(3, CT,   4,  8,  6,  6,  0,  5,  2,  4, SPR_DIALOG_ABOUT);
-                di(4, CT,  12,  8,  6,  6,  0,  5,  3,  5, SPR_DIALOG_QUIT);
-                di(5, TR,  -1,  1,  5,  5, -2,  0,  4,  0, SPR_DIALOG_AUDIO_ON);
+                setItem(0, 14,  6,  5, -2,  5,  1, SPR_DIALOG_PLAY);
+                setItem(1,  6,  6,  0,  5,  0,  2, SPR_DIALOG_JUKEBOX);
+                setItem(2,  6,  6,  0,  5,  1,  3, SPR_DIALOG_SETTINGS);
+                setItem(3,  6,  6,  0,  5,  2,  4, SPR_DIALOG_ABOUT);
+                setItem(4,  6,  6,  0,  5,  3,  5, SPR_DIALOG_QUIT);
+                setItem(5,  5,  5, -2,  0,  4,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 6;
+                setItemPosition(0, ALIGN_CENTER, 0, 0); //Play
+                positionItemsCenter(1, 4, false, 8, 8);
+                setItemPosition(5, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
             case DLG_DIFFICULTY:
-                di(0, CT, -12,  0, 10,  5,  3,  3,  3,  1, SPR_DIALOG_NORMAL);
-                di(1, CT,   0,  0, 10,  5,  3,  3,  0,  2, SPR_DIALOG_HARD);
-                di(2, CT,  12,  0, 10,  5,  3,  3,  1,  3, SPR_DIALOG_SUPER);
-                di(3, TL,   1,  1,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
+                setItem(0, 10,  5,  3,  3,  3,  1, SPR_DIALOG_NORMAL);
+                setItem(1, 10,  5,  3,  3,  0,  2, SPR_DIALOG_HARD);
+                setItem(2, 10,  5,  3,  3,  1,  3, SPR_DIALOG_SUPER);
+                setItem(3,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
+                positionItemsCenter(0, 2, false, 12, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_LEVEL:
-                if (difficulty == DIFFICULTY_SUPER) { //3 levels
-                    di(0, CT,  -8,  0,  6,  6,  3,  3,  3,  1, SPR_DIALOG_1);
-                    di(1, CT,   0,  0,  6,  6,  3,  3,  0,  2, SPR_DIALOG_2);
-                    di(2, CT,   8,  0,  6,  6,  3,  3,  1,  3, SPR_DIALOG_3);
-                    di(3, TL,   1,  1,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
-                    ctx.numItems = 4;
-                } else { //5 levels
-                    di(0, CT, -16,  0,  6,  6,  5,  5,  5,  1, SPR_DIALOG_1);
-                    di(1, CT,  -8,  0,  6,  6,  5,  5,  0,  2, SPR_DIALOG_2);
-                    di(2, CT,   0,  0,  6,  6,  5,  5,  1,  3, SPR_DIALOG_3);
-                    di(3, CT,   8,  0,  6,  6,  5,  5,  2,  4, SPR_DIALOG_4);
-                    di(4, CT,  16,  0,  6,  6,  5,  5,  3,  5, SPR_DIALOG_5);
-                    di(5, TL,   1,  1,  5,  5, -2, -2,  4,  0, SPR_DIALOG_RETURN);
-                    ctx.numItems = 6;
-                }
+                setItem(0,  6,  6,  5,  5,  5,  1, SPR_DIALOG_1);
+                setItem(1,  6,  6,  5,  5,  0,  2, SPR_DIALOG_2);
+                setItem(2,  6,  6,  5,  5,  1,  3, SPR_DIALOG_3);
+                setItem(3,  6,  6,  5,  5,  2,  4, SPR_DIALOG_4);
+                setItem(4,  6,  6,  5,  5,  3,  5, SPR_DIALOG_5);
+                setItem(5,  5,  5, -2, -2,  4,  0, SPR_DIALOG_RETURN);
+                ctx.numItems = 6;
+                positionItemsCenter(0, 4, false, 8, 0);
+                setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_JUKEBOX:
-                di(0, CT, -12,  0,  6,  6,  4,  4,  4,  1, SPR_DIALOG_1);
-                di(1, CT,  -4,  0,  6,  6,  4,  4,  0,  2, SPR_DIALOG_2);
-                di(2, CT,   4,  0,  6,  6,  4,  4,  1,  3, SPR_DIALOG_3);
-                di(3, CT,  12,  0,  6,  6,  4,  4,  2,  4, SPR_DIALOG_4);
-                di(4, TL,   1,  1,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
+                setItem(0,  6,  6,  4,  4,  4,  1, SPR_DIALOG_1);
+                setItem(1,  6,  6,  4,  4,  0,  2, SPR_DIALOG_2);
+                setItem(2,  6,  6,  4,  4,  1,  3, SPR_DIALOG_3);
+                setItem(3,  6,  6,  4,  4,  2,  4, SPR_DIALOG_4);
+                setItem(4,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
+                positionItemsCenter(0, 3, false, 8, 0);
+                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_SETTINGS:
-                di(0, CT,   0, -6, 32,  3,  4,  1,  4,  4, NONE);
-                di(1, CT,   0, -2, 32,  3,  0,  2,  4,  4, NONE);
-                di(2, CT,   0,  2, 32,  3,  1,  3,  4,  4, NONE);
-                di(3, CT,   0,  6, 32,  3,  2,  4,  4,  4, NONE);
-                di(4, TL,   1,  1,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                setItem(0, 32,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 32,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 32,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 32,  3,  2,  4,  4,  4, NONE);
+                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
+                positionItemsCenter(0, 3, true, 4, 0);
+                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "WINDOW MODE";
                 ctx.items[1].caption = "SCANLINES";
                 ctx.items[2].caption = "AUDIO";
@@ -824,12 +814,14 @@ class Dialogs {
                 break;
 
             case DLG_WINDOW_MODE:
-                di(0, CT,   0, -6, 16,  3,  4,  1,  4,  4, NONE);
-                di(1, CT,   0, -2, 16,  3,  0,  2,  4,  4, NONE);
-                di(2, CT,   0,  2, 16,  3,  1,  3,  4,  4, NONE);
-                di(3, CT,   0,  6, 16,  3,  2,  4,  4,  4, NONE);
-                di(4, TL,   1,  1,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                setItem(0, 16,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 16,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 16,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 16,  3,  2,  4,  4,  4, NONE);
+                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
+                positionItemsCenter(0, 3, true, 4, 0);
+                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "1X";
                 ctx.items[1].caption = "2X";
                 ctx.items[2].caption = "3X";
@@ -837,52 +829,69 @@ class Dialogs {
                 break;
 
             case DLG_ABOUT:
-                di(0, CT,   0, 13, 10,  5,  1,  1,  1,  1, NONE);
-                di(1, TL,   1,  1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
+                setItem(0, 10,  5,  1,  1,  1,  1, NONE);
+                setItem(1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 2;
+                setItemPosition(0, ALIGN_CENTER, 0, 13); //Credits
+                setItemPosition(1, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "CREDITS";
                 break;
 
             case DLG_CREDITS:
-                di(0, TL,   1,  1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
+                setItem(0,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 1;
+                setItemPosition(0, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_PAUSE:
-                di(0, CT,   0,  0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
-                di(1, CT,  -8,  8,  6,  6,  0,  4,  0,  2, SPR_DIALOG_TRYAGAIN);
-                di(2, CT,   0,  8,  6,  6,  0,  4,  1,  3, SPR_DIALOG_SETTINGS);
-                di(3, CT,   8,  8,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
-                di(4, TR,  -1,  1,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
+                setItem(0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
+                setItem(1,  6,  6,  0,  4,  0,  2, SPR_DIALOG_TRYAGAIN);
+                setItem(2,  6,  6,  0,  4,  1,  3, SPR_DIALOG_SETTINGS);
+                setItem(3,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
+                setItem(4,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 5;
+                setItemPosition(0, ALIGN_CENTER, 0, 0); //Play
+                positionItemsCenter(1, 3, false, 8, 8);
+                setItemPosition(4, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
             case DLG_TRYAGAIN_PAUSE:
-                di(0, CT,  -4,  8,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
-                di(1, CT,   4,  8,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
-                di(2, TL,   1,  1,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
+                setItem(0,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
+                positionItemsCenter(0, 1, false, 8, 8);
+                setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_TRYAGAIN_TIMEUP:
-                di(0, CT,  -4,  8,  6,  6,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
-                di(1, CT,   4,  8,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
+                setItem(0,  6,  6,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
                 ctx.numItems = 2;
+                positionItemsCenter(0, 1, false, 8, 8);
                 break;
 
             case DLG_QUIT:
-                di(0, CT,  -4,  8,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
-                di(1, CT,   4,  8,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
-                di(2, TL,   1,  1,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
+                setItem(0,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
+                positionItemsCenter(0, 1, false, 8, 8);
+                setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_ERROR:
-                di(0, CT,   0,  8,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CONFIRM);
+                setItem(0,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CONFIRM);
                 ctx.numItems = 1;
+                setItemPosition(0, ALIGN_CENTER, 0, 8); //Confirm
         }
 
-        if (dialogType == DLG_DIFFICULTY) {
+        if (dialogType == DLG_SETTINGS) {
+            //Determine items to be hidden from settings dialog
+            ctx.items[0].hidden = (config.windowMode == WM_UNSUPPORTED);
+            ctx.items[3].hidden = !config.touchEnabled;
+            positionItemsCenter(0, 3, true, 4, 0);
+        } else if (dialogType == DLG_DIFFICULTY) {
             if (!config.progressCheat) {
                 if (config.progressDifficulty < DIFFICULTY_HARD) {
                     //Disable "hard" if it has not been unlocked
@@ -896,9 +905,17 @@ class Dialogs {
                 }
             }
         } else if (dialogType == DLG_LEVEL) {
-            if (difficulty == config.progressDifficulty && !config.progressCheat) {
-                int numLevels = difficultyNumLevels[difficulty];
+            int numLevels = difficultyNumLevels[difficulty];
 
+            //Hide levels that do not exist in selected difficulty
+            for (i = 0; i < 5; i++) {
+                if (i > numLevels - 1) {
+                    ctx.items[i].hidden = true;
+                }
+            }
+            positionItemsCenter(0, 4, false, 8, 0);
+
+            if (difficulty == config.progressDifficulty && !config.progressCheat) {
                 //Disable selection of locked levels
                 for (i = config.progressLevel; i <= numLevels - 1; i++) {
                     ctx.items[i].iconSprite = SPR_DIALOG_LOCKED;
@@ -907,7 +924,7 @@ class Dialogs {
             }
         }
 
-        //Minimum and maximum item to be stored in storedSel
+        //Determine minimum and maximum item to be stored in storedSel
         if (dialogType == DLG_MAIN || dialogType == DLG_PAUSE) {
             storeSelMin = 1;
         } else {
@@ -916,15 +933,56 @@ class Dialogs {
         storeSelMax = ctx.numItems - 2;
     }
 
-    //Sets the attributes of a dialog item
-    void di(int item, int align, int xoffs, int yoffs, int width, int height,
+    void setItemPosition(int item, int align, int offsetX, int offsetY) {
+        DialogItem it = ctx.items[item];
+
+        it.align = align;
+        it.offsetX = offsetX;
+        it.offsetY = offsetY;
+    }
+
+    //Positions a range of items as a line or row (depending on "vertical"
+    //parameter) at the center of the screen, with an optional Y offset
+    //(offsetY) if the items are positioned horizontally
+    void positionItemsCenter(int firstItem, int lastItem, boolean vertical,
+            int posDiff, int offsetY) {
+
+        int numVisibleItems = 0;
+        int pos;
+        int i;
+
+        for (i = firstItem; i <= lastItem; i++) {
+            if (!ctx.items[i].hidden) {
+                numVisibleItems++;
+            }
+        }
+
+        pos = -((numVisibleItems - 1) * posDiff);
+        pos /= 2;
+
+        for (i = firstItem; i <= lastItem; i++) {
+            DialogItem it = ctx.items[i];
+
+            if (it.hidden) continue;
+
+            it.align = ALIGN_CENTER;
+            if (vertical) {
+                it.offsetY = pos;
+            } else {
+                it.offsetX = pos;
+                it.offsetY = offsetY;
+            }
+            pos += posDiff;
+        }
+    }
+
+    //Sets most of the attributes of a dialog item
+    void setItem(int item, int width, int height,
             int targetUp, int targetDown, int targetLeft, int targetRight,
             int iconSprite) {
 
         DialogItem it = ctx.items[item];
-        it.align = align;
-        it.offsetX = xoffs;
-        it.offsetY = yoffs;
+
         it.width = width;
         it.height = height;
         it.targets[DLGDIR_UP] = targetUp;
@@ -932,7 +990,6 @@ class Dialogs {
         it.targets[DLGDIR_LEFT] = targetLeft;
         it.targets[DLGDIR_RIGHT] = targetRight;
         it.iconSprite = iconSprite;
-        it.disabled = false;
     }
 }
 

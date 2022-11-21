@@ -637,6 +637,8 @@ class Renderer {
         int w = item.width;
         int h = item.height;
 
+        if (item.hidden) return;
+
         x = Dialogs.itemX(item);
         y = Dialogs.itemY(item, projectionHeight);
 
@@ -873,7 +875,7 @@ class Renderer {
     //The character 0x1B (which corresponds to ASCII Escape) is used by this
     //method to switch between white and green characters
     //
-    //The argument "green" specifies the initial color: false for white and
+    //The parameter "green" specifies the initial color: false for white and
     //obviously true for green
     //
     //The newline (\n) character also reverts to the initial color

@@ -70,6 +70,7 @@ public class Defs {
         int iconSprite;
         int targets[]; //One target for each of the four directions
         boolean disabled;
+        boolean hidden;
     }
 
     static class DialogStackEntry {
