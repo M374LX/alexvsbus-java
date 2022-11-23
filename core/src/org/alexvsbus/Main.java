@@ -227,10 +227,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         if (config.touchEnabled) {
             boolean touching = false;
             boolean playing = (screenType == SCR_PLAY);
+            boolean ending = (playCtx.levelNum == LVLNUM_ENDING);
             boolean dialogOpen = (dialogCtx.stackSize > 0);
             int i;
 
-            if (!dialogOpen && playing && playCtx.levelNum != LVLNUM_ENDING) {
+            if (!dialogOpen && playing && !ending) {
                 config.showTouchControls = true;
             }
 

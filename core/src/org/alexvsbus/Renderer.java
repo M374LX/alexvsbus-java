@@ -525,7 +525,7 @@ class Renderer {
         int x, y, spr;
         boolean dialogOpen;
 
-        if (!config.touchEnabled) return;
+        if (!config.showTouchControls) return;
 
        dialogOpen = (dialogCtx.stackSize > 0);
 
