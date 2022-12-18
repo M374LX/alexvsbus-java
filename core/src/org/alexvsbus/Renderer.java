@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 
 class Renderer {
+    DisplayParams displayParams;
     Config config;
     PlayCtx playCtx;
     DialogCtx dialogCtx;
@@ -41,12 +42,6 @@ class Renderer {
 
     int drawOffsetX;
     int drawOffsetY;
-
-    int projectionWidth;
-    int projectionHeight;
-
-    int viewportWidth;
-    int viewportHeight;
 
     //Temporary location for drawDigits()
     //
@@ -60,15 +55,15 @@ class Renderer {
 
     //--------------------------------------------------------------------------
 
-    Renderer(Config config, PlayCtx playCtx, DialogCtx dialogCtx) {
+    Renderer(DisplayParams displayParams, Config config,
+                                        PlayCtx playCtx, DialogCtx dialogCtx) {
+
+        this.displayParams = displayParams;
         this.config = config;
         this.playCtx = playCtx;
         this.dialogCtx = dialogCtx;
 
         gfx = null;
-
-        projectionWidth  = SCREEN_WIDTH;
-        projectionHeight = SCREEN_MIN_HEIGHT;
 
         digitsTemp = new int[12];
 
@@ -86,16 +81,22 @@ class Renderer {
     }
 
     void draw(int screenType, int inputState, int wipeValue) {
-        //Clear screen
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+
+        //Clear entire physical screen to black
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         textureRegion.setTexture(gfx);
 
         //Set the matrix so that the Y axis points downwards
-        mat.setToOrtho(0, projectionWidth, projectionHeight, 0, 0, 1);
+        mat.setToOrtho(0, vscreenWidth, vscreenHeight, 0, 0, 1);
         spriteBatch.setProjectionMatrix(mat);
         spriteBatch.begin();
+
+        //Clear virtual screen to black
+        drawSpriteStretch(SPR_BG_BLACK, 0, 0, vscreenWidth, vscreenHeight);
 
         switch (screenType) {
             case SCR_BLANK:
@@ -103,7 +104,7 @@ class Renderer {
                 break;
 
             case SCR_LOGO:
-                drawSprite(SPR_LOGO, (SCREEN_WIDTH - LOGO_WIDTH) / 2 + 4, 16);
+                drawSprite(SPR_LOGO, (vscreenWidth - LOGO_WIDTH) / 2 + 4, 16);
                 break;
 
             case SCR_PLAY:
@@ -123,23 +124,20 @@ class Renderer {
         }
 
         //Draw screen wiping effects
-        drawSpriteStretch(SPR_BG_BLACK, 0, 0, wipeValue, projectionHeight);
+        drawSpriteStretch(SPR_BG_BLACK, 0, 0, wipeValue, vscreenHeight);
 
         drawScanlines();
 
         spriteBatch.end();
     }
 
-    void setViewport(int x, int y, int width, int height) {
-        viewportWidth = width;
-        viewportHeight = height;
+    void onScreenResize() {
+        int x = displayParams.viewportOffsetX;
+        int y = displayParams.viewportOffsetY;
+        int width = displayParams.viewportWidth;
+        int height = displayParams.viewportHeight;
 
         Gdx.gl.glViewport(x, y, width, height);
-    }
-
-    void setProjection(int width, int height) {
-        projectionWidth  = width;
-        projectionHeight = height;
     }
 
     void dispose() {
@@ -157,14 +155,17 @@ class Renderer {
     //--------------------------------------------------------------------------
 
     void drawPlay() {
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+
         PlayCtx ctx = playCtx;
         int x, y, spr, frame;
         int i;
 
         //Background color
-        drawSpriteStretch(ctx.bgColor, 0, 0, projectionWidth, projectionHeight);
+        drawSpriteStretch(ctx.bgColor, 0, 0, vscreenWidth, vscreenHeight);
 
-        drawOffsetY = (int)ctx.cam.y - (projectionHeight - SCREEN_MIN_HEIGHT);
+        drawOffsetY = (int)ctx.cam.y - (vscreenHeight - VSCREEN_MAX_HEIGHT);
 
         //Background image
         drawSpriteRepeat(SPR_BACKGROUND, -ctx.bgOffsetX, BACKGROUND_DRAW_Y, 6, 1);
@@ -508,16 +509,20 @@ class Renderer {
     }
 
     void drawHud() {
-        drawSpriteStretch(SPR_BG_BLACK, 0, 0, SCREEN_WIDTH, 24);
+        int x;
+
+        drawSpriteStretch(SPR_BG_BLACK, 0, 0, displayParams.vscreenWidth, 24);
 
         drawSprite(SPR_HUD_SCORE, 1, 1);
         drawDigits(playCtx.score, 6, 1, 9);
 
-        drawSprite(SPR_HUD_TIME, 225, 1);
+        x = (displayParams.vscreenWidth / 2) - (2 * TILE_SIZE) + 1;
+
+        drawSprite(SPR_HUD_TIME, x, 1);
         if (playCtx.levelNum == LVLNUM_ENDING) {
-            drawText("--", false, 233, 9);
+            drawText("--", false, x + TILE_SIZE, 9);
         } else {
-            drawDigits(playCtx.time, 2, 233, 9);
+            drawDigits(playCtx.time, 2, x + TILE_SIZE, 9);
         }
     }
 
@@ -531,14 +536,14 @@ class Renderer {
 
         //Pause
         if (playCtx.canPause && !dialogOpen) {
-            drawSprite(SPR_PAUSE, SCREEN_WIDTH - 24, 0);
+            drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0);
         }
 
         if (!config.touchButtonsEnabled) return;
 
         //Left
         x = TOUCH_LEFT_X;
-        y = projectionHeight - TOUCH_LEFT_OFFSET_Y;
+        y = displayParams.vscreenHeight - TOUCH_LEFT_OFFSET_Y;
         spr = SPR_TOUCH_LEFT;
         if (!dialogOpen && (inputState & INPUT_LEFT) > 0) {
             spr = SPR_TOUCH_LEFT_HELD;
@@ -547,7 +552,7 @@ class Renderer {
 
         //Right
         x = TOUCH_RIGHT_X;
-        y = projectionHeight - TOUCH_RIGHT_OFFSET_Y;
+        y = displayParams.vscreenHeight - TOUCH_RIGHT_OFFSET_Y;
         spr = SPR_TOUCH_RIGHT;
         if (!dialogOpen && (inputState & INPUT_RIGHT) > 0) {
             spr = SPR_TOUCH_RIGHT_HELD;
@@ -555,8 +560,8 @@ class Renderer {
         drawSpriteTransparent(spr, x, y, TOUCH_OPACITY);
 
         //Jump
-        x = TOUCH_JUMP_X;
-        y = projectionHeight - TOUCH_JUMP_OFFSET_Y;
+        x = displayParams.vscreenWidth - TOUCH_JUMP_OFFSET_X;
+        y = displayParams.vscreenHeight - TOUCH_JUMP_OFFSET_Y;
         spr = SPR_TOUCH_JUMP;
         if (!dialogOpen && (inputState & INPUT_JUMP) > 0) {
             spr = SPR_TOUCH_JUMP_HELD;
@@ -565,8 +570,8 @@ class Renderer {
     }
 
     void drawFinalScore() {
-        int cx = (projectionWidth  / TILE_SIZE) / 2 * TILE_SIZE;
-        int cy = (projectionHeight / TILE_SIZE) / 2 * TILE_SIZE;
+        int cx = (displayParams.vscreenWidth  / TILE_SIZE) / 2 * TILE_SIZE;
+        int cy = (displayParams.vscreenHeight / TILE_SIZE) / 2 * TILE_SIZE;
         int x = 0;
         String msg = "";
 
@@ -598,14 +603,29 @@ class Renderer {
         int selectedItem = dialogCtx.stack[dialogCtx.stackSize - 1].selectedItem;
         int i;
 
+        //Virtual screen center position in tiles
+        int cx = (displayParams.vscreenWidth  / TILE_SIZE) / 2;
+        int cy = (displayParams.vscreenHeight / TILE_SIZE) / 2;
+
         if (dialogCtx.showFrame) {
-            int y = ((projectionHeight / TILE_SIZE) - 18) / 2 * TILE_SIZE;
-            drawSpriteStretch(SPR_BG_BLACK, 96, y, 288, 192);
+            //Frame size and position in tiles
+            int tw = 36;
+            int th = 24;
+            int tx = cx - (tw / 2);
+            int ty = cy - (th / 2);
+
+            int w = tw * TILE_SIZE;
+            int h = th * TILE_SIZE;
+            int x = tx * TILE_SIZE;
+            int y = ty * TILE_SIZE;
+
+            drawSpriteStretch(SPR_BG_BLACK, x, y, w, h);
         }
 
         if (dialogCtx.text.length() > 0) {
-            int tx = ((projectionWidth  / TILE_SIZE) + dialogCtx.textOffsetX) / 2;
-            int ty = ((projectionHeight / TILE_SIZE) + dialogCtx.textOffsetY) / 2;
+            //Text position in tiles
+            int tx = cx - (dialogCtx.textWidth  / 2) + dialogCtx.textOffsetX;
+            int ty = cy - (dialogCtx.textHeight / 2) + dialogCtx.textOffsetY;
 
             int x = tx * TILE_SIZE;
             int y = ty * TILE_SIZE;
@@ -640,7 +660,7 @@ class Renderer {
         if (item.hidden) return;
 
         x = Dialogs.itemX(item);
-        y = Dialogs.itemY(item, projectionHeight);
+        y = Dialogs.itemY(item);
 
         drawDialogBorder(x, y, w, h, selected, item.disabled);
 
@@ -665,7 +685,7 @@ class Renderer {
             if (selected) spr++;
 
             x = Dialogs.itemX(item) + TILE_SIZE;
-            y = Dialogs.itemY(item, projectionHeight) + TILE_SIZE;
+            y = Dialogs.itemY(item) + TILE_SIZE;
 
             drawSprite(spr, x, y);
         }
@@ -739,21 +759,25 @@ class Renderer {
     }
 
     void drawScanlines() {
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+
         Color c = spriteBatch.getColor();
         int line;
 
         if (!config.scanlinesEnabled) return;
-        if (viewportHeight < SCREEN_MIN_HEIGHT * 2) return;
+        if (displayParams.scale < 2) return;
 
-        mat.setToOrtho(0, projectionWidth * 2, projectionHeight * 2, 0, 0, 1);
+        mat.setToOrtho(0, vscreenWidth * 2, vscreenHeight * 2, 0, 0, 1);
         spriteBatch.setProjectionMatrix(mat);
         spriteBatch.setColor(c.r, c.g, c.b, 0.5f);
 
-        for (line = 0; line < projectionHeight * 2; line += 2) {
+        for (line = 0; line < vscreenHeight * 2; line += 2) {
+            int dw = displayParams.viewportWidth;
             int sx = sprites[SPR_SCANLINE * 4 + 0];
             int sy = sprites[SPR_SCANLINE * 4 + 1];
 
-            drawRegion(0, line + 1, viewportWidth, 1, sx, sy, 8, 1, false, false);
+            drawRegion(0, line + 1, dw, 1, sx, sy, 8, 1, false, false);
         }
 
         spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
@@ -769,7 +793,7 @@ class Renderer {
         dy -= drawOffsetY;
 
         //Skip drawing what is outside the screen
-        if (dx < -dw || dx > projectionWidth) return;
+        if (dx < -dw || dx > displayParams.vscreenWidth) return;
 
         textureRegion.setRegion(sx, sy, sw, sh);
 

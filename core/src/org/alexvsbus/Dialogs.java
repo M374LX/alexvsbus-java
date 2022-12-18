@@ -24,8 +24,9 @@ import static org.alexvsbus.Defs.*;
 
 class Dialogs {
     DialogCtx ctx;
-    Audio audio;
+    static DisplayParams displayParams;
     Config config;
+    Audio audio;
     int difficulty;
     boolean waitInputUp;
     int cursorDirection;
@@ -43,9 +44,11 @@ class Dialogs {
     int storeSelMin;
     int storeSelMax;
 
-    Dialogs(Audio audio, Config config) {
-        this.audio = audio;
+    Dialogs(DisplayParams displayParams, Config config, Audio audio) {
+        this.displayParams = displayParams;
         this.config = config;
+        this.audio = audio;
+
         difficulty = DIFFICULTY_NORMAL;
         waitInputUp = false;
         cursorDirection = NONE;
@@ -83,27 +86,27 @@ class Dialogs {
         int x = item.offsetX;
 
         if (item.align == ALIGN_TOPRIGHT) {
-            x += (SCREEN_WIDTH / TILE_SIZE) - item.width;
+            x += (displayParams.vscreenWidth / TILE_SIZE) - item.width;
         } else if (item.align == ALIGN_CENTER) {
-            x += ((SCREEN_WIDTH / TILE_SIZE) - item.width) / 2;
+            x += ((displayParams.vscreenWidth / TILE_SIZE) - item.width) / 2;
         }
 
         return x * TILE_SIZE;
     }
 
     //Returns the absolute Y position of an item on the screen in pixels
-    static int itemY(DialogItem item, int projectionHeight) {
+    static int itemY(DialogItem item) {
         int y = item.offsetY;
 
         if (item.align == ALIGN_CENTER) {
-            y += ((projectionHeight / TILE_SIZE) - item.height) / 2;
+            y += ((displayParams.vscreenHeight / TILE_SIZE) - item.height) / 2;
         }
 
         return y * TILE_SIZE;
     }
 
     //Called when the touchscreen is tapped
-    void onTap(int x, int y, int projectionHeight) {
+    void onTap(int x, int y) {
         //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
 
@@ -112,7 +115,7 @@ class Dialogs {
 
         for (int i = 0; i < ctx.numItems; i++) {
             int ix = itemX(ctx.items[i]);
-            int iy = itemY(ctx.items[i], projectionHeight);
+            int iy = itemY(ctx.items[i]);
             int w = ctx.items[i].width;
             int h = ctx.items[i].height;
 
@@ -659,8 +662,8 @@ class Dialogs {
         //separately by Render.java on the first line
         ctx.text = "\n\n" + msg;
 
-        ctx.textOffsetX = -40;
-        ctx.textOffsetY = -6;
+        ctx.textOffsetX = 0;
+        ctx.textOffsetY = 0;
         ctx.textWidth = 40;
         ctx.textHeight = 4;
     }
@@ -688,8 +691,8 @@ class Dialogs {
                     "\n" +
                     " https://www.gnu.org/licenses/gpl-3.0.en.html\n" +
                     " https://creativecommons.org/licenses/by-sa/4.0";
-                ctx.textOffsetX = -47;
-                ctx.textOffsetY = -14;
+                ctx.textOffsetX = 0;
+                ctx.textOffsetY = 0;
                 ctx.textWidth = 47;
                 ctx.textHeight = 15;
                 break;
@@ -713,8 +716,8 @@ class Dialogs {
                     (char)0x1B + "YoWorks" + (char)0x1B +
                             " (https://www.yoworks.com)\n" +
                     " \"Telegrama\" font";
-                ctx.textOffsetX = -47;
-                ctx.textOffsetY = -14;
+                ctx.textOffsetX = 0;
+                ctx.textOffsetY = 0;
                 ctx.textWidth = 47;
                 ctx.textHeight = 15;
                 break;
@@ -722,16 +725,16 @@ class Dialogs {
             case DLG_TRYAGAIN_PAUSE:
             case DLG_TRYAGAIN_TIMEUP:
                 ctx.text = "TRY AGAIN?";
-                ctx.textOffsetX = -9;
-                ctx.textOffsetY = -2;
+                ctx.textOffsetX = 0;
+                ctx.textOffsetY = 0;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
                 break;
 
             case DLG_QUIT:
                 ctx.text = "QUIT?";
-                ctx.textOffsetX = -9;
-                ctx.textOffsetY = -2;
+                ctx.textOffsetX = 0;
+                ctx.textOffsetY = 0;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
                 break;

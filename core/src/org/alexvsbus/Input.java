@@ -29,6 +29,7 @@ import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.Controllers;
 
 public class Input extends ControllerAdapter {
+    DisplayParams displayParams;
     Config config;
 
     //Game controller (joystick, joypad, ...)
@@ -44,10 +45,11 @@ public class Input extends ControllerAdapter {
 
     //--------------------------------------------------------------------------
 
-    Input(Config config) {
+    Input(DisplayParams displayParams, Config config) {
         int i;
 
         this.config = config;
+        this.displayParams = displayParams;
 
         pauseTouched = false;
         leftTouched  = false;
@@ -101,11 +103,11 @@ public class Input extends ControllerAdapter {
         return actionsHeld;
     }
 
-    void onTouch(float x, float y, float projectionHeight) {
+    void onTouch(float x, float y) {
         if (!config.touchEnabled || !config.showTouchControls) return;
 
         //Pause
-        if (x >= SCREEN_WIDTH - 32 && y <= 32) {
+        if (x >= displayParams.vscreenWidth - 32 && y <= 32) {
             pauseTouched = true;
             return;
         }
@@ -114,11 +116,11 @@ public class Input extends ControllerAdapter {
 
         //If the Y position is above all buttons (other than pause), nothing
         //to do
-        if (y < projectionHeight - 70) return;
+        if (y < displayParams.vscreenHeight - 70) return;
 
         if (x < 64) leftTouched = true;
         if (x >= 64 && x < 128) rightTouched = true;
-        if (x >= SCREEN_WIDTH - 64) jumpTouched = true;
+        if (x >= displayParams.vscreenWidth - TOUCH_JUMP_OFFSET_X) jumpTouched = true;
     }
 
     //--------------------------------------------------------------------------

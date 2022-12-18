@@ -80,7 +80,7 @@ class LevelLoad {
         ctx.bgColor = NONE;
         ctx.bgm = NONE;
 
-        x = SCREEN_WIDTH_LEVEL_BLOCKS;
+        x = VSCREEN_MAX_WIDTH_LEVEL_BLOCKS;
 
         while (!lineRead.endOfData()) {
             String line = lineRead.getLine();
@@ -130,9 +130,9 @@ class LevelLoad {
                 }
 
                 //Just before the last screen
-                xMax = (token1 - 1) * SCREEN_WIDTH_LEVEL_BLOCKS;
+                xMax = (token1 - 1) * VSCREEN_MAX_WIDTH_LEVEL_BLOCKS;
 
-                ctx.levelSize = token1 * SCREEN_WIDTH;
+                ctx.levelSize = token1 * VSCREEN_MAX_WIDTH;
 
                 continue;
             } else if (tokens[0].equals("sky-color")) {

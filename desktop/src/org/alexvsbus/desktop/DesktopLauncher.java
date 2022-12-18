@@ -24,8 +24,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import org.alexvsbus.Main;
 
-import static org.alexvsbus.Defs.SCREEN_WIDTH;
-import static org.alexvsbus.Defs.SCREEN_MIN_HEIGHT;
+import static org.alexvsbus.Defs.VSCREEN_MAX_WIDTH;
+import static org.alexvsbus.Defs.VSCREEN_MAX_HEIGHT;
 import static org.alexvsbus.Defs.VERSION;
 import static org.alexvsbus.Defs.WM_1X;
 import static org.alexvsbus.Defs.WM_2X;
@@ -50,15 +50,15 @@ public class DesktopLauncher {
 
         switch (platDep.config.windowMode) {
             case WM_1X:
-                appConfig.setWindowedMode(SCREEN_WIDTH, SCREEN_MIN_HEIGHT);
+                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH, VSCREEN_MAX_HEIGHT);
                 break;
 
             case WM_2X:
-                appConfig.setWindowedMode(SCREEN_WIDTH * 2, SCREEN_MIN_HEIGHT * 2);
+                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH * 2, VSCREEN_MAX_HEIGHT * 2);
                 break;
 
             case WM_3X:
-                appConfig.setWindowedMode(SCREEN_WIDTH * 3, SCREEN_MIN_HEIGHT * 3);
+                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH * 3, VSCREEN_MAX_HEIGHT * 3);
                 break;
 
             case WM_FULLSCREEN:
@@ -69,6 +69,7 @@ public class DesktopLauncher {
         appConfig.setTitle("Alex vs Bus: The Race");
         appConfig.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon128.png");
         appConfig.setResizable(platDep.resizable);
+        appConfig.setWindowSizeLimits(VSCREEN_MAX_WIDTH, VSCREEN_MAX_HEIGHT, -1, -1);
 
         new Lwjgl3Application(new Main(platDep), appConfig);
     }

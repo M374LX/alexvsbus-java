@@ -35,8 +35,24 @@ public class Defs {
 
 
     //==========================================================================
-    // Passive classes: configuration
+    // Passive classes: display parameters and configuration
     //
+
+    static class DisplayParams {
+        //Size of the game's virtual screen
+        int vscreenWidth;
+        int vscreenHeight;
+
+        //Offset and size of the viewport, which is the area of the physical
+        //screen (or window) in which the virtual screen is displayed
+        int viewportOffsetX;
+        int viewportOffsetY;
+        int viewportWidth;
+        int viewportHeight;
+
+        //Screen scale
+        int scale;
+    }
 
     public static class Config {
         public int windowMode;
@@ -54,7 +70,6 @@ public class Defs {
         public int progressDifficulty;
         public boolean progressCheat;
     }
-
 
 
     //==========================================================================
@@ -378,10 +393,9 @@ public class Defs {
     static final int LVLERR_TOO_LARGE = 2;
     static final int LVLERR_INVALID = 3;
 
-    //Size of the virtual screen and default aspect ratio
-    public static final int SCREEN_WIDTH = 480;
-    public static final int SCREEN_MIN_HEIGHT = 270;
-    static final float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
+    //Maximum size of the virtual screen
+    public static final int VSCREEN_MAX_WIDTH  = 480;
+    public static final int VSCREEN_MAX_HEIGHT = 270;
 
     //Screen wiping commands
     static final int WIPECMD_IN = 0;
@@ -389,7 +403,7 @@ public class Defs {
     static final int WIPECMD_CLEAR = 2;
 
     //Other screen wiping constants
-    static final int WIPE_MAX_VALUE = SCREEN_WIDTH;
+    static final int WIPE_MAX_VALUE = VSCREEN_MAX_WIDTH;
     static final int WIPE_DELTA = 16;
     static final float WIPE_MAX_DELAY = 0.0005f;
 
@@ -457,7 +471,7 @@ public class Defs {
     static final int TOUCH_LEFT_OFFSET_Y = 72;
     static final int TOUCH_RIGHT_X = 64;
     static final int TOUCH_RIGHT_OFFSET_Y = 64;
-    static final int TOUCH_JUMP_X = SCREEN_WIDTH - 64;
+    static final int TOUCH_JUMP_OFFSET_X = 64; //Offset from right side of screen
     static final int TOUCH_JUMP_OFFSET_Y = 64;
 
     //Touchscreen button opacity
@@ -701,7 +715,8 @@ public class Defs {
     //A level block is the basic unit for positioning objects in the level, as
     //well as for the width of deep holes and passageways
     static final int LEVEL_BLOCK_SIZE = TILE_SIZE * 3;
-    static final int SCREEN_WIDTH_LEVEL_BLOCKS = SCREEN_WIDTH / LEVEL_BLOCK_SIZE;
+    static final int VSCREEN_MAX_WIDTH_LEVEL_BLOCKS =
+                                        VSCREEN_MAX_WIDTH / LEVEL_BLOCK_SIZE;
 
     //Floor, holes, light poles, and background
     static final int BACKGROUND_DRAW_Y = 176;
@@ -837,6 +852,16 @@ public class Defs {
     // Read-only data
     //
 
+    //Supported virtual screen widths
+    static final int[] vscreenWidths = new int[]{
+        480, 432, 424
+    };
+
+    //Supported virtual screen heights
+    static final int[] vscreenHeights = new int[]{
+        270, 256, 240
+    };
+
     //Number of levels per difficulty
     public static final int[] difficultyNumLevels = new int[]{
         5, //DIFFICULTY_NORMAL
@@ -844,6 +869,7 @@ public class Defs {
         3, //DIFFICULTY_SUPER
     };
 
+    //A cheat code
     static final int[] cheatSequence = new int[]{
         3, 0, 2, 1, 3, 0, 1, 2, 1, 3, 0, 2, -1
     };

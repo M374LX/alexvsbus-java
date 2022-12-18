@@ -38,6 +38,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //Delta time (seconds since the previous frame)
     float dt;
 
+    //Display parameters
+    DisplayParams displayParams;
+
     //Configuration
     Config config;
     int oldWindowMode;
@@ -80,12 +83,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     int wipeDelta;
     float wipeDelay;
 
-    //Viewport and projection within the screen
-    int viewportX;
-    int viewportWidth;
-    int viewportHeight;
-    int projectionHeight;
-
     // -------------------------------------------------------------------------
 
     public Main(PlatDep platDep) {
@@ -95,14 +92,15 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void create() {
-        input = new Input(config);
+        displayParams = new DisplayParams();
+        input = new Input(displayParams, config);
         audio = new Audio();
-        play = new Play(audio);
+        play = new Play(displayParams, audio);
         playCtx = play.newCtx();
-        dialogs = new Dialogs(audio, config);
+        dialogs = new Dialogs(displayParams, config, audio);
         dialogCtx = dialogs.newCtx();
         levelLoad = new LevelLoad(playCtx);
-        renderer = new Renderer(config, playCtx, dialogCtx);
+        renderer = new Renderer(displayParams, config, playCtx, dialogCtx);
 
         defHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.currentThread().setDefaultUncaughtExceptionHandler(this);
@@ -176,21 +174,70 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void resize(int newWidth, int newHeight) {
-        float ratio = (float)newWidth / (float)newHeight;
-        if (ratio > DEFAULT_ASPECT_RATIO) {
-            viewportWidth = (int)(newHeight * DEFAULT_ASPECT_RATIO);
-            viewportX = (newWidth - viewportWidth) / 2;
-            projectionHeight = SCREEN_MIN_HEIGHT;
-        } else {
-            viewportX = 0;
-            viewportWidth = (int)newWidth;
-            projectionHeight = (int)((float)SCREEN_WIDTH / ratio);
+        int physWidth  = newWidth;
+        int physHeight = newHeight;
+        int vscreenWidth  = 0;
+        int vscreenHeight = 0;
+        int bestWidthDiff = 99999;
+        int bestHeightDiff = 99999;
+        int viewportWidth;
+        int viewportHeight;
+        int scale = 1;
+        int i, j;
+
+        //Determine the virtual screen size that best fits the physical screen
+        for (i = 0; i < vscreenWidths.length; i++) {
+            for (j = 0; j < vscreenWidths.length; j++) {
+                int scaledWidth  = 0;
+                int scaledHeight = 0;
+                int widthDiff;
+                int heightDiff;
+                int w = vscreenWidths[i];
+                int h = vscreenHeights[j];
+
+                for (scale = 1; scale <= 8; scale++) {
+                    scaledWidth  = w * scale;
+                    scaledHeight = h * scale;
+
+                    if (scaledWidth > physWidth || scaledHeight > physHeight) {
+                        //With the scale being zero, nothing would appear on
+                        //the screen
+                        if (scale > 1) {
+                            scale -= 1;
+                        }
+
+                        scaledWidth  = w * scale;
+                        scaledHeight = h * scale;
+
+                        break;
+                    }
+                }
+
+                widthDiff  = physWidth  - scaledWidth;
+                heightDiff = physHeight - scaledHeight;
+
+                if (widthDiff < bestWidthDiff && heightDiff < bestHeightDiff) {
+                    bestWidthDiff  = widthDiff;
+                    bestHeightDiff = heightDiff;
+                    vscreenWidth   = w;
+                    vscreenHeight  = h;
+                }
+            }
         }
 
-        viewportHeight = newHeight;
+        viewportWidth  = vscreenWidth  * scale;
+        viewportHeight = vscreenHeight * scale;
 
-        renderer.setViewport(viewportX, 0, viewportWidth, viewportHeight);
-        renderer.setProjection(SCREEN_WIDTH, projectionHeight);
+        //Apply display parameters
+        displayParams.vscreenWidth    = vscreenWidth;
+        displayParams.vscreenHeight   = vscreenHeight;
+        displayParams.viewportWidth   = viewportWidth;
+        displayParams.viewportHeight  = viewportHeight;
+        displayParams.viewportOffsetX = (physWidth  - viewportWidth)  / 2;
+        displayParams.viewportOffsetY = (physHeight - viewportHeight) / 2;
+        displayParams.scale = scale;
+
+        renderer.onScreenResize();
     }
 
     @Override
@@ -242,19 +289,20 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                 touching = true;
 
-                //Convert coordinates from physical screen to projection
+                //Convert coordinates from physical screen to virtual screen
                 x = Gdx.input.getX(i);
-                x -= viewportX;
-                x /= viewportWidth;
-                x *= SCREEN_WIDTH;
+                x -= displayParams.viewportOffsetX;
+                x /= displayParams.viewportWidth;
+                x *= displayParams.vscreenWidth;
 
                 y = Gdx.input.getY(i);
-                y /= viewportHeight;
-                y *= projectionHeight;
+                y -= displayParams.viewportOffsetY;
+                y /= displayParams.viewportHeight;
+                y *= displayParams.vscreenHeight;
 
-                input.onTouch(x, y, projectionHeight);
+                input.onTouch(x, y);
                 if (!wasTouching) {
-                    dialogs.onTap((int)x, (int)y, projectionHeight);
+                    dialogs.onTap((int)x, (int)y);
                 }
             }
 
@@ -404,8 +452,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                 modeChanged = Gdx.graphics.setFullscreenMode(dm);
             } else {
-                int width  = SCREEN_WIDTH;
-                int height = SCREEN_MIN_HEIGHT;
+                int width  = VSCREEN_MAX_WIDTH;
+                int height = VSCREEN_MAX_HEIGHT;
 
                 if (config.windowMode == WM_2X) {
                     width  *= 2;
@@ -629,7 +677,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.levelNum = LVLNUM_ENDING;
         playCtx.lastLevel = false;
 
-        playCtx.levelSize = 8 * SCREEN_WIDTH;
+        playCtx.levelSize = 8 * VSCREEN_MAX_WIDTH;
         playCtx.bgColor = SPR_BG_SKY3;
         playCtx.bgm = BGM3;
 
