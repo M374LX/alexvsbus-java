@@ -126,8 +126,8 @@ class Dialogs {
 
             //Do not change the selection to the audio toggle item when
             //touching it
-            if ((dialogType == DLG_MAIN  && i == 4) ||
-                (dialogType == DLG_PAUSE && i == 3)) {
+            if ((dialogType == DLG_MAIN  && i == 5) ||
+                (dialogType == DLG_PAUSE && i == 4)) {
 
                 changeItem = false;
             } else {
