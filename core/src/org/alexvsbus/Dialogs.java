@@ -769,13 +769,16 @@ class Dialogs {
                 break;
 
             case DLG_DIFFICULTY:
-                setItem(0, 10,  5,  3,  3,  3,  1, SPR_DIALOG_NORMAL);
-                setItem(1, 10,  5,  3,  3,  0,  2, SPR_DIALOG_HARD);
-                setItem(2, 10,  5,  3,  3,  1,  3, SPR_DIALOG_SUPER);
+                setItem(0, 10,  5,  3,  3,  3,  1, NONE);
+                setItem(1, 10,  5,  3,  3,  0,  2, NONE);
+                setItem(2, 10,  5,  3,  3,  1,  3, NONE);
                 setItem(3,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, false, 12, 0);
                 setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                ctx.items[0].caption = "NORMAL";
+                ctx.items[1].caption = "HARD";
+                ctx.items[2].caption = "SUPER";
                 break;
 
             case DLG_LEVEL:
@@ -899,12 +902,10 @@ class Dialogs {
                 if (config.progressDifficulty < DIFFICULTY_HARD) {
                     //Disable "hard" if it has not been unlocked
                     ctx.items[1].disabled = true;
-                    ctx.items[1].iconSprite = SPR_DIALOG_HARD_DISABLED;
                 }
                 if (config.progressDifficulty < DIFFICULTY_SUPER) {
                     //Disable "super" if it has not been unlocked
                     ctx.items[2].disabled = true;
-                    ctx.items[2].iconSprite = SPR_DIALOG_SUPER_DISABLED;
                 }
             }
         } else if (dialogType == DLG_LEVEL) {

@@ -520,7 +520,7 @@ class Renderer {
 
         drawSprite(SPR_HUD_TIME, x, 1);
         if (playCtx.levelNum == LVLNUM_ENDING) {
-            drawText("--", false, x + TILE_SIZE, 9);
+            drawText("--", TXTCOL_WHITE, x + TILE_SIZE, 9);
         } else {
             drawDigits(playCtx.time, 2, x + TILE_SIZE, 9);
         }
@@ -575,7 +575,7 @@ class Renderer {
         int x = 0;
         String msg = "";
 
-        drawText("SCORE:", false, cx - 7 * TILE_SIZE, cy - TILE_SIZE);
+        drawText("SCORE:", TXTCOL_WHITE, cx - 7 * TILE_SIZE, cy - TILE_SIZE);
         drawDigits(playCtx.score, 6, cx + 1 * TILE_SIZE, cy - TILE_SIZE);
 
         switch (playCtx.difficulty) {
@@ -596,7 +596,7 @@ class Renderer {
         }
 
 
-        drawText(msg, false, x, cy + TILE_SIZE);
+        drawText(msg, TXTCOL_WHITE, x, cy + TILE_SIZE);
     }
 
     void drawDialog() {
@@ -633,7 +633,7 @@ class Renderer {
             int h = dialogCtx.textHeight;
 
             drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
-            drawText(dialogCtx.text, false, x, y);
+            drawText(dialogCtx.text, TXTCOL_WHITE, x, y);
 
             if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
                 drawSprite(SPR_ERROR, x, y);
@@ -668,16 +668,34 @@ class Renderer {
             String caption = item.caption.copyValueOf(item.caption.toCharArray());
             int xoffs = TILE_SIZE;
             int yoffs = TILE_SIZE * (item.height / 2);
+            int color;
 
-            drawText(caption, selected, x + xoffs, y + yoffs);
+            if (item.disabled) {
+                color = TXTCOL_GRAY;
+            } else if (selected) {
+                color = TXTCOL_GREEN;
+            } else {
+                color = TXTCOL_WHITE;
+            }
+
+            drawText(caption, color, x + xoffs, y + yoffs);
         }
 
         if (item.value.length() > 0) {
             String value = item.value.copyValueOf(item.value.toCharArray());
             int xoffs = ((w - 1) * TILE_SIZE) - (value.length() * TILE_SIZE);
             int yoffs = TILE_SIZE * (item.height / 2);
+            int color;
 
-            drawText(value, selected, x + xoffs, y + yoffs);
+            if (item.disabled) {
+                color = TXTCOL_GRAY;
+            } else if (selected) {
+                color = TXTCOL_GREEN;
+            } else {
+                color = TXTCOL_WHITE;
+            }
+
+            drawText(value, color, x + xoffs, y + yoffs);
         }
 
         if (item.iconSprite != NONE) {
@@ -899,14 +917,14 @@ class Renderer {
     //The character 0x1B (which corresponds to ASCII Escape) is used by this
     //method to switch between white and green characters
     //
-    //The parameter "green" specifies the initial color: false for white and
-    //obviously true for green
+    //The parameter "color" specifies the initial color: TXTCOL_WHITE, 
+    //TXTCOL_GREEN, or TXTCOL_GRAY
     //
     //The newline (\n) character also reverts to the initial color
-    void drawText(String text, boolean green, int x, int y) {
+    void drawText(String text, int color, int x, int y) {
         int i;
         int len = text.length();
-        boolean initialGreen = green;
+        int initialColor = color;
 
         int spr;
         int dx = x;
@@ -918,16 +936,21 @@ class Renderer {
             c = text.charAt(i);
 
             if (c == 0x1B) {
-                green = !green;
+                color = (color == TXTCOL_GREEN) ? TXTCOL_WHITE : TXTCOL_GREEN;
             } else if (c == '\n') {
                 dy += 8;
                 dx = x;
-                green = initialGreen;
+                color = initialColor;
             } else {
                 c -= ' ';
                 sx = (c % 16) * 8;
                 sy = (c / 16) * 8;
-                spr = green ? SPR_CHARSET_GREEN : SPR_CHARSET_WHITE;
+
+                switch (color) {
+                    case TXTCOL_GREEN: spr = SPR_CHARSET_GREEN; break;
+                    case TXTCOL_GRAY:  spr = SPR_CHARSET_GRAY;  break;
+                    default:           spr = SPR_CHARSET_WHITE; break;
+                }
 
                 drawSpritePart(spr, dx, dy, sx, sy, 8, 8);
 
