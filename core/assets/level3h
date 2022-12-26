@@ -53,9 +53,9 @@ coin-silver 5 4
 respawn-point 5 9
 deep-hole 1 5
 trigger-car-silver 4
-coin-gold 1 2
-respawn-point 0 9
+respawn-point 1 9
 deep-hole 1 4
+coin-gold 0 3
 coin-gold 2 6
 gush 2
 coin-silver 1 10
@@ -66,8 +66,8 @@ banana-peel 1 11
 gush 2
 respawn-point 1 9
 deep-hole 1 4
-banana-peel 3 11
-coin-silver 0 7
+coin-silver 3 7
+banana-peel 0 11
 banana-peel 3 11
 gush 2
 trigger-car-blue 2
@@ -91,13 +91,13 @@ deep-hole 1 7
 coin-silver 3 7
 coin-silver 4 9
 banana-peel 1 11
-crates 3 9 1 2
-respawn-point 0 7
+respawn-point 3 7
+crates 0 9 1 2
 deep-hole 1 3
 coin-silver 3 9
 spring 0 10
-crates 1 7 1 4
-respawn-point 0 5
+respawn-point 1 5
+crates 0 7 1 4
 deep-hole 1 8
 coin-gold 8 3
 gush 1
@@ -163,8 +163,8 @@ respawn-point 3 9
 deep-hole 1 4
 coin-gold 1 5
 gush 5
-coin-silver 4 8
-coin-silver 0 6
+coin-silver 4 6
+coin-silver 0 8
 spring 0 10
 crates 1 6 2 5
 respawn-point 1 4
@@ -175,8 +175,8 @@ deep-hole 1 6
 coin-gold 2 4
 coin-gold 1 5
 respawn-point 2 9
-coin-silver 1 9
-deep-hole 0 6
+deep-hole 1 6
+coin-silver 0 9
 trigger-car-blue 5
 banana-peel 1 11
 respawn-point 1 9

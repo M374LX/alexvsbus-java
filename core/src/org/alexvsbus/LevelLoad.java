@@ -526,11 +526,14 @@ class LevelLoad {
     void addObj(int type, int x, int y, boolean useY) {
         int i;
 
-        if (numObjs >= MAX_OBJS
-            || y > 15
-            || (useY && y == NONE)
-            || x > xMax) {
+        //Check if there are too many objects
+        if (numObjs >= MAX_OBJS) {
+            invalid = true;
+            return;
+        }
 
+        //Check if the object's position is within the allowed range
+        if (y > 15 || (y != NONE && y < 3) || (useY && y == NONE) || x > xMax) {
             invalid = true;
             return;
         }
@@ -557,12 +560,20 @@ class LevelLoad {
         int y2 = y + h - 1;
         int i;
 
-        if (numCrateBlocks >= MAX_CRATE_BLOCKS
-            || x > xMax - 2
-            || y < 1 || y > 15
-            || w < 1 || w > 8
-            || h < 1 || h > 8) {
+        //Check if there are too many crate blocks
+        if (numCrateBlocks >= MAX_CRATE_BLOCKS) {
+            invalid = true;
+            return;
+        }
 
+        //Check if the crate block's position is within the allowed range
+        if (x > xMax - 2 || y < 3 || y > 15) {
+            invalid = true;
+            return;
+        }
+
+        //Check if the crate block's size is within the allowed range
+        if (w < 1 || w > 4 || h < 1 || h > 5) {
             invalid = true;
             return;
         }
@@ -605,10 +616,14 @@ class LevelLoad {
         int maxWidth = (type == HOLE_DEEP) ? 16 : 32;
         int i;
 
-        if (numHoles >= MAX_HOLES
-            || x > xMax - 2
-            || w < 2 || w > maxWidth) {
+        //Check if there are too many holes
+        if (numHoles >= MAX_HOLES) {
+            invalid = true;
+            return;
+        }
 
+        //Check if the hole's position and size are within the allowed range
+        if (x > xMax - 2 || w < 2 || w > maxWidth) {
             invalid = true;
             return;
         }
@@ -653,10 +668,14 @@ class LevelLoad {
     void addRespawnPoint(int x, int y) {
         int i;
 
-        if (numRespawnPoints >= MAX_RESPAWN_POINTS
-            || x > xMax
-            || y < 1 || y > 15) {
+        //Check if there are too many triggers
+        if (numRespawnPoints >= MAX_RESPAWN_POINTS) {
+            invalid = true;
+            return;
+        }
 
+        //Check if the respawn point's position is within the allowed range
+        if (x > xMax || y < 3 || y > 15) {
             invalid = true;
             return;
         }
@@ -680,7 +699,14 @@ class LevelLoad {
     void addTrigger(int x, int what) {
         int i;
 
-        if (numTriggers >= MAX_TRIGGERS || x > xMax - 20) {
+        //Check if there are too many triggers
+        if (numTriggers >= MAX_TRIGGERS) {
+            invalid = true;
+            return;
+        }
+
+        //Check if the trigger's position is within the allowed range
+        if (x > xMax - 20) {
             invalid = true;
             return;
         }
@@ -706,12 +732,14 @@ class LevelLoad {
     }
 
     int addSolid(int type, int x, int y, int width, int height) {
+        //Check if there are too many solids
         if (numSolids >= MAX_SOLIDS) {
             invalid = true;
             return -1;
         }
 
-        //Slopes are always contained in a square
+        //Slopes are always contained in a square, which means that the height
+        //equals the width
         if (type == SOL_SLOPE_UP || type == SOL_SLOPE_DOWN) {
             height = width;
         }
