@@ -383,12 +383,12 @@ class Play {
         ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
 
         //Bus route sign
-        if (ctx.levelNum == 1) {
-            ctx.bus.routeSign = 0; //First sign, which has the number 2
-        } else if (ctx.lastLevel) {
-            ctx.bus.routeSign = 4; //Finish (checkered flag) sign
+        if (ctx.lastLevel) {
+            //Finish (checkered flag) sign
+            ctx.bus.routeSign = 0;
         } else {
-            ctx.bus.routeSign++;
+            //Sign corresponding to the next level
+            ctx.bus.routeSign = ctx.levelNum + 1;
         }
     }
 
@@ -2185,7 +2185,7 @@ class Play {
 
                 ctx.bus.x = VSCREEN_MAX_WIDTH + 16 - 408;
                 ctx.bus.xvel = 0;
-                ctx.bus.routeSign = 4; //Finish (checkered flag) sign
+                ctx.bus.routeSign = 0; //Finish (checkered flag) sign
 
                 flagman.sprite = SPR_FLAGMAN;
                 flagman.x = VSCREEN_MAX_WIDTH * 2 + 32;

@@ -210,7 +210,17 @@ class Renderer {
         y = BUS_Y;
         drawSprite(SPR_BUS, x, y);
         if (ctx.bus.routeSign != NONE) {
-            drawSpriteFrame(SPR_BUS_ROUTE, x + 308, y + 48, ctx.bus.routeSign);
+            if (ctx.bus.routeSign == 0) { //Finish (checkered flag) sign
+                frame = 4;
+            } else {
+                //Frame zero corresponds to the sign containing number two, as
+                //there is no number one sign
+                frame = ctx.bus.routeSign - 2;
+            }
+
+            if (frame >= 0) {
+                drawSpriteFrame(SPR_BUS_ROUTE, x + 308, y + 48, frame);
+            }
         }
         frame = ctx.anims[ANIM_BUS_WHEELS].frame;
         drawSpriteFrame(SPR_BUS_WHEEL, x + 104, y + 80, frame);

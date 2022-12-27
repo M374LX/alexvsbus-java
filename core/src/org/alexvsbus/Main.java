@@ -633,36 +633,19 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         playCtx.sequenceStep = SEQ_INITIAL;
         playCtx.skipInitialSequence = skipInitialSequence;
 
-        switch (levelNum) {
-            case 1:
-                playCtx.bus.routeSign = NONE;
-                playCtx.bus.numCharacters = 0;
-                break;
-
-            case 2:
-                playCtx.bus.routeSign = 0;
-                playCtx.bus.numCharacters = 0;
-                break;
-
-            case 3:
-                playCtx.bus.routeSign = 1;
-                playCtx.bus.numCharacters = 1;
-                break;
-
-            case 4:
-                playCtx.bus.routeSign = 2;
-                playCtx.bus.numCharacters = 2;
-                break;
-
-            case 5:
-                playCtx.bus.routeSign = 3;
-                playCtx.bus.numCharacters = 3;
-                break;
-        }
-
         if (playCtx.lastLevel) {
             playCtx.bus.numCharacters = 3;
+        } else {
+            switch (levelNum) {
+                case 1: playCtx.bus.numCharacters = 0; break;
+                case 2: playCtx.bus.numCharacters = 0; break;
+                case 3: playCtx.bus.numCharacters = 1; break;
+                case 4: playCtx.bus.numCharacters = 2; break;
+                case 5: playCtx.bus.numCharacters = 3; break;
+            }
         }
+
+        playCtx.bus.routeSign = levelNum;
 
         audio.playBgm(playCtx.bgm);
         wipeCmd = WIPECMD_IN;
