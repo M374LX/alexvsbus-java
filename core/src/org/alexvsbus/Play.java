@@ -1,6 +1,6 @@
 /*
  * Alex vs Bus
- * Copyright (C) 2021-2022 M374LX
+ * Copyright (C) 2021-2023 M374LX
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,6 +149,7 @@ class Play {
         ctx.cam.y = 0;
         ctx.cam.xvel = 0;
         ctx.cam.yvel = 0;
+        ctx.cam.followPlayer = false;
 
         ctx.player.x = 96;
         ctx.player.oldx = 96;
@@ -508,7 +509,7 @@ class Play {
             peel.x += peel.xvel * dt;
             peel.y += peel.yvel * dt;
             if (peel.y >= 400) {
-                //Deactivate the peel when it goes too far down
+                //Deactivate the peel when it goes too far downwards
                 obj.type = NONE;
                 peel.obj = NONE;
             }
@@ -1121,24 +1122,12 @@ class Play {
             ctx.slipPeel.xvel = 150;
             ctx.slipPeel.yvel = -200;
             ctx.slipPeel.grav = 500;
-
-            //Retreat camera if needed
-            if (!ctx.timeUp && pl.x < ctx.cam.x + 64) {
-                ctx.cam.xdest = ctx.cam.x - 64;
-                ctx.cam.xvel  = -CAMERA_XVEL;
-            }
         }
 
         //Act if the player character has been thrown back by a gush
         if (thrownBack) {
             audio.playSfx(SFX_HIT);
             pl.state = PLAYER_STATE_THROWBACK;
-
-            //Retreat camera if needed
-            if (!ctx.timeUp && pl.x < ctx.cam.x + 128) {
-                ctx.cam.xdest = ctx.cam.x -128;
-                ctx.cam.xvel  = -CAMERA_XVEL;
-            }
         }
 
         //Handle pushable crates
@@ -1332,8 +1321,8 @@ class Play {
         ctx.player.fell = false;
 
         //Retreat camera if needed
-        if (ctx.cam.x > rx - 32) {
-            ctx.cam.xdest = rx - 32;
+        if (ctx.cam.x > rx - 64) {
+            ctx.cam.xdest = rx - 64;
             ctx.cam.xvel = -CAMERA_XVEL;
         }
 
@@ -1409,7 +1398,6 @@ class Play {
     //Updates the position of the camera
     void moveCamera() {
         Camera cam = ctx.cam;
-        int leftmost  = VSCREEN_MAX_WIDTH - displayParams.vscreenWidth;
         int rightmost = ctx.levelSize - displayParams.vscreenWidth;
 
         //Horizontal camera movement
@@ -1421,11 +1409,13 @@ class Play {
             } else if (cam.xvel < 0 && cam.x <= cam.xdest) {
                 cam.xvel = 0;
             }
-        } else {
-            //If the camera is not doing a horizontal movement, it follows the
-            //player character
+        } else if (cam.followPlayer) {
             if (ctx.player.x > cam.x + displayParams.vscreenWidth / 2) {
+                //Move right
                 cam.x = ctx.player.x - displayParams.vscreenWidth / 2;
+            } else if (ctx.player.x < cam.x + 64) {
+                //Move left
+                cam.x = ctx.player.x - 64;
             }
         }
 
@@ -1434,8 +1424,8 @@ class Play {
             cam.x = rightmost;
             cam.xvel = 0;
         }
-        if (cam.x < leftmost) {
-            cam.x = leftmost;
+        if (cam.x < 0) {
+            cam.x = 0;
             cam.xvel = 0;
         }
 
@@ -1450,21 +1440,10 @@ class Play {
         }
     }
 
-    //Prevents the player character from moving off the limits, which can
-    //correspond either to the camera's position or the level's boundaries
+    //Prevents the player character from moving off the level's boundaries
     void keepPlayerWithinLimits() {
-        //In most cases, the limit is relative to the position of the camera
-        int leftLimit = (int)ctx.cam.x + 8;
-
-        //In these cases, ignore the position of the camera and use the level's
-        //left boundary instead
-        if (ctx.timeUp) leftLimit = 32;
-        if (ctx.player.state == PLAYER_STATE_FLICKER) leftLimit = 32;
-        if (ctx.cam.xvel < 0) leftLimit = 32;
-        if (leftLimit < 32) leftLimit = 32;
-
-        if (ctx.player.x < leftLimit) {
-            ctx.player.x = leftLimit;
+        if (ctx.player.x < 32) {
+            ctx.player.x = 32;
             ctx.player.xvel = 0;
 
             if (ctx.player.onFloor) ctx.player.animType = PLAYER_ANIM_STAND;
@@ -1642,6 +1621,7 @@ class Play {
             case 0: //SEQ_NORMAL_PLAY_START
                 moveBusToEnd();
                 ignoreUserInput = false;
+                ctx.cam.followPlayer = true;
                 ctx.timeRunning = true;
                 ctx.timeDelay = 1;
                 ctx.canPause = true;
@@ -1739,6 +1719,7 @@ class Play {
                 }
                 if (ctx.car.x != NONE) break; //Wait until the car and hen are
                 if (ctx.hen.x != NONE) break; //not visible anymore
+                cam.followPlayer = false;
                 cam.xdest = levelSize - (vscreenWidth / 2);
                 cam.xvel = CAMERA_XVEL;
                 cam.yvel = 0;
@@ -1757,6 +1738,7 @@ class Play {
             //------------------------------------------------------------------
             case 40: //SEQ_TIMEUP_BUS_FAR
                 //Screen wipes to black
+                cam.followPlayer = false;
                 cam.xvel = 0;
                 cam.yvel = 0;
                 ctx.car.x = NONE;

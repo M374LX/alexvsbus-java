@@ -1,6 +1,6 @@
 /*
  * Alex vs Bus
- * Copyright (C) 2021-2022 M374LX
+ * Copyright (C) 2021-2023 M374LX
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +127,7 @@ public class Defs {
         float x, y;
         float xvel, yvel;
         float xdest;
+        boolean followPlayer;
     }
 
     static class Player {
