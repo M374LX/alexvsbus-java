@@ -664,7 +664,7 @@ class Dialogs {
 
         ctx.textOffsetX = 0;
         ctx.textOffsetY = 0;
-        ctx.textWidth = 40;
+        ctx.textWidth = 32;
         ctx.textHeight = 4;
     }
 
@@ -726,7 +726,7 @@ class Dialogs {
             case DLG_TRYAGAIN_TIMEUP:
                 ctx.text = "TRY AGAIN?";
                 ctx.textOffsetX = 0;
-                ctx.textOffsetY = 0;
+                ctx.textOffsetY = -4;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
                 break;
@@ -734,7 +734,7 @@ class Dialogs {
             case DLG_QUIT:
                 ctx.text = "QUIT?";
                 ctx.textOffsetX = 0;
-                ctx.textOffsetY = 0;
+                ctx.textOffsetY = -4;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
                 break;
@@ -856,8 +856,8 @@ class Dialogs {
                 setItem(3,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
                 setItem(4,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 5;
-                setItemPosition(0, ALIGN_CENTER, 0, 0); //Play
-                positionItemsCenter(1, 3, false, 8, 8);
+                setItemPosition(0, ALIGN_CENTER, 0, -4); //Play
+                positionItemsCenter(1, 3, false, 8, 4);
                 setItemPosition(4, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
@@ -866,7 +866,7 @@ class Dialogs {
                 setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
                 setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
-                positionItemsCenter(0, 1, false, 8, 8);
+                positionItemsCenter(0, 1, false, 8, 4);
                 setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
@@ -874,7 +874,7 @@ class Dialogs {
                 setItem(0,  6,  6,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
                 setItem(1,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
                 ctx.numItems = 2;
-                positionItemsCenter(0, 1, false, 8, 8);
+                positionItemsCenter(0, 1, false, 8, 4);
                 break;
 
             case DLG_QUIT:
@@ -882,7 +882,7 @@ class Dialogs {
                 setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
                 setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
-                positionItemsCenter(0, 1, false, 8, 8);
+                positionItemsCenter(0, 1, false, 8, 4);
                 setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 

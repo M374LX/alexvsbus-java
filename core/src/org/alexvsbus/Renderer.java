@@ -620,7 +620,7 @@ class Renderer {
         if (dialogCtx.showFrame) {
             //Frame size and position in tiles
             int tw = 36;
-            int th = 24;
+            int th = 20;
             int tx = cx - (tw / 2);
             int ty = cy - (th / 2);
 
