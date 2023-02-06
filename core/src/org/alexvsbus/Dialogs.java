@@ -71,11 +71,14 @@ class Dialogs {
             ctx.items[i].targets = new int[4];
         }
 
+        ctx.displayName = "";
         ctx.action = NONE;
-        ctx.useCursor = !config.touchEnabled;
         ctx.levelSelected = false;
         ctx.selectedVisible = true;
+        ctx.useCursor = !config.touchEnabled;
+        ctx.showLogo = false;
         ctx.showFrame = false;
+        ctx.fillScreen = false;
         ctx.text = "";
 
         return ctx;
@@ -551,7 +554,7 @@ class Dialogs {
         ctx.stack[ctx.stackSize].type = dialogType;
         ctx.stackSize++;
 
-        loadItemsAndText(dialogType);
+        loadDialog(dialogType);
 
         switch (dialogType) {
             case DLG_JUKEBOX:
@@ -630,7 +633,7 @@ class Dialogs {
         if (ctx.stackSize > 0) {
             int sel;
 
-            loadItemsAndText(ctx.stack[ctx.stackSize - 1].type);
+            loadDialog(ctx.stack[ctx.stackSize - 1].type);
 
             sel = ctx.stack[ctx.stackSize - 1].selectedItem;
 
@@ -668,16 +671,76 @@ class Dialogs {
         ctx.textHeight = 4;
     }
 
-    //Loads the items and text corresponding to a specific dialog
-    void loadItemsAndText(int dialogType) {
+    //Loads a specific dialog
+    void loadDialog(int dialogType) {
+        String displayName = "";
         int i;
+
+        ctx.showLogo = (dialogType == DLG_MAIN);
+        ctx.fillScreen = (dialogType != DLG_PAUSE);
+
+        //Set the name to be displayed at the top of the screen
+        switch (dialogType) {
+            case DLG_MAIN:
+                displayName = "";
+                break;
+
+            case DLG_DIFFICULTY:
+                displayName = "DIFFICULTY SELECT";
+                break;
+
+            case DLG_LEVEL:
+                displayName = "LEVEL SELECT";
+                break;
+
+            case DLG_JUKEBOX:
+                displayName = "JUKEBOX";
+                break;
+
+            case DLG_SETTINGS:
+                displayName = "SETTINGS";
+                break;
+
+            case DLG_WINDOW_MODE:
+                displayName = "WINDOW MODE";
+                break;
+
+            case DLG_ABOUT:
+                displayName = "ABOUT";
+                break;
+
+            case DLG_CREDITS:
+                displayName = "CREDITS";
+                break;
+
+            case DLG_PAUSE:
+                displayName = "";
+                break;
+
+            case DLG_TRYAGAIN_PAUSE:
+                displayName = "CONFIRMATION";
+                break;
+
+            case DLG_TRYAGAIN_TIMEUP:
+                displayName = "CONFIRMATION";
+                break;
+
+            case DLG_QUIT:
+                displayName = "CONFIRMATION";
+                break;
+
+            case DLG_ERROR:
+                displayName = "";
+                break;
+        }
+        ctx.displayName = displayName;
 
         //Load text
         switch (dialogType) {
             case DLG_ABOUT:
                 ctx.text =
                     (char)0x1B + "Alex vs Bus: The Race\n" +
-                    (char)0x7F + " 2021-2023 M374LX\n" + // 0x7F = copyright symbol
+                    (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
                     "\n" +
                     (char)0x1B + "Version\n" +
                     " " + VERSION + "\n" +
@@ -692,7 +755,7 @@ class Dialogs {
                     " https://www.gnu.org/licenses/gpl-3.0.en.html\n" +
                     " https://creativecommons.org/licenses/by-sa/4.0";
                 ctx.textOffsetX = 0;
-                ctx.textOffsetY = 0;
+                ctx.textOffsetY = 1;
                 ctx.textWidth = 47;
                 ctx.textHeight = 15;
                 break;
@@ -717,7 +780,7 @@ class Dialogs {
                             " (https://www.yoworks.com)\n" +
                     " \"Telegrama\" font";
                 ctx.textOffsetX = 0;
-                ctx.textOffsetY = 0;
+                ctx.textOffsetY = 1;
                 ctx.textWidth = 47;
                 ctx.textHeight = 15;
                 break;
@@ -835,10 +898,10 @@ class Dialogs {
                 break;
 
             case DLG_ABOUT:
-                setItem(0, 10,  5,  1,  1,  1,  1, NONE);
+                setItem(0, 16,  3,  1,  1,  1,  1, NONE);
                 setItem(1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 2;
-                setItemPosition(0, ALIGN_CENTER, 0, 13); //Credits
+                setItemPosition(0, ALIGN_CENTER, 0, 14); //Credits
                 setItemPosition(1, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "CREDITS";
                 break;

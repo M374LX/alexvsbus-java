@@ -558,7 +558,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //--------------------------------------------------------------------------
 
     void showTitle() {
-        screenType = SCR_LOGO;
+        screenType = SCR_BLANK;
 
         playCtx.score = 0;
         playCtx.levelNum = -1;

@@ -84,6 +84,8 @@ class Renderer {
         int vscreenWidth  = displayParams.vscreenWidth;
         int vscreenHeight = displayParams.vscreenHeight;
 
+        boolean dialogOpen = (dialogCtx.stackSize > 0);
+
         //Clear entire physical screen to black
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -103,15 +105,13 @@ class Renderer {
                 //Do nothing
                 break;
 
-            case SCR_LOGO:
-                drawSprite(SPR_LOGO, (vscreenWidth - LOGO_WIDTH) / 2 + 4, 16);
-                break;
-
             case SCR_PLAY:
             case SCR_PLAY_FREEZE:
-                drawPlay();
-                drawHud();
-                drawTouchButtons(inputState);
+                if (!(dialogOpen && dialogCtx.fillScreen)) {
+                    drawPlay();
+                    drawHud();
+                    drawTouchButtons(inputState);
+                }
                 break;
 
             case SCR_FINALSCORE:
@@ -119,7 +119,7 @@ class Renderer {
                 break;
         }
 
-        if (dialogCtx.stackSize > 0) {
+        if (dialogOpen) {
             drawDialog();
         }
 
@@ -630,6 +630,23 @@ class Renderer {
             int y = ty * TILE_SIZE;
 
             drawSpriteStretch(SPR_BG_BLACK, x, y, w, h);
+        }
+
+        if (dialogCtx.showLogo) {
+            drawSprite(SPR_LOGO, (displayParams.vscreenWidth - LOGO_WIDTH) / 2 + 4, 16);
+        }
+
+        if (dialogCtx.displayName.length() > 0) {
+            //Text position in tiles
+            int tx = cx - 14;
+            int ty = 3;
+
+            int x = tx * TILE_SIZE;
+            int y = ty * TILE_SIZE;
+            int w = 28;
+
+            drawDialogBorder(x - 16, y - 16, w + 4, 5, false, false);
+            drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
         }
 
         if (dialogCtx.text.length() > 0) {

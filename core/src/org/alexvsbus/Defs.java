@@ -94,13 +94,14 @@ public class Defs {
     }
 
     static class DialogCtx {
+        String displayName;
+
         int stackSize;
         DialogStackEntry stack[];
 
         int numItems;
         DialogItem items[];
 
-        boolean useCursor;
 
         String text;
         int textOffsetX; //Offset from center of screen in 8x8 tiles
@@ -111,7 +112,10 @@ public class Defs {
         boolean levelSelected;
         boolean selectedVisible;
 
+        boolean useCursor;
+        boolean showLogo;
         boolean showFrame;
+        boolean fillScreen;
 
         int action;
         int actionParam;
@@ -372,10 +376,9 @@ public class Defs {
 
     //Screen types
     static final int SCR_BLANK = 0;
-    static final int SCR_LOGO = 1;
-    static final int SCR_PLAY = 2;
-    static final int SCR_PLAY_FREEZE = 3; //Render a play session without upating it
-    static final int SCR_FINALSCORE = 4;
+    static final int SCR_PLAY = 1;
+    static final int SCR_PLAY_FREEZE = 2; //Render a play session without updating it
+    static final int SCR_FINALSCORE = 3;
 
     //Delayed actions
     static final int DELACT_TITLE = 0;
