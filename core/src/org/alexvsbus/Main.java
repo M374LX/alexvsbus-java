@@ -176,66 +176,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     public void resize(int newWidth, int newHeight) {
         int physWidth  = newWidth;
         int physHeight = newHeight;
-        int vscreenWidth  = 0;
-        int vscreenHeight = 0;
-        int bestWidthDiff = 99999;
-        int bestHeightDiff = 99999;
-        int viewportWidth;
-        int viewportHeight;
-        int scale = 1;
-        int i, j;
 
-        //Determine the virtual screen size that best fits the physical screen
-        for (i = 0; i < vscreenWidths.length; i++) {
-            for (j = 0; j < vscreenWidths.length; j++) {
-                int scaledWidth  = 0;
-                int scaledHeight = 0;
-                int widthDiff;
-                int heightDiff;
-                int w = vscreenWidths[i];
-                int h = vscreenHeights[j];
-
-                for (scale = 1; scale <= 8; scale++) {
-                    scaledWidth  = w * scale;
-                    scaledHeight = h * scale;
-
-                    if (scaledWidth > physWidth || scaledHeight > physHeight) {
-                        //With the scale being zero, nothing would appear on
-                        //the screen
-                        if (scale > 1) {
-                            scale -= 1;
-                        }
-
-                        scaledWidth  = w * scale;
-                        scaledHeight = h * scale;
-
-                        break;
-                    }
-                }
-
-                widthDiff  = physWidth  - scaledWidth;
-                heightDiff = physHeight - scaledHeight;
-
-                if (widthDiff < bestWidthDiff && heightDiff < bestHeightDiff) {
-                    bestWidthDiff  = widthDiff;
-                    bestHeightDiff = heightDiff;
-                    vscreenWidth   = w;
-                    vscreenHeight  = h;
-                }
-            }
+        if (config.vscreenAutoSize) {
+            autoSizeVscreen(physWidth, physHeight);
+        } else {
+            scaleManualVscreen(physWidth, physHeight);
         }
-
-        viewportWidth  = vscreenWidth  * scale;
-        viewportHeight = vscreenHeight * scale;
-
-        //Apply display parameters
-        displayParams.vscreenWidth    = vscreenWidth;
-        displayParams.vscreenHeight   = vscreenHeight;
-        displayParams.viewportWidth   = viewportWidth;
-        displayParams.viewportHeight  = viewportHeight;
-        displayParams.viewportOffsetX = (physWidth  - viewportWidth)  / 2;
-        displayParams.viewportOffsetY = (physHeight - viewportHeight) / 2;
-        displayParams.scale = scale;
 
         renderer.onScreenResize();
     }
@@ -452,8 +398,16 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                 modeChanged = Gdx.graphics.setFullscreenMode(dm);
             } else {
-                int width  = VSCREEN_MAX_WIDTH;
-                int height = VSCREEN_MAX_HEIGHT;
+                int width;
+                int height;
+
+                if (config.vscreenAutoSize) {
+                    width  = VSCREEN_MAX_WIDTH;
+                    height = VSCREEN_MAX_HEIGHT;
+                } else {
+                    width  = config.vscreenWidth;
+                    height = config.vscreenHeight;
+                }
 
                 if (config.windowMode == WM_2X) {
                     width  *= 2;
@@ -669,6 +623,99 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         audio.playBgm(playCtx.bgm);
         wipeCmd = WIPECMD_IN;
+    }
+
+    //--------------------------------------------------------------------------
+
+    void autoSizeVscreen(int physWidth, int physHeight) {
+        int vscreenWidth  = 0;
+        int vscreenHeight = 0;
+        int bestWidthDiff = 99999;
+        int bestHeightDiff = 99999;
+        int viewportWidth;
+        int viewportHeight;
+        int scale = 1;
+        int i, j;
+
+        //Determine the virtual screen size that best fits the physical screen
+        for (i = 0; i < vscreenWidths.length; i++) {
+            for (j = 0; j < vscreenWidths.length; j++) {
+                int scaledWidth  = 0;
+                int scaledHeight = 0;
+                int widthDiff;
+                int heightDiff;
+                int w = vscreenWidths[i];
+                int h = vscreenHeights[j];
+
+                for (scale = 1; scale <= 8; scale++) {
+                    scaledWidth  = w * scale;
+                    scaledHeight = h * scale;
+
+                    if (scaledWidth > physWidth || scaledHeight > physHeight) {
+                        //With the scale being zero, nothing would appear on
+                        //the screen
+                        if (scale > 1) {
+                            scale -= 1;
+                        }
+
+                        scaledWidth  = w * scale;
+                        scaledHeight = h * scale;
+
+                        break;
+                    }
+                }
+
+                widthDiff  = physWidth  - scaledWidth;
+                heightDiff = physHeight - scaledHeight;
+
+                if (widthDiff < bestWidthDiff && heightDiff < bestHeightDiff) {
+                    bestWidthDiff  = widthDiff;
+                    bestHeightDiff = heightDiff;
+                    vscreenWidth   = w;
+                    vscreenHeight  = h;
+                }
+            }
+        }
+
+        applyDisplayParams(physWidth, physHeight, vscreenWidth, vscreenHeight, scale);
+    }
+
+    void scaleManualVscreen(int physWidth, int physHeight) {
+        int vscreenWidth  = config.vscreenWidth;
+        int vscreenHeight = config.vscreenHeight;
+        int scale;
+
+        for (scale = 1; scale <= 8; scale++) {
+            int scaledWidth  = vscreenWidth  * scale;
+            int scaledHeight = vscreenHeight * scale;
+
+            if (scaledWidth > physWidth || scaledHeight > physHeight) {
+                //With the scale being zero, nothing would appear on the screen
+                if (scale > 1) {
+                    scale -= 1;
+                }
+
+                break;
+            }
+        }
+
+        applyDisplayParams(physWidth, physHeight, vscreenWidth, vscreenHeight, scale);
+
+    }
+
+    void applyDisplayParams(int physWidth, int physHeight,
+                            int vscreenWidth, int vscreenHeight, int scale) {
+
+        int viewportWidth  = vscreenWidth  * scale;
+        int viewportHeight = vscreenHeight * scale;
+
+        displayParams.vscreenWidth    = vscreenWidth;
+        displayParams.vscreenHeight   = vscreenHeight;
+        displayParams.viewportWidth   = viewportWidth;
+        displayParams.viewportHeight  = viewportHeight;
+        displayParams.viewportOffsetX = (physWidth  - viewportWidth)  / 2;
+        displayParams.viewportOffsetY = (physHeight - viewportHeight) / 2;
+        displayParams.scale = scale;
     }
 }
 

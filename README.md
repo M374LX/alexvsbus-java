@@ -97,21 +97,37 @@ java -jar alexvsbus-desktop-pre5.jar --fullscreen
 
 The options are:
 ```
--h, --help          Show this usage information and exit
--v, --version       Show version and license information and exit
--f, --fullscreen    Run in fullscreen mode
--w, --window <size> Run in windowed mode with the specified window size:
-                    1 for 1x window size, 2 for 2x, and 3 for 3x
---audio-on          Enable audio output
---audio-off         Disable audio output
---scanlines-on      Enable scanlines visual effect
---scanlines-off     Disable scanlines visual effect
---resizable         Make the window resizable
---touch             Enable touchscreen controls, which can also be simulated
-                    by using the mouse
+-h, --help            Show this usage information and exit
+-v, --version         Show version and license information and exit
+-f, --fullscreen      Run in fullscreen mode
+-w, --window <size>   Run in windowed mode with the specified window size:
+                      1 for 1x window size, 2 for 2x, and 3 for 3x
+--audio-on            Enable audio output
+--audio-off           Disable audio output
+--resizable           Make the window resizable
+--scanlines-on        Enable scanlines visual effect
+--scanlines-off       Disable scanlines visual effect
+--touch               Enable touchscreen controls, which can also be
+                      simulated by using the mouse
+--vscreen-size <size> Set the size of the virtual screen (vscreen)
+
+For --vscreen-size, the size can be either "auto" or a width and a height
+separated by an "x" (example: 480x270), with the supported values listed
+below.
+
+Supported width values:
+480
+432
+424
+
+Supported height values:
+270
+256
+240
 ```
 
-*Note that scanlines are not yet available in a release, only in the main Git
+*Note that the options ``--scanlines-on``, ``--scanlines-off``, and
+``--vscreen-size`` are not yet available in a release, only in the main Git
 branch.
 
 

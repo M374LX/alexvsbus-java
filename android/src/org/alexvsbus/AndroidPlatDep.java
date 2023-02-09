@@ -55,6 +55,7 @@ class AndroidPlatDep implements PlatDep {
         config.windowMode = WM_UNSUPPORTED;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
+        config.vscreenAutoSize = true;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 

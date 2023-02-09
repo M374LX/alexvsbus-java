@@ -38,6 +38,8 @@ import static org.alexvsbus.Defs.WM_2X;
 import static org.alexvsbus.Defs.WM_3X;
 import static org.alexvsbus.Defs.WM_FULLSCREEN;
 import static org.alexvsbus.Defs.difficultyNumLevels;
+import static org.alexvsbus.Defs.vscreenWidths;
+import static org.alexvsbus.Defs.vscreenHeights;
 
 class DesktopPlatDep implements PlatDep {
     Path configDirPath;
@@ -50,6 +52,8 @@ class DesktopPlatDep implements PlatDep {
     int cliWindowMode;
     int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliVscreenWidth; //0 = auto or unspecified
+    int cliVscreenHeight; //0 = auto or unspecified
 
     DesktopPlatDep() {
         config = new Config();
@@ -72,6 +76,8 @@ class DesktopPlatDep implements PlatDep {
         cliWindowMode = WM_UNSET;
         cliAudioEnabled = 0;
         cliScanlinesEnabled = 0;
+        cliVscreenWidth = 0;
+        cliVscreenHeight = 0;
 
         for (i = 0; i < argc; i++) {
             String a = args[i];
@@ -102,6 +108,17 @@ class DesktopPlatDep implements PlatDep {
                     help = true;
                     return;
                 }
+            } else if (a.equals("--vscreen-size")) {
+                i++;
+                if (i >= argc) {
+                    help = true;
+                    return;
+                }
+
+                if (!parseVscreenSizeArg(args[i])) {
+                    help = true;
+                    return;
+                }
             } else if (a.equals("--audio-on")) {
                 cliAudioEnabled = 1;
             } else if (a.equals("--audio-off")) {
@@ -121,6 +138,51 @@ class DesktopPlatDep implements PlatDep {
         }
     }
 
+    boolean parseVscreenSizeArg(String arg) {
+        if (arg.equals("auto")) {
+            cliVscreenWidth = 0;
+            cliVscreenHeight = 0;
+        } else {
+            int sepPos = arg.indexOf('x'); //Separator position
+
+            if (sepPos < 1 || sepPos > 3 || arg.length() > 7) {
+                return false;
+            } else {
+                try {
+                    int width  = Integer.parseInt(arg.substring(0, sepPos));
+                    int height = Integer.parseInt(arg.substring(sepPos + 1));
+                    boolean supportedWidth  = false;
+                    boolean supportedHeight = false;
+                    int i;
+
+                    for (i = 0; i < vscreenWidths.length; i++) {
+                        if (width == vscreenWidths[i]) {
+                            supportedWidth = true;
+                            break;
+                        }
+                    }
+                    for (i = 0; i < vscreenHeights.length; i++) {
+                        if (height == vscreenHeights[i]) {
+                            supportedHeight = true;
+                            break;
+                        }
+                    }
+
+                    if (!supportedWidth || !supportedHeight) {
+                        return false;
+                    }
+
+                    cliVscreenWidth  = width;
+                    cliVscreenHeight = height;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     void loadConfig() {
         LineRead lineRead = new LineRead();
         String os = System.getProperty("os.name").toLowerCase();
@@ -132,6 +194,7 @@ class DesktopPlatDep implements PlatDep {
         config.windowMode = WM_FULLSCREEN;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
+        config.vscreenAutoSize = true;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 
@@ -152,6 +215,11 @@ class DesktopPlatDep implements PlatDep {
         }
         if (touchEnabled) {
             config.touchEnabled = true;
+        }
+        if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
+            config.vscreenAutoSize = false;
+            config.vscreenWidth = cliVscreenWidth;
+            config.vscreenHeight = cliVscreenHeight;
         }
 
         //Find configuration directory

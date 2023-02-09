@@ -31,9 +31,13 @@ import static org.alexvsbus.Defs.WM_1X;
 import static org.alexvsbus.Defs.WM_2X;
 import static org.alexvsbus.Defs.WM_3X;
 import static org.alexvsbus.Defs.WM_FULLSCREEN;
+import static org.alexvsbus.Defs.vscreenWidths;
+import static org.alexvsbus.Defs.vscreenHeights;
 
 public class DesktopLauncher {
     public static void main(String[] args) {
+        int windowMinWidth;
+        int windowMinHeight;
         DesktopPlatDep platDep = new DesktopPlatDep();
         Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
 
@@ -48,17 +52,25 @@ public class DesktopLauncher {
 
         platDep.loadConfig();
 
+        if (platDep.getConfig().vscreenAutoSize) {
+            windowMinWidth  = VSCREEN_MAX_WIDTH;
+            windowMinHeight = VSCREEN_MAX_HEIGHT;
+        } else {
+            windowMinWidth  = platDep.getConfig().vscreenWidth;
+            windowMinHeight = platDep.getConfig().vscreenHeight;
+        }
+
         switch (platDep.config.windowMode) {
             case WM_1X:
-                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH, VSCREEN_MAX_HEIGHT);
+                appConfig.setWindowedMode(windowMinWidth, windowMinHeight);
                 break;
 
             case WM_2X:
-                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH * 2, VSCREEN_MAX_HEIGHT * 2);
+                appConfig.setWindowedMode(windowMinWidth * 2, windowMinHeight * 2);
                 break;
 
             case WM_3X:
-                appConfig.setWindowedMode(VSCREEN_MAX_WIDTH * 3, VSCREEN_MAX_HEIGHT * 3);
+                appConfig.setWindowedMode(windowMinWidth * 3, windowMinHeight * 3);
                 break;
 
             case WM_FULLSCREEN:
@@ -69,29 +81,47 @@ public class DesktopLauncher {
         appConfig.setTitle("Alex vs Bus: The Race");
         appConfig.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon128.png");
         appConfig.setResizable(platDep.resizable);
-        appConfig.setWindowSizeLimits(VSCREEN_MAX_WIDTH, VSCREEN_MAX_HEIGHT, -1, -1);
+        appConfig.setWindowSizeLimits(windowMinWidth, windowMinHeight, -1, -1);
 
         new Lwjgl3Application(new Main(platDep), appConfig);
     }
 
     static void help() {
+        int i;
+
         System.out.println(
         "Alex vs Bus: The Race\n" +
         "\n" +
-        "-h, --help          Show this usage information and exit\n" +
-        "-v, --version       Show version and license information and exit\n" +
-        "-f, --fullscreen    Run in fullscreen mode\n" +
-        "-w, --window <size> Run in windowed mode with the specified window size:\n" +
-        "                    1 for 1x window size, 2 for 2x, and 3 for 3x\n" +
-        "--audio-on          Enable audio output\n" +
-        "--audio-off         Disable audio output\n" +
-        "--scanlines-on      Enable scanlines visual effect\n" +
-        "--scanlines-off     Disable scanlines visual effect\n" +
-        "--resizable         Make the window resizable\n" +
-        "--touch             Enable touchscreen controls, which can also be simulated\n" +
-        "                    by using the mouse"
+        "-h, --help            Show this usage information and exit\n" +
+        "-v, --version         Show version and license information and exit\n" +
+        "-f, --fullscreen      Run in fullscreen mode\n" +
+        "-w, --window <size>   Run in windowed mode with the specified window size:\n" +
+        "                      1 for 1x window size, 2 for 2x, and 3 for 3x\n" +
+        "--audio-on            Enable audio output\n" +
+        "--audio-off           Disable audio output\n" +
+        "--resizable           Make the window resizable\n" +
+        "--scanlines-on        Enable scanlines visual effect\n" +
+        "--scanlines-off       Disable scanlines visual effect\n" +
+        "--touch               Enable touchscreen controls, which can also be\n" +
+        "                      simulated by using the mouse\n" +
+        "--vscreen-size <size> Set the size of the virtual screen (vscreen)\n" +
+        "\n" +
+        "For --vscreen-size, the size can be either \"auto\" or a width and a height\n" +
+        "separated by an \"x\" (example: 480x270), with the supported values listed\n" +
+        "below.\n"
         );
-    }
+
+        System.out.println("Supported width values:");
+        for (i = 0; i < vscreenWidths.length; i++) {
+            System.out.println(vscreenWidths[i]);
+        }
+        System.out.println();
+
+        System.out.println("Supported height values:");
+        for (i = 0; i < vscreenHeights.length; i++) {
+            System.out.println(vscreenHeights[i]);
+        }
+   }
 
     static void version() {
         System.out.println(

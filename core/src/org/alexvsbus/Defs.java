@@ -59,6 +59,11 @@ public class Defs {
         public boolean audioEnabled;
         public boolean scanlinesEnabled;
 
+        //Virtual screen size
+        public boolean vscreenAutoSize;
+        public int vscreenWidth;
+        public int vscreenHeight;
+
         //Touchscreen
         public boolean touchEnabled;
         public boolean touchButtonsEnabled; //Left, Right, and Jump buttons
@@ -853,12 +858,12 @@ public class Defs {
     //
 
     //Supported virtual screen widths
-    static final int[] vscreenWidths = new int[]{
+    public static final int[] vscreenWidths = new int[]{
         480, 432, 424
     };
 
     //Supported virtual screen heights
-    static final int[] vscreenHeights = new int[]{
+    public static final int[] vscreenHeights = new int[]{
         270, 256, 240
     };
 
