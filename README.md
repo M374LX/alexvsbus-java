@@ -206,8 +206,9 @@ On Windows, replace "./gradlew" with "gradlew.bat".
 
 ## Project status and plans
 
-It is quite close to becoming a finished game, but more testing and
-documentation are planned.
+While it is quite close to becoming a finished game, there are still plans to
+improve the support for different screen sizes, offer the user more settings,
+and improve the documentation, as well as more testing.
 
 There are also plans to port the game from Java/libGDX to C/SDL. This is why
 the GitHub repository contains "java" in its name and also why many Java
