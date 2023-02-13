@@ -225,19 +225,16 @@ class Dialogs {
         //Update the values displayed by dialog items
         dialogType = ctx.stack[ctx.stackSize - 1].type;
         if (dialogType == DLG_SETTINGS) {
-            String windowMode = "";
+            ctx.items[0].value = (config.fullscreen) ? "ON" : "OFF";
+            ctx.items[3].value = (config.scanlinesEnabled) ? "ON" : "OFF";
+            ctx.items[4].value = (config.audioEnabled) ? "ON" : "OFF";
+            ctx.items[5].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
 
-            switch (config.windowMode) {
-                case WM_1X: windowMode = "1X"; break;
-                case WM_2X: windowMode = "2X"; break;
-                case WM_3X: windowMode = "3X"; break;
-                case WM_FULLSCREEN: windowMode = "FULLSCREEN"; break;
+            if (config.resizableWindow) {
+                ctx.items[1].value = "---";
+            } else {
+                ctx.items[1].value = "" + config.windowScale;
             }
-
-            ctx.items[0].value = windowMode;
-            ctx.items[2].value = (config.scanlinesEnabled) ? "ON" : "OFF";
-            ctx.items[3].value = (config.audioEnabled) ? "ON" : "OFF";
-            ctx.items[4].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
         } else if (dialogType == DLG_VSCREEN_SIZE) {
             if (config.vscreenAutoSize) {
                 ctx.items[0].value = "AUTO";
@@ -420,55 +417,42 @@ class Dialogs {
             case DLG_SETTINGS:
                 switch (item) {
                     case 0:
-                        if (config.windowMode != WM_UNSUPPORTED) {
-                            open(DLG_WINDOW_MODE);
+                        if (config.windowSupported) {
+                            config.fullscreen = !config.fullscreen;
                         }
                         break;
 
                     case 1:
-                        open(DLG_VSCREEN_SIZE);
+                        open(DLG_WINDOW_SCALE);
                         break;
 
                     case 2:
-                        config.scanlinesEnabled = !config.scanlinesEnabled;
+                        open(DLG_VSCREEN_SIZE);
                         break;
 
                     case 3:
-                        config.audioEnabled = !config.audioEnabled;
+                        config.scanlinesEnabled = !config.scanlinesEnabled;
                         break;
 
                     case 4:
+                        config.audioEnabled = !config.audioEnabled;
+                        break;
+
+                    case 5:
                         if (config.touchEnabled) {
                             config.touchButtonsEnabled = !config.touchButtonsEnabled;
                         }
                         break;
 
-                    case 5:
+                    case 6:
                         close();
                         break;
                 }
                 break;
 
-            case DLG_WINDOW_MODE:
-                switch (item) {
-                    case 0:
-                        config.windowMode = WM_1X;
-                        break;
-
-                    case 1:
-                        config.windowMode = WM_2X;
-                        break;
-
-                    case 2:
-                        config.windowMode = WM_3X;
-                        break;
-
-                    case 3:
-                        config.windowMode = WM_FULLSCREEN;
-                        break;
-
-                    case 4:
-                        break;
+            case DLG_WINDOW_SCALE:
+                if (item < 3) {
+                    config.windowScale = item + 1;
                 }
                 close();
                 break;
@@ -650,14 +634,9 @@ class Dialogs {
                 if (config.progressLevel > ctx.numItems - 2) {
                     sel = ctx.numItems - 2;
                 }
-            } else if (dialogType == DLG_WINDOW_MODE) {
-                //Default selection to current window mode
-                switch (config.windowMode) {
-                    case WM_1X: sel = 0; break;
-                    case WM_2X: sel = 1; break;
-                    case WM_3X: sel = 2; break;
-                    case WM_FULLSCREEN: sel = 3; break;
-                }
+            } else if (dialogType == DLG_WINDOW_SCALE) {
+                //Default selection to current window scale
+                sel = config.windowScale - 1;
             } else if (dialogType == DLG_VSCREEN_WIDTH) {
                 int i;
 
@@ -781,8 +760,8 @@ class Dialogs {
                 displayName = "SETTINGS";
                 break;
 
-            case DLG_WINDOW_MODE:
-                displayName = "WINDOW MODE";
+            case DLG_WINDOW_SCALE:
+                displayName = "WINDOW SCALE";
                 break;
 
             case DLG_VSCREEN_SIZE:
@@ -960,35 +939,35 @@ class Dialogs {
                 break;
 
             case DLG_SETTINGS:
-                setItem(0, 32,  3,  5,  1,  5,  5, NONE);
-                setItem(1, 32,  3,  0,  2,  5,  5, NONE);
-                setItem(2, 32,  3,  1,  3,  5,  5, NONE);
-                setItem(3, 32,  3,  2,  4,  5,  5, NONE);
-                setItem(4, 32,  3,  3,  5,  5,  5, NONE);
-                setItem(5,  5,  5,  4,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 6;
-                positionItemsCenter(0, 4, true, 4, 0);
-                setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
-                ctx.items[0].caption = "WINDOW MODE";
-                ctx.items[1].caption = "VSCREEN SIZE";
-                ctx.items[2].caption = "SCANLINES";
-                ctx.items[3].caption = "AUDIO";
-                ctx.items[4].caption = "TOUCHSCREEN BUTTONS";
+                setItem(0, 32,  3,  6,  1,  6,  6, NONE);
+                setItem(1, 32,  3,  0,  2,  6,  6, NONE);
+                setItem(2, 32,  3,  1,  3,  6,  6, NONE);
+                setItem(3, 32,  3,  2,  4,  6,  6, NONE);
+                setItem(4, 32,  3,  3,  5,  6,  6, NONE);
+                setItem(5, 32,  3,  4,  6,  6,  6, NONE);
+                setItem(6,  5,  5,  5,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 7;
+                positionItemsCenter(0, 5, true, 4, 0);
+                setItemPosition(6, ALIGN_TOPLEFT, 1, 1); //Return
+                ctx.items[0].caption = "FULLSCREEN";
+                ctx.items[1].caption = "WINDOW SCALE";
+                ctx.items[2].caption = "VSCREEN SIZE";
+                ctx.items[3].caption = "SCANLINES";
+                ctx.items[4].caption = "AUDIO";
+                ctx.items[5].caption = "TOUCHSCREEN BUTTONS";
                 break;
 
-            case DLG_WINDOW_MODE:
-                setItem(0, 16,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 16,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 16,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 16,  3,  2,  4,  4,  4, NONE);
-                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 5;
-                positionItemsCenter(0, 3, true, 4, 0);
-                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
-                ctx.items[0].caption = "1X";
-                ctx.items[1].caption = "2X";
-                ctx.items[2].caption = "3X";
-                ctx.items[3].caption = "FULLSCREEN";
+            case DLG_WINDOW_SCALE:
+                setItem(0, 16,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 16,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 16,  3,  1,  3,  3,  3, NONE);
+                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
+                positionItemsCenter(0, 2, true, 4, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                ctx.items[0].caption = "1";
+                ctx.items[1].caption = "2";
+                ctx.items[2].caption = "3";
                 break;
 
             case DLG_VSCREEN_SIZE:
@@ -1096,8 +1075,10 @@ class Dialogs {
 
         //Determine items to be hidden or disabled
         if (dialogType == DLG_SETTINGS) {
-            ctx.items[0].hidden = (config.windowMode == WM_UNSUPPORTED);
-            ctx.items[4].hidden = !config.touchEnabled;
+            ctx.items[0].hidden   = !config.windowSupported;
+            ctx.items[1].hidden   = !config.windowSupported;
+            ctx.items[1].disabled =  config.resizableWindow;
+            ctx.items[5].hidden   = !config.touchEnabled;
             positionItemsCenter(0, 4, true, 4, 0);
         } else if (dialogType == DLG_VSCREEN_SIZE) {
             if (config.vscreenAutoSize) {

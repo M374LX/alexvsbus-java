@@ -34,11 +34,6 @@ import static org.alexvsbus.Defs.NONE;
 import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
 import static org.alexvsbus.Defs.DIFFICULTY_HARD;
 import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
-import static org.alexvsbus.Defs.WM_UNSET;
-import static org.alexvsbus.Defs.WM_1X;
-import static org.alexvsbus.Defs.WM_2X;
-import static org.alexvsbus.Defs.WM_3X;
-import static org.alexvsbus.Defs.WM_FULLSCREEN;
 import static org.alexvsbus.Defs.difficultyNumLevels;
 import static org.alexvsbus.Defs.vscreenWidths;
 import static org.alexvsbus.Defs.vscreenHeights;
@@ -52,7 +47,9 @@ class DesktopPlatDep implements PlatDep {
     boolean version;
     boolean resizable;
     boolean touchEnabled;
-    int cliWindowMode;
+    boolean cliFullscreen;
+    boolean cliWindowed;
+    int cliWindowScale; //0 = unset
     int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliVscreenWidth;  //0 = unset; -1 = auto
@@ -80,7 +77,9 @@ class DesktopPlatDep implements PlatDep {
         resizable = false;
         touchEnabled = false;
 
-        cliWindowMode = WM_UNSET;
+        cliFullscreen = false;
+        cliWindowed = false;
+        cliWindowScale = 0;
         cliAudioEnabled = 0;
         cliScanlinesEnabled = 0;
         cliVscreenWidth = 0;
@@ -96,25 +95,11 @@ class DesktopPlatDep implements PlatDep {
                 version = true;
                 return;
             } else if (a.equals("-f") || a.equals("--fullscreen")) {
-                cliWindowMode = WM_FULLSCREEN;
-            } else if (a.equals("-w") || a.equals("--window")) {
-                i++;
-                if (i >= argc) {
-                    help = true;
-                    return;
-                }
-
-                a = args[i];
-                if (a.equals("1")) {
-                    cliWindowMode = WM_1X;
-                } else if (a.equals("2")) {
-                    cliWindowMode = WM_2X;
-                } else if (a.equals("3")) {
-                    cliWindowMode = WM_3X;
-                } else {
-                    help = true;
-                    return;
-                }
+                cliFullscreen = true;
+                cliWindowed = false;
+            } else if (a.equals("-w") || a.equals("--windowed")) {
+                cliWindowed = true;
+                cliFullscreen = false;
             } else if (a.equals("--vscreen-size")) {
                 i++;
                 if (i >= argc) {
@@ -125,6 +110,21 @@ class DesktopPlatDep implements PlatDep {
                 if (!parseVscreenSizeArg(args[i])) {
                     help = true;
                     return;
+                }
+            } else if (a.equals("--window-scale")) {
+                i++;
+                if (i >= argc) {
+                    help = true;
+                    return;
+                }
+
+                a = args[i];
+                if (a.equals("1")) {
+                    cliWindowScale = 1;
+                } else if (a.equals("2")) {
+                    cliWindowScale = 2;
+                } else if (a.equals("3")) {
+                    cliWindowScale = 3;
                 }
             } else if (a.equals("--audio-on")) {
                 cliAudioEnabled = 1;
@@ -213,7 +213,9 @@ class DesktopPlatDep implements PlatDep {
         //Defaults
         config.touchEnabled = false;
         config.touchButtonsEnabled = true;
-        config.windowMode = WM_FULLSCREEN;
+        config.fullscreen = true;
+        config.windowSupported = true;
+        config.windowScale = 2;
         config.resizableWindow = false;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
@@ -229,8 +231,14 @@ class DesktopPlatDep implements PlatDep {
         config.useBackKey = false;
 
         //Apply configuration set from CLI
-        if (cliWindowMode != WM_UNSET) {
-            config.windowMode = cliWindowMode;
+        if (cliFullscreen) {
+            config.fullscreen = true;
+        }
+        if (cliWindowed) {
+            config.fullscreen = false;
+        }
+        if (cliWindowScale > 0) {
+            config.windowScale = cliWindowScale;
         }
         if (cliAudioEnabled != 0) {
             config.audioEnabled = (cliAudioEnabled == -1) ? false : true;
@@ -292,20 +300,31 @@ class DesktopPlatDep implements PlatDep {
                 continue;
             }
 
-            if (tokens[0].equals("window-mode")) {
-                //Do not load window mode from config file if set from CLI
-                if (cliWindowMode != WM_UNSET) {
+            if (tokens[0].equals("fullscreen")) {
+                //Do not check for fullscreen on config file if set from CLI
+                if (cliFullscreen || cliWindowed) {
+                    continue;
+                }
+
+                if (tokens[1].equals("true")) {
+                    config.fullscreen = true;
+                } else if (tokens[1].equals("false")) {
+                    config.fullscreen = false;
+                }
+
+            } else if (tokens[0].equals("window-scale")) {
+                //If the window scale was set from CLI, do not load the
+                //configuration from the config file
+                if (cliWindowScale > 0) {
                     continue;
                 }
 
                 if (tokens[1].equals("1")) {
-                    config.windowMode = WM_1X;
+                    config.windowScale = 1;
                 } else if (tokens[1].equals("2")) {
-                    config.windowMode = WM_2X;
+                    config.windowScale = 2;
                 } else if (tokens[1].equals("3")) {
-                    config.windowMode = WM_3X;
-                } else if (tokens[1].equals("fullscreen")) {
-                    config.windowMode = WM_FULLSCREEN;
+                    config.windowScale = 3;
                 }
             } else if (tokens[0].equals("audio-enabled")) {
                 //If the audio was enabled or disabled from CLI, do not load
@@ -427,15 +446,12 @@ class DesktopPlatDep implements PlatDep {
     public void saveConfig() {
         String data = "";
 
-        //Window mode
-        data += "window-mode ";
-        switch (config.windowMode) {
-            case WM_1X: data += "1"; break;
-            case WM_2X: data += "2"; break;
-            case WM_3X: data += "3"; break;
-            case WM_FULLSCREEN: data += "fullscreen"; break;
-        }
-        data += "\n";
+        //Fullscreen
+        data += "fullscreen " +
+            (config.fullscreen ? "true" : "false") + "\n";
+
+        //Window scale
+        data += "window-scale " + config.windowScale + "\n";
 
         //Audio enabled
         data += "audio-enabled " +

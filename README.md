@@ -97,19 +97,19 @@ java -jar alexvsbus-desktop-pre5.jar --fullscreen
 
 The options are:
 ```
--h, --help            Show this usage information and exit
--v, --version         Show version and license information and exit
--f, --fullscreen      Run in fullscreen mode
--w, --window <size>   Run in windowed mode with the specified window size:
-                      1 for 1x window size, 2 for 2x, and 3 for 3x
---audio-on            Enable audio output
---audio-off           Disable audio output
---resizable           Make the window resizable
---scanlines-on        Enable scanlines visual effect
---scanlines-off       Disable scanlines visual effect
---touch               Enable touchscreen controls, which can also be
-                      simulated by using the mouse
---vscreen-size <size> Set the size of the virtual screen (vscreen)
+-h, --help             Show this usage information and exit
+-v, --version          Show version and license information and exit
+-f, --fullscreen       Run in fullscreen mode
+-w, --windowed         Run in windowed mode
+--window-scale <scale> Set the window scale (1 to 3)
+--audio-on             Enable audio output
+--audio-off            Disable audio output
+--resizable            Make the window resizable
+--scanlines-on         Enable scanlines visual effect
+--scanlines-off        Disable scanlines visual effect
+--touch                Enable touchscreen controls, which can also be
+                       simulated by using the mouse
+--vscreen-size <size>  Set the size of the virtual screen (vscreen)
 
 For --vscreen-size, the size can be either "auto" or a width and a height
 separated by an "x" (example: 480x270), with the supported values listed
@@ -126,9 +126,9 @@ Supported height values:
 240
 ```
 
-*Note that the options ``--scanlines-on``, ``--scanlines-off``, and
-``--vscreen-size`` are not yet available in a release, only in the main Git
-branch.
+**Note:** The options above refer to the latest commit, which have changed
+since the latest pre-release. For the options available in the latest
+pre-release, see https://github.com/M374LX/alexvsbus-java/blob/pre5/README.md.
 
 
 ## Building from source

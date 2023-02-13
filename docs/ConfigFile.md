@@ -29,11 +29,16 @@ property value. The value can be either a string or a number.
 
 ## Properties
 
-* window-mode
+* fullscreen
 
-  Defines the window mode. The allowed values are ``1`` (small window),`` 2``
-  (medium-sized window), ``3`` (large window), and ``fullscreen`` (fullscreen
-  mode).
+  The value ``true`` causes the game to run in fullscreen mode, while ``false``
+  causes it to run in windowed mode.
+
+* window-scale
+
+  Sets the scale of the window when running in windowed mode. The allowed
+  values are ``1`` (small window), ``2`` (medium-sized window), and ``3``
+  (large window).
 
 * audio-enabled
 

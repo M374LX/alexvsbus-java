@@ -61,8 +61,11 @@ public class Defs {
     }
 
     public static class Config {
-        public int windowMode;
+        public boolean fullscreen;
+        public boolean windowSupported;
         public boolean resizableWindow;
+        public int windowScale;
+
         public boolean audioEnabled;
         public boolean scanlinesEnabled;
 
@@ -443,20 +446,6 @@ public class Defs {
 
 
     //==========================================================================
-    // Constants: configuration
-    //
-
-    //Window modes
-    public static final int WM_UNSUPPORTED = -1;
-    public static final int WM_UNSET = 0;
-    public static final int WM_1X = 1;
-    public static final int WM_2X = 2;
-    public static final int WM_3X = 3;
-    public static final int WM_FULLSCREEN = 4;
-
-
-
-    //==========================================================================
     // Constants: input
     //
 
@@ -470,7 +459,7 @@ public class Defs {
     static final int INPUT_PAUSE_TOUCH = (1 << 6);
     static final int INPUT_DIALOG_CONFIRM = (1 << 7);
     static final int INPUT_DIALOG_RETURN = (1 << 8);
-    static final int INPUT_CFG_WINDOW_MODE = (1 << 9);
+    static final int INPUT_CFG_FULLSCREEN_TOGGLE = (1 << 9);
     static final int INPUT_CFG_AUDIO_TOGGLE = (1 << 10);
     static final int INPUT_CFG_SCANLINES_TOGGLE = (1 << 11);
 
@@ -690,7 +679,7 @@ public class Defs {
     static final int DLG_VSCREEN_SIZING = 6;
     static final int DLG_VSCREEN_WIDTH = 7;
     static final int DLG_VSCREEN_HEIGHT = 8;
-    static final int DLG_WINDOW_MODE = 9;
+    static final int DLG_WINDOW_SCALE = 9;
     static final int DLG_ABOUT = 10;
     static final int DLG_CREDITS = 11;
     static final int DLG_PAUSE = 12;

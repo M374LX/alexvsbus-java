@@ -43,9 +43,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //Configuration
     Config config;
-    int oldWindowMode;
+    boolean oldFullscreen;
     boolean oldAudioEnabled;
     boolean oldVscreenAutoSize;
+    int oldWindowScale;
 
     //Game progress
     boolean progressChecked;
@@ -125,9 +126,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         play.clear();
         renderer.load();
 
-        oldWindowMode = -1;
+        oldFullscreen = false;
         oldAudioEnabled = true;
         oldVscreenAutoSize = true;
+        oldWindowScale = config.windowScale;
         displayParams.vscreenWidth  = config.vscreenWidth;
         displayParams.vscreenHeight = config.vscreenHeight;
         handleConfigChange();
@@ -295,12 +297,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         oldInputHeld = inputHeld;
 
         //Handle keys that change configuration
-        if ((inputHit & INPUT_CFG_WINDOW_MODE) > 0) {
-            if (config.windowMode != WM_UNSUPPORTED) {
-                config.windowMode++;
-                if (config.windowMode > WM_FULLSCREEN) {
-                    config.windowMode = WM_1X;
-                }
+        if ((inputHit & INPUT_CFG_FULLSCREEN_TOGGLE) > 0) {
+            if (config.windowSupported) {
+                config.fullscreen = !config.fullscreen;
             }
         }
         if ((inputHit & INPUT_CFG_AUDIO_TOGGLE) > 0) {
@@ -433,16 +432,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
                     int windowWidth;
                     int windowHeight;
-                    int scale = 1;
 
-                    switch (config.windowMode) {
-                        case WM_1X: scale = 1; break;
-                        case WM_2X: scale = 2; break;
-                        case WM_3X: scale = 3; break;
-                    }
-
-                    windowWidth  = config.vscreenWidth  * scale;
-                    windowHeight = config.vscreenHeight * scale;
+                    windowWidth  = config.vscreenWidth  * config.windowScale;
+                    windowHeight = config.vscreenHeight * config.windowScale;
 
                     Gdx.graphics.setWindowedMode(windowWidth, windowHeight);
                 } else {
@@ -460,11 +452,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             oldVscreenAutoSize = config.vscreenAutoSize;
         }
 
-        //Window mode change
-        if (config.windowMode != WM_UNSUPPORTED && config.windowMode != oldWindowMode) {
+        //Fullscreen toggle
+        if (config.windowSupported && config.fullscreen != oldFullscreen) {
             boolean modeChanged = false;
 
-            if (config.windowMode == WM_FULLSCREEN) {
+            if (config.fullscreen) {
                 Monitor m = Gdx.graphics.getMonitor();
                 DisplayMode dm = Gdx.graphics.getDisplayMode(m);
 
@@ -474,28 +466,20 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 int height;
 
                 if (config.vscreenAutoSize) {
-                    width  = VSCREEN_MAX_WIDTH;
-                    height = VSCREEN_MAX_HEIGHT;
+                    width  = VSCREEN_MAX_WIDTH  * config.windowScale;
+                    height = VSCREEN_MAX_HEIGHT * config.windowScale;
                 } else {
-                    width  = config.vscreenWidth;
-                    height = config.vscreenHeight;
-                }
-
-                if (config.windowMode == WM_2X) {
-                    width  *= 2;
-                    height *= 2;
-                } else if (config.windowMode == WM_3X) {
-                    width  *= 3;
-                    height *= 3;
+                    width  = config.vscreenWidth  * config.windowScale;
+                    height = config.vscreenHeight * config.windowScale;
                 }
 
                 modeChanged = Gdx.graphics.setWindowedMode(width, height);
             }
 
             if (modeChanged) {
-                oldWindowMode = config.windowMode;
+                oldFullscreen = config.fullscreen;
             } else {
-                config.windowMode = oldWindowMode;
+                config.fullscreen = oldFullscreen;
             }
 
             if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
@@ -503,6 +487,26 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             } else {
                 Gdx.input.setCursorCatched(false);
             }
+        }
+
+        //Window scale change
+        if (config.windowScale != oldWindowScale) {
+            if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
+                int width;
+                int height;
+
+                if (config.vscreenAutoSize) {
+                    width  = VSCREEN_MAX_WIDTH  * config.windowScale;
+                    height = VSCREEN_MAX_HEIGHT * config.windowScale;
+                } else {
+                    width  = config.vscreenWidth  * config.windowScale;
+                    height = config.vscreenHeight * config.windowScale;
+                }
+
+                Gdx.graphics.setWindowedMode(width, height);
+            }
+
+            oldWindowScale = config.windowScale;
         }
 
         //Audio toggle

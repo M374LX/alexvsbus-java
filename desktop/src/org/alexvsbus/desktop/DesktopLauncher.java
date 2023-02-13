@@ -27,10 +27,6 @@ import org.alexvsbus.Main;
 import static org.alexvsbus.Defs.VSCREEN_MAX_WIDTH;
 import static org.alexvsbus.Defs.VSCREEN_MAX_HEIGHT;
 import static org.alexvsbus.Defs.VERSION;
-import static org.alexvsbus.Defs.WM_1X;
-import static org.alexvsbus.Defs.WM_2X;
-import static org.alexvsbus.Defs.WM_3X;
-import static org.alexvsbus.Defs.WM_FULLSCREEN;
 import static org.alexvsbus.Defs.vscreenWidths;
 import static org.alexvsbus.Defs.vscreenHeights;
 
@@ -60,22 +56,13 @@ public class DesktopLauncher {
             windowMinHeight = platDep.getConfig().vscreenHeight;
         }
 
-        switch (platDep.config.windowMode) {
-            case WM_1X:
-                appConfig.setWindowedMode(windowMinWidth, windowMinHeight);
-                break;
+        if (platDep.getConfig().fullscreen) {
+            appConfig.setFullscreenMode(appConfig.getDisplayMode());
+        } else {
+            int width  = windowMinWidth  * platDep.getConfig().windowScale;
+            int height = windowMinHeight * platDep.getConfig().windowScale;
 
-            case WM_2X:
-                appConfig.setWindowedMode(windowMinWidth * 2, windowMinHeight * 2);
-                break;
-
-            case WM_3X:
-                appConfig.setWindowedMode(windowMinWidth * 3, windowMinHeight * 3);
-                break;
-
-            case WM_FULLSCREEN:
-                appConfig.setFullscreenMode(appConfig.getDisplayMode());
-                break;
+            appConfig.setWindowedMode(width, height);
         }
 
         appConfig.setTitle("Alex vs Bus: The Race");
@@ -91,19 +78,19 @@ public class DesktopLauncher {
         System.out.println(
         "Alex vs Bus: The Race\n" +
         "\n" +
-        "-h, --help            Show this usage information and exit\n" +
-        "-v, --version         Show version and license information and exit\n" +
-        "-f, --fullscreen      Run in fullscreen mode\n" +
-        "-w, --window <size>   Run in windowed mode with the specified window size:\n" +
-        "                      1 for 1x window size, 2 for 2x, and 3 for 3x\n" +
-        "--audio-on            Enable audio output\n" +
-        "--audio-off           Disable audio output\n" +
-        "--resizable           Make the window resizable\n" +
-        "--scanlines-on        Enable scanlines visual effect\n" +
-        "--scanlines-off       Disable scanlines visual effect\n" +
-        "--touch               Enable touchscreen controls, which can also be\n" +
-        "                      simulated by using the mouse\n" +
-        "--vscreen-size <size> Set the size of the virtual screen (vscreen)\n" +
+        "-h, --help             Show this usage information and exit\n" +
+        "-v, --version          Show version and license information and exit\n" +
+        "-f, --fullscreen       Run in fullscreen mode\n" +
+        "-w, --windowed         Run in windowed mode\n" +
+        "--window-scale <scale> Set the window scale (1 to 3)\n" +
+        "--audio-on             Enable audio output\n" +
+        "--audio-off            Disable audio output\n" +
+        "--resizable            Make the window resizable\n" +
+        "--scanlines-on         Enable scanlines visual effect\n" +
+        "--scanlines-off        Disable scanlines visual effect\n" +
+        "--touch                Enable touchscreen controls, which can also be\n" +
+        "                       simulated by using the mouse\n" +
+        "--vscreen-size <size>  Set the size of the virtual screen (vscreen)\n" +
         "\n" +
         "For --vscreen-size, the size can be either \"auto\" or a width and a height\n" +
         "separated by an \"x\" (example: 480x270), with the supported values listed\n" +

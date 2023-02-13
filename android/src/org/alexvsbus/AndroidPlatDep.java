@@ -30,7 +30,6 @@ import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
 import static org.alexvsbus.Defs.DIFFICULTY_HARD;
 import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
 import static org.alexvsbus.Defs.DIFFICULTY_MAX;
-import static org.alexvsbus.Defs.WM_UNSUPPORTED;
 import static org.alexvsbus.Defs.difficultyNumLevels;
 import static org.alexvsbus.Defs.vscreenWidths;
 import static org.alexvsbus.Defs.vscreenHeights;
@@ -64,8 +63,10 @@ class AndroidPlatDep implements PlatDep {
         int numLevels;
 
         config.touchEnabled = true;
-        config.windowMode = WM_UNSUPPORTED;
+        config.fullscreen = true;
+        config.windowSupported = false;
         config.resizableWindow = false;
+        config.touchEnabled = true;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
         config.vscreenAutoSize = true;
