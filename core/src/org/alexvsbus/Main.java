@@ -128,7 +128,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         oldWindowMode = -1;
         oldAudioEnabled = true;
         oldVscreenAutoSize = true;
+        displayParams.vscreenWidth  = config.vscreenWidth;
+        displayParams.vscreenHeight = config.vscreenHeight;
         handleConfigChange();
+
+        platDep.postInit();
 
         showTitle();
     }
@@ -176,16 +180,37 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void resize(int newWidth, int newHeight) {
+        int minWindowWidth;
+        int minWindowHeight;
+
         displayParams.physWidth  = newWidth;
         displayParams.physHeight = newHeight;
 
         if (config.vscreenAutoSize) {
+            minWindowWidth  = VSCREEN_MAX_WIDTH;
+            minWindowHeight = VSCREEN_MAX_HEIGHT;
+
             autoSizeVscreen();
         } else {
+            minWindowWidth  = displayParams.vscreenWidth;
+            minWindowHeight = displayParams.vscreenHeight;
+
             scaleManualVscreen();
         }
 
         renderer.onScreenResize();
+        platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
+
+        //Ensure the window is not smaller than the minimum size
+        if (!Gdx.graphics.isFullscreen() && config.resizableWindow) {
+            int width  = Gdx.graphics.getWidth();
+            int height = Gdx.graphics.getHeight();
+
+            if (width  < minWindowWidth)  width  = minWindowWidth;
+            if (height < minWindowHeight) height = minWindowHeight;
+
+            Gdx.graphics.setWindowedMode(width, height);
+        }
     }
 
     @Override
@@ -390,27 +415,24 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void handleConfigChange() {
-        //Virtual screen (vscreen) sizing change
+        //Manually set virtual screen (vscreen) size change
         if (!config.vscreenAutoSize) {
-            boolean widthChanged  = false;
-            boolean heightChanged = false;
-            boolean windowed;
+            boolean sizeChanged = false;
 
             if (config.vscreenWidth != displayParams.vscreenWidth) {
-                widthChanged = true;
+                sizeChanged = true;
             }
             if (config.vscreenHeight != displayParams.vscreenHeight) {
-                heightChanged = true;
+                sizeChanged = true;
             }
 
-            windowed = (config.windowMode != WM_UNSUPPORTED &&
-                                        config.windowMode != WM_FULLSCREEN);
-
-            if (widthChanged || heightChanged) {
+            if (sizeChanged) {
                 displayParams.vscreenWidth  = config.vscreenWidth;
                 displayParams.vscreenHeight = config.vscreenHeight;
 
-                if (windowed) {
+                if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
+                    int windowWidth;
+                    int windowHeight;
                     int scale = 1;
 
                     switch (config.windowMode) {
@@ -419,20 +441,19 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                         case WM_3X: scale = 3; break;
                     }
 
-                    displayParams.physWidth  = config.vscreenWidth  * scale;
-                    displayParams.physHeight = config.vscreenHeight * scale;
+                    windowWidth  = config.vscreenWidth  * scale;
+                    windowHeight = config.vscreenHeight * scale;
 
-                    Gdx.graphics.setWindowedMode(displayParams.physWidth, displayParams.physHeight);
+                    Gdx.graphics.setWindowedMode(windowWidth, windowHeight);
                 } else {
                     resize(displayParams.physWidth, displayParams.physHeight);
                 }
             }
         }
-        if (config.vscreenAutoSize != oldVscreenAutoSize) {
-            boolean windowed = (config.windowMode != WM_UNSUPPORTED &&
-                                        config.windowMode != WM_FULLSCREEN);
 
-            if (config.vscreenAutoSize && !windowed) {
+        //Virtual screen (vscreen) sizing mode change
+        if (config.vscreenAutoSize != oldVscreenAutoSize) {
+            if (config.vscreenAutoSize && Gdx.graphics.isFullscreen()) {
                 resize(displayParams.physWidth, displayParams.physHeight);
             }
 
@@ -482,9 +503,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             } else {
                 Gdx.input.setCursorCatched(false);
             }
-        }
-
-        if (config.vscreenAutoSize) {
         }
 
         //Audio toggle
@@ -693,7 +711,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         int scale = 1;
         int i, j;
 
-        //Determine the virtual screen size that best fits the physical screen
+        //Determine the size for the virtual screen (vscreen) so that it best
+        //fits in the physical screen or window
         for (i = 0; i < vscreenWidths.length; i++) {
             for (j = 0; j < vscreenWidths.length; j++) {
                 int scaledWidth  = 0;

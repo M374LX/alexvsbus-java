@@ -32,6 +32,8 @@ import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
 import static org.alexvsbus.Defs.DIFFICULTY_MAX;
 import static org.alexvsbus.Defs.WM_UNSUPPORTED;
 import static org.alexvsbus.Defs.difficultyNumLevels;
+import static org.alexvsbus.Defs.vscreenWidths;
+import static org.alexvsbus.Defs.vscreenHeights;
 
 class AndroidPlatDep implements PlatDep {
     Config config;
@@ -50,12 +52,25 @@ class AndroidPlatDep implements PlatDep {
         return config;
     }
 
+    @Override
+    public void postInit() {
+    }
+
+    @Override
+    public void setMinWindowSize(int width, int height) {
+    }
+
     public void loadConfig() {
+        int numLevels;
+
         config.touchEnabled = true;
         config.windowMode = WM_UNSUPPORTED;
+        config.resizableWindow = false;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
         config.vscreenAutoSize = true;
+        config.vscreenWidth  = -1;
+        config.vscreenHeight = -1;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 
@@ -84,6 +99,44 @@ class AndroidPlatDep implements PlatDep {
         }
 
         try {
+            config.vscreenAutoSize = prefs.getBoolean("vscreen-auto-size", true);
+        } catch (Exception e) {
+            config.vscreenAutoSize = true;
+        }
+
+        if (!config.vscreenAutoSize) {
+            try {
+                int val = prefs.getInt("vscreen-width", 480);
+                if (val >= 1 && val <= 999) {
+                    int i;
+                    for (i = 0; i < vscreenWidths.length; i++) {
+                        if (val == vscreenWidths[i]) {
+                            config.vscreenWidth = val;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                config.vscreenAutoSize = true;
+            }
+
+            try {
+                int val = prefs.getInt("vscreen-height", 270);
+                if (val >= 1 && val <= 999) {
+                    int i;
+                    for (i = 0; i < vscreenHeights.length; i++) {
+                        if (val == vscreenHeights[i]) {
+                            config.vscreenHeight = val;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                config.vscreenAutoSize = true;
+            }
+        }
+
+        try {
             int val = prefs.getInt("progress-difficulty", DIFFICULTY_NORMAL);
             if (val < DIFFICULTY_NORMAL || val > DIFFICULTY_MAX) {
                 val = DIFFICULTY_NORMAL;
@@ -105,9 +158,14 @@ class AndroidPlatDep implements PlatDep {
             config.progressLevel = 1;
         }
 
-        if (config.progressLevel >
-                            difficultyNumLevels[config.progressDifficulty]) {
+        if (!config.vscreenAutoSize) {
+            if (config.vscreenWidth == -1 || config.vscreenHeight == -1) {
+                config.vscreenAutoSize = true;
+            }
+        }
 
+        numLevels = difficultyNumLevels[config.progressDifficulty];
+        if (config.progressLevel > numLevels) {
             config.progressLevel = 1;
         }
     }
@@ -118,6 +176,9 @@ class AndroidPlatDep implements PlatDep {
         editor.putBoolean("audio-enabled", config.audioEnabled);
         editor.putBoolean("scanlines-enabled", config.scanlinesEnabled);
         editor.putBoolean("touch-buttons-enabled", config.touchButtonsEnabled);
+        editor.putBoolean("vscreen-auto-size", config.vscreenAutoSize);
+        editor.putInt("vscreen-width",  config.vscreenWidth);
+        editor.putInt("vscreen-height", config.vscreenHeight);
         editor.putInt("progress-level", config.progressLevel);
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();

@@ -45,6 +45,24 @@ property value. The value can be either a string or a number.
   The value ``true`` enables a scanlines visual effect, while the value
   ``false`` disables the effect.
 
+* vscreen-auto-size
+
+  The value ``true`` causes the virtual screen (vscreen) to be automatically
+  set to the size that best fits in the physical screen or window, while the
+  value ``false`` is used when the size is set manually.
+
+* vscreen-width
+
+  The width of the virtual screen (vscreen) if its size is set manually. It is
+  required if the property ``vscreen-auto-size`` is set to ``false``, but
+  ignored otherwise.
+
+* vscreen-height
+
+  The height of the virtual screen (vscreen) if its size is set manually. It is
+  required if the property ``vscreen-auto-size`` is set to ``false``, but
+  ignored otherwise.
+
 * touch-buttons-enabled
 
   The value ``true`` causes the left, right, and jump buttons to be displayed

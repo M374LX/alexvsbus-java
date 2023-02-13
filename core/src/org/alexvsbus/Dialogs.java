@@ -241,8 +241,8 @@ class Dialogs {
         } else if (dialogType == DLG_VSCREEN_SIZE) {
             if (config.vscreenAutoSize) {
                 ctx.items[0].value = "AUTO";
-                ctx.items[1].value = "---";
-                ctx.items[2].value = "---";
+                ctx.items[1].value = "" + displayParams.vscreenWidth;
+                ctx.items[2].value = "" + displayParams.vscreenHeight;
             } else {
                 ctx.items[0].value = "MANUAL";
                 ctx.items[1].value = "" + config.vscreenWidth;

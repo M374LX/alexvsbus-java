@@ -80,8 +80,7 @@ public class DesktopLauncher {
 
         appConfig.setTitle("Alex vs Bus: The Race");
         appConfig.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon128.png");
-        appConfig.setResizable(platDep.resizable);
-        appConfig.setWindowSizeLimits(windowMinWidth, windowMinHeight, -1, -1);
+        appConfig.setResizable(platDep.getConfig().resizableWindow);
 
         new Lwjgl3Application(new Main(platDep), appConfig);
     }

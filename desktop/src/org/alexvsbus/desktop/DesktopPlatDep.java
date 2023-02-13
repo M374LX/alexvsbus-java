@@ -24,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import org.alexvsbus.Defs.Config;
 import org.alexvsbus.Defs.PlatDep;
 import org.alexvsbus.LineRead;
@@ -45,6 +47,7 @@ class DesktopPlatDep implements PlatDep {
     Path configDirPath;
     Path configFilePath;
     Config config;
+
     boolean help;
     boolean version;
     boolean resizable;
@@ -52,8 +55,12 @@ class DesktopPlatDep implements PlatDep {
     int cliWindowMode;
     int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
-    int cliVscreenWidth; //0 = auto or unspecified
-    int cliVscreenHeight; //0 = auto or unspecified
+    int cliVscreenWidth;  //0 = unset; -1 = auto
+    int cliVscreenHeight; //0 = unset; -1 = auto
+
+    Lwjgl3Window window;
+    int minWindowWidth;
+    int minWindowHeight;
 
     DesktopPlatDep() {
         config = new Config();
@@ -140,8 +147,8 @@ class DesktopPlatDep implements PlatDep {
 
     boolean parseVscreenSizeArg(String arg) {
         if (arg.equals("auto")) {
-            cliVscreenWidth = 0;
-            cliVscreenHeight = 0;
+            cliVscreenWidth  = -1;
+            cliVscreenHeight = -1;
         } else {
             int sepPos = arg.indexOf('x'); //Separator position
 
@@ -183,18 +190,36 @@ class DesktopPlatDep implements PlatDep {
         return true;
     }
 
+    @Override
+    public void postInit() {
+        window = ((Lwjgl3Graphics)Gdx.graphics).getWindow();
+    }
+
+    @Override
+    public void setMinWindowSize(int width, int height) {
+        if (width != minWindowWidth || height != minWindowHeight) {
+            minWindowWidth  = width;
+            minWindowHeight = height;
+            window.setSizeLimits(width, height, -1, -1);
+        }
+    }
+
     void loadConfig() {
         LineRead lineRead = new LineRead();
         String os = System.getProperty("os.name").toLowerCase();
+        int numLevels;
         int i;
 
         //Defaults
         config.touchEnabled = false;
         config.touchButtonsEnabled = true;
         config.windowMode = WM_FULLSCREEN;
+        config.resizableWindow = false;
         config.audioEnabled = true;
         config.scanlinesEnabled = false;
         config.vscreenAutoSize = true;
+        config.vscreenWidth  = -1;
+        config.vscreenHeight = -1;
         config.progressLevel = 1;
         config.progressDifficulty = DIFFICULTY_NORMAL;
 
@@ -220,6 +245,9 @@ class DesktopPlatDep implements PlatDep {
             config.vscreenAutoSize = false;
             config.vscreenWidth = cliVscreenWidth;
             config.vscreenHeight = cliVscreenHeight;
+        }
+        if (resizable) {
+            config.resizableWindow = true;
         }
 
         //Find configuration directory
@@ -309,6 +337,58 @@ class DesktopPlatDep implements PlatDep {
                 } else if (tokens[1].equals("false")) {
                     config.touchButtonsEnabled = false;
                 }
+            } else if (tokens[0].equals("vscreen-auto-size")) {
+                //If the virtual screen (vscreen) size was set from CLI, do not
+                //load the configuration from the config file
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
+                    continue;
+                }
+
+                if (tokens[1].equals("true")) {
+                    config.vscreenAutoSize = true;
+                } else if (tokens[1].equals("false")) {
+                    config.vscreenAutoSize = false;
+                }
+            } else if (tokens[0].equals("vscreen-width")) {
+                //If the virtual screen (vscreen) size was set from CLI, do not
+                //load the configuration from the config file
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
+                    continue;
+                }
+
+                try {
+                    int val = Integer.parseInt(tokens[1]);
+                    if (val >= 1 && val <= 999) {
+                        for (i = 0; i < vscreenWidths.length; i++) {
+                            if (vscreenWidths[i] == val) {
+                                config.vscreenWidth = val;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    //Do nothing
+                }
+            } else if (tokens[0].equals("vscreen-height")) {
+                //If the virtual screen (vscreen) size was set from CLI, do not
+                //load the configuration from the config file
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
+                    continue;
+                }
+
+                try {
+                    int val = Integer.parseInt(tokens[1]);
+                    if (val >= 1 && val <= 999) {
+                        for (i = 0; i < vscreenHeights.length; i++) {
+                            if (vscreenHeights[i] == val) {
+                                config.vscreenHeight = val;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    //Do nothing
+                }
             } else if (tokens[0].equals("progress-difficulty")) {
                 if (tokens[1].equals("normal")) {
                     config.progressDifficulty = DIFFICULTY_NORMAL;
@@ -331,9 +411,14 @@ class DesktopPlatDep implements PlatDep {
             }
         }
 
-        if (config.progressLevel >
-                            difficultyNumLevels[config.progressDifficulty]) {
+        if (!config.vscreenAutoSize) {
+            if (config.vscreenWidth == -1 || config.vscreenHeight == -1) {
+                config.vscreenAutoSize = true;
+            }
+        }
 
+        numLevels = difficultyNumLevels[config.progressDifficulty];
+        if (config.progressLevel > numLevels) {
             config.progressLevel = 1;
         }
     }
@@ -363,6 +448,16 @@ class DesktopPlatDep implements PlatDep {
         //Touchscreen buttons enabled
         data += "touch-buttons-enabled " +
             (config.touchButtonsEnabled ? "true" : "false") + "\n";
+
+        //Virtual screen (vscreen) size
+        data += "vscreen-auto-size " +
+            (config.vscreenAutoSize ? "true" : "false") + "\n";
+
+        //Manual vscreen size if set
+        if (!config.vscreenAutoSize) {
+            data += "vscreen-width "  + config.vscreenWidth  + "\n";
+            data += "vscreen-height " + config.vscreenHeight + "\n";
+        }
 
         //Game progress
         data += "progress-difficulty ";

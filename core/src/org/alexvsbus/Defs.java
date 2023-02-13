@@ -28,6 +28,8 @@ public class Defs {
     //
 
     public static interface PlatDep {
+        void postInit();
+        void setMinWindowSize(int width, int height);
         Config getConfig();
         void saveConfig();
     }
@@ -60,6 +62,7 @@ public class Defs {
 
     public static class Config {
         public int windowMode;
+        public boolean resizableWindow;
         public boolean audioEnabled;
         public boolean scanlinesEnabled;
 
@@ -75,6 +78,7 @@ public class Defs {
 
         public boolean useBackKey;
 
+        //Game progress
         public int progressLevel;
         public int progressDifficulty;
         public boolean progressCheat;
