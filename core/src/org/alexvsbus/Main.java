@@ -45,6 +45,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     Config config;
     int oldWindowMode;
     boolean oldAudioEnabled;
+    boolean oldVscreenAutoSize;
 
     //Game progress
     boolean progressChecked;
@@ -126,6 +127,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         oldWindowMode = -1;
         oldAudioEnabled = true;
+        oldVscreenAutoSize = true;
         handleConfigChange();
 
         showTitle();
@@ -174,13 +176,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void resize(int newWidth, int newHeight) {
-        int physWidth  = newWidth;
-        int physHeight = newHeight;
+        displayParams.physWidth  = newWidth;
+        displayParams.physHeight = newHeight;
 
         if (config.vscreenAutoSize) {
-            autoSizeVscreen(physWidth, physHeight);
+            autoSizeVscreen();
         } else {
-            scaleManualVscreen(physWidth, physHeight);
+            scaleManualVscreen();
         }
 
         renderer.onScreenResize();
@@ -388,6 +390,55 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void handleConfigChange() {
+        //Virtual screen (vscreen) sizing change
+        if (!config.vscreenAutoSize) {
+            boolean widthChanged  = false;
+            boolean heightChanged = false;
+            boolean windowed;
+
+            if (config.vscreenWidth != displayParams.vscreenWidth) {
+                widthChanged = true;
+            }
+            if (config.vscreenHeight != displayParams.vscreenHeight) {
+                heightChanged = true;
+            }
+
+            windowed = (config.windowMode != WM_UNSUPPORTED &&
+                                        config.windowMode != WM_FULLSCREEN);
+
+            if (widthChanged || heightChanged) {
+                displayParams.vscreenWidth  = config.vscreenWidth;
+                displayParams.vscreenHeight = config.vscreenHeight;
+
+                if (windowed) {
+                    int scale = 1;
+
+                    switch (config.windowMode) {
+                        case WM_1X: scale = 1; break;
+                        case WM_2X: scale = 2; break;
+                        case WM_3X: scale = 3; break;
+                    }
+
+                    displayParams.physWidth  = config.vscreenWidth  * scale;
+                    displayParams.physHeight = config.vscreenHeight * scale;
+
+                    Gdx.graphics.setWindowedMode(displayParams.physWidth, displayParams.physHeight);
+                } else {
+                    resize(displayParams.physWidth, displayParams.physHeight);
+                }
+            }
+        }
+        if (config.vscreenAutoSize != oldVscreenAutoSize) {
+            boolean windowed = (config.windowMode != WM_UNSUPPORTED &&
+                                        config.windowMode != WM_FULLSCREEN);
+
+            if (config.vscreenAutoSize && !windowed) {
+                resize(displayParams.physWidth, displayParams.physHeight);
+            }
+
+            oldVscreenAutoSize = config.vscreenAutoSize;
+        }
+
         //Window mode change
         if (config.windowMode != WM_UNSUPPORTED && config.windowMode != oldWindowMode) {
             boolean modeChanged = false;
@@ -431,6 +482,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             } else {
                 Gdx.input.setCursorCatched(false);
             }
+        }
+
+        if (config.vscreenAutoSize) {
         }
 
         //Audio toggle
@@ -627,7 +681,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //--------------------------------------------------------------------------
 
-    void autoSizeVscreen(int physWidth, int physHeight) {
+    void autoSizeVscreen() {
+        int physWidth  = displayParams.physWidth;
+        int physHeight = displayParams.physHeight;
         int vscreenWidth  = 0;
         int vscreenHeight = 0;
         int bestWidthDiff = 99999;
@@ -680,7 +736,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         applyDisplayParams(physWidth, physHeight, vscreenWidth, vscreenHeight, scale);
     }
 
-    void scaleManualVscreen(int physWidth, int physHeight) {
+    void scaleManualVscreen() {
+        int physWidth  = displayParams.physWidth;
+        int physHeight = displayParams.physHeight;
         int vscreenWidth  = config.vscreenWidth;
         int vscreenHeight = config.vscreenHeight;
         int scale;

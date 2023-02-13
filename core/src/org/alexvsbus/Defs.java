@@ -43,6 +43,10 @@ public class Defs {
         int vscreenWidth;
         int vscreenHeight;
 
+        //Size of the physical screen (or window)
+        int physWidth;
+        int physHeight;
+
         //Offset and size of the viewport, which is the area of the physical
         //screen (or window) in which the virtual screen is displayed
         int viewportOffsetX;
@@ -678,14 +682,18 @@ public class Defs {
     static final int DLG_LEVEL = 2;
     static final int DLG_JUKEBOX = 3;
     static final int DLG_SETTINGS = 4;
-    static final int DLG_WINDOW_MODE = 5;
-    static final int DLG_ABOUT = 6;
-    static final int DLG_CREDITS = 7;
-    static final int DLG_PAUSE = 8;
-    static final int DLG_TRYAGAIN_PAUSE = 9;
-    static final int DLG_TRYAGAIN_TIMEUP = 10;
-    static final int DLG_QUIT = 11;
-    static final int DLG_ERROR = 12;
+    static final int DLG_VSCREEN_SIZE = 5;
+    static final int DLG_VSCREEN_SIZING = 6;
+    static final int DLG_VSCREEN_WIDTH = 7;
+    static final int DLG_VSCREEN_HEIGHT = 8;
+    static final int DLG_WINDOW_MODE = 9;
+    static final int DLG_ABOUT = 10;
+    static final int DLG_CREDITS = 11;
+    static final int DLG_PAUSE = 12;
+    static final int DLG_TRYAGAIN_PAUSE = 13;
+    static final int DLG_TRYAGAIN_TIMEUP = 14;
+    static final int DLG_QUIT = 15;
+    static final int DLG_ERROR = 16;
 
     //Dialog actions
     static final int DLGACT_QUIT = 0;

@@ -199,6 +199,7 @@ class Dialogs {
 
     void update(float dt) {
         boolean selectionChanged;
+        int dialogType;
 
         //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
@@ -221,8 +222,9 @@ class Dialogs {
 
         updateAudioIcon();
 
-        //Update the values of the settings dialog
-        if (ctx.stack[ctx.stackSize - 1].type == DLG_SETTINGS) {
+        //Update the values displayed by dialog items
+        dialogType = ctx.stack[ctx.stackSize - 1].type;
+        if (dialogType == DLG_SETTINGS) {
             String windowMode = "";
 
             switch (config.windowMode) {
@@ -233,9 +235,19 @@ class Dialogs {
             }
 
             ctx.items[0].value = windowMode;
-            ctx.items[1].value = (config.scanlinesEnabled) ? "ON" : "OFF";
-            ctx.items[2].value = (config.audioEnabled) ? "ON" : "OFF";
-            ctx.items[3].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
+            ctx.items[2].value = (config.scanlinesEnabled) ? "ON" : "OFF";
+            ctx.items[3].value = (config.audioEnabled) ? "ON" : "OFF";
+            ctx.items[4].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
+        } else if (dialogType == DLG_VSCREEN_SIZE) {
+            if (config.vscreenAutoSize) {
+                ctx.items[0].value = "AUTO";
+                ctx.items[1].value = "---";
+                ctx.items[2].value = "---";
+            } else {
+                ctx.items[0].value = "MANUAL";
+                ctx.items[1].value = "" + config.vscreenWidth;
+                ctx.items[2].value = "" + config.vscreenHeight;
+            }
         }
 
         //Handle selected item change
@@ -414,20 +426,24 @@ class Dialogs {
                         break;
 
                     case 1:
-                        config.scanlinesEnabled = !config.scanlinesEnabled;
+                        open(DLG_VSCREEN_SIZE);
                         break;
 
                     case 2:
-                        config.audioEnabled = !config.audioEnabled;
+                        config.scanlinesEnabled = !config.scanlinesEnabled;
                         break;
 
                     case 3:
+                        config.audioEnabled = !config.audioEnabled;
+                        break;
+
+                    case 4:
                         if (config.touchEnabled) {
                             config.touchButtonsEnabled = !config.touchButtonsEnabled;
                         }
                         break;
 
-                    case 4:
+                    case 5:
                         close();
                         break;
                 }
@@ -453,6 +469,52 @@ class Dialogs {
 
                     case 4:
                         break;
+                }
+                close();
+                break;
+
+            case DLG_VSCREEN_SIZE:
+                switch (item) {
+                    case 0:
+                        if (config.vscreenAutoSize) {
+                            config.vscreenAutoSize = false;
+                            config.vscreenWidth  = displayParams.vscreenWidth;
+                            config.vscreenHeight = displayParams.vscreenHeight;
+
+                            ctx.items[1].disabled = false;
+                            ctx.items[2].disabled = false;
+                        } else {
+                            config.vscreenAutoSize = true;
+
+                            ctx.items[1].disabled = true;
+                            ctx.items[2].disabled = true;
+                        }
+                        break;
+
+                    case 1:
+                        open(DLG_VSCREEN_WIDTH);
+                        break;
+
+                    case 2:
+                        open(DLG_VSCREEN_HEIGHT);
+                        break;
+
+                    case 3:
+                        close();
+                        break;
+                }
+                break;
+
+            case DLG_VSCREEN_WIDTH:
+                if (item < 3) {
+                    config.vscreenWidth = vscreenWidths[item];
+                }
+                close();
+                break;
+
+            case DLG_VSCREEN_HEIGHT:
+                if (item < 3) {
+                    config.vscreenHeight = vscreenHeights[item];
                 }
                 close();
                 break;
@@ -596,6 +658,24 @@ class Dialogs {
                     case WM_3X: sel = 2; break;
                     case WM_FULLSCREEN: sel = 3; break;
                 }
+            } else if (dialogType == DLG_VSCREEN_WIDTH) {
+                int i;
+
+                //Default selection to current vscreen width
+                for (i = 0; i < vscreenWidths.length; i++) {
+                    if (vscreenWidths[i] == config.vscreenWidth) {
+                        sel = i;
+                    }
+                }
+            } else if (dialogType == DLG_VSCREEN_HEIGHT) {
+                int i;
+
+                //Default selection to current vscreen height
+                for (i = 0; i < vscreenHeights.length; i++) {
+                    if (vscreenHeights[i] == config.vscreenHeight) {
+                        sel = i;
+                    }
+                }
             }
 
             //Do not select a hidden item
@@ -703,6 +783,18 @@ class Dialogs {
 
             case DLG_WINDOW_MODE:
                 displayName = "WINDOW MODE";
+                break;
+
+            case DLG_VSCREEN_SIZE:
+                displayName = "VSCREEN SIZE";
+                break;
+
+            case DLG_VSCREEN_WIDTH:
+                displayName = "VSCREEN WIDTH";
+                break;
+
+            case DLG_VSCREEN_HEIGHT:
+                displayName = "VSCREEN HEIGHT";
                 break;
 
             case DLG_ABOUT:
@@ -868,18 +960,20 @@ class Dialogs {
                 break;
 
             case DLG_SETTINGS:
-                setItem(0, 32,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 32,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 32,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 32,  3,  2,  4,  4,  4, NONE);
-                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 5;
-                positionItemsCenter(0, 3, true, 4, 0);
-                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
+                setItem(0, 32,  3,  5,  1,  5,  5, NONE);
+                setItem(1, 32,  3,  0,  2,  5,  5, NONE);
+                setItem(2, 32,  3,  1,  3,  5,  5, NONE);
+                setItem(3, 32,  3,  2,  4,  5,  5, NONE);
+                setItem(4, 32,  3,  3,  5,  5,  5, NONE);
+                setItem(5,  5,  5,  4,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 6;
+                positionItemsCenter(0, 4, true, 4, 0);
+                setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "WINDOW MODE";
-                ctx.items[1].caption = "SCANLINES";
-                ctx.items[2].caption = "AUDIO";
-                ctx.items[3].caption = "TOUCHSCREEN BUTTONS";
+                ctx.items[1].caption = "VSCREEN SIZE";
+                ctx.items[2].caption = "SCANLINES";
+                ctx.items[3].caption = "AUDIO";
+                ctx.items[4].caption = "TOUCHSCREEN BUTTONS";
                 break;
 
             case DLG_WINDOW_MODE:
@@ -895,6 +989,51 @@ class Dialogs {
                 ctx.items[1].caption = "2X";
                 ctx.items[2].caption = "3X";
                 ctx.items[3].caption = "FULLSCREEN";
+                break;
+
+            case DLG_VSCREEN_SIZE:
+                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
+                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
+                positionItemsCenter(0, 2, true, 4, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                ctx.items[0].caption = "MODE";
+                ctx.items[1].caption = "WIDTH";
+                ctx.items[2].caption = "HEIGHT";
+                break;
+
+            case DLG_VSCREEN_WIDTH:
+                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
+                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
+                positionItemsCenter(0, 2, true, 4, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+
+                //Note: the width options here should be the same as in the
+                //vscreenWidths array, found in the Defs class
+                ctx.items[0].caption = "480";
+                ctx.items[1].caption = "432";
+                ctx.items[2].caption = "424";
+                break;
+
+            case DLG_VSCREEN_HEIGHT:
+                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
+                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
+                positionItemsCenter(0, 2, true, 4, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+
+                //Note: the height options here should be the same as in the
+                //vscreenHeights array, found in the Defs class
+                ctx.items[0].caption = "270";
+                ctx.items[1].caption = "256";
+                ctx.items[2].caption = "240";
                 break;
 
             case DLG_ABOUT:
@@ -955,11 +1094,16 @@ class Dialogs {
                 setItemPosition(0, ALIGN_CENTER, 0, 8); //Confirm
         }
 
+        //Determine items to be hidden or disabled
         if (dialogType == DLG_SETTINGS) {
-            //Determine items to be hidden from settings dialog
             ctx.items[0].hidden = (config.windowMode == WM_UNSUPPORTED);
-            ctx.items[3].hidden = !config.touchEnabled;
-            positionItemsCenter(0, 3, true, 4, 0);
+            ctx.items[4].hidden = !config.touchEnabled;
+            positionItemsCenter(0, 4, true, 4, 0);
+        } else if (dialogType == DLG_VSCREEN_SIZE) {
+            if (config.vscreenAutoSize) {
+                ctx.items[1].disabled = true;
+                ctx.items[2].disabled = true;
+            }
         } else if (dialogType == DLG_DIFFICULTY) {
             if (!config.progressCheat) {
                 if (config.progressDifficulty < DIFFICULTY_HARD) {
