@@ -655,7 +655,7 @@ public class Defs {
     // Constants: dialogs
     //
 
-    static final int DIALOG_MAX_STACK_SIZE = 4;
+    static final int DIALOG_MAX_STACK_SIZE = 8;
     static final int DIALOG_MAX_ITEMS = 16;
 
     //Cursor movement directions
@@ -675,18 +675,19 @@ public class Defs {
     static final int DLG_LEVEL = 2;
     static final int DLG_JUKEBOX = 3;
     static final int DLG_SETTINGS = 4;
-    static final int DLG_VSCREEN_SIZE = 5;
-    static final int DLG_VSCREEN_SIZING = 6;
-    static final int DLG_VSCREEN_WIDTH = 7;
-    static final int DLG_VSCREEN_HEIGHT = 8;
-    static final int DLG_WINDOW_SCALE = 9;
-    static final int DLG_ABOUT = 10;
-    static final int DLG_CREDITS = 11;
-    static final int DLG_PAUSE = 12;
-    static final int DLG_TRYAGAIN_PAUSE = 13;
-    static final int DLG_TRYAGAIN_TIMEUP = 14;
-    static final int DLG_QUIT = 15;
-    static final int DLG_ERROR = 16;
+    static final int DLG_DISPLAY_SETTINGS = 5;
+    static final int DLG_VSCREEN_SIZE = 6;
+    static final int DLG_VSCREEN_SIZING = 7;
+    static final int DLG_VSCREEN_WIDTH = 8;
+    static final int DLG_VSCREEN_HEIGHT = 9;
+    static final int DLG_WINDOW_SCALE = 10;
+    static final int DLG_ABOUT = 11;
+    static final int DLG_CREDITS = 12;
+    static final int DLG_PAUSE = 13;
+    static final int DLG_TRYAGAIN_PAUSE = 14;
+    static final int DLG_TRYAGAIN_TIMEUP = 15;
+    static final int DLG_QUIT = 16;
+    static final int DLG_ERROR = 17;
 
     //Dialog actions
     static final int DLGACT_QUIT = 0;
