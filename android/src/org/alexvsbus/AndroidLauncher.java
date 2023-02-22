@@ -32,6 +32,9 @@ public class AndroidLauncher extends AndroidApplication {
         super.onCreate(savedInstanceState);
 
         AndroidApplicationConfiguration appConfig = new AndroidApplicationConfiguration();
+        SharedPreferences prefs = getSharedPreferences("alexvsbus", Context.MODE_PRIVATE);
+        AndroidPlatDep platDep = new AndroidPlatDep(prefs);
+
         appConfig.maxSimultaneousSounds = 4;
         appConfig.useAccelerometer = false;
         appConfig.useCompass = false;
@@ -39,9 +42,6 @@ public class AndroidLauncher extends AndroidApplication {
         appConfig.useImmersiveMode = true;
         appConfig.useWakelock = true;
 
-        SharedPreferences prefs = getSharedPreferences("alexvsbus", Context.MODE_PRIVATE);
-
-        AndroidPlatDep platDep = new AndroidPlatDep(prefs);
         platDep.loadConfig();
 
         initialize(new Main(platDep), appConfig);

@@ -126,9 +126,9 @@ Supported height values:
 240
 ```
 
-**Note:** The options above refer to the latest commit, which have changed
-since the latest pre-release. For the options available in the latest
-pre-release, see https://github.com/M374LX/alexvsbus-java/blob/pre5/README.md.
+**Note:** The options above refer to the latest commit and have changed since
+the latest pre-release. For the options available in the latest pre-release,
+see https://github.com/M374LX/alexvsbus-java/blob/pre5/README.md.
 
 
 ## Building from source

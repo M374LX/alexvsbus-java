@@ -44,9 +44,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //Configuration
     Config config;
     boolean oldFullscreen;
-    boolean oldAudioEnabled;
-    boolean oldVscreenAutoSize;
     int oldWindowScale;
+    boolean oldVscreenAutoSize;
+    boolean oldAudioEnabled;
 
     //Game progress
     boolean progressChecked;
@@ -126,13 +126,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         play.clear();
         renderer.load();
 
-        oldFullscreen = false;
-        oldAudioEnabled = true;
-        oldVscreenAutoSize = true;
+        audio.enable(config.audioEnabled);
+        changeWindowMode();
+
+        oldFullscreen = config.fullscreen;
         oldWindowScale = config.windowScale;
-        displayParams.vscreenWidth  = config.vscreenWidth;
-        displayParams.vscreenHeight = config.vscreenHeight;
-        handleConfigChange();
+        oldVscreenAutoSize = config.vscreenAutoSize;
+        oldAudioEnabled = config.audioEnabled;
 
         platDep.postInit();
 
@@ -454,56 +454,14 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Fullscreen toggle
         if (config.windowSupported && config.fullscreen != oldFullscreen) {
-            boolean modeChanged = false;
-
-            if (config.fullscreen) {
-                Monitor m = Gdx.graphics.getMonitor();
-                DisplayMode dm = Gdx.graphics.getDisplayMode(m);
-
-                modeChanged = Gdx.graphics.setFullscreenMode(dm);
-            } else {
-                int width;
-                int height;
-
-                if (config.vscreenAutoSize) {
-                    width  = VSCREEN_MAX_WIDTH  * config.windowScale;
-                    height = VSCREEN_MAX_HEIGHT * config.windowScale;
-                } else {
-                    width  = config.vscreenWidth  * config.windowScale;
-                    height = config.vscreenHeight * config.windowScale;
-                }
-
-                modeChanged = Gdx.graphics.setWindowedMode(width, height);
-            }
-
-            if (modeChanged) {
-                oldFullscreen = config.fullscreen;
-            } else {
-                config.fullscreen = oldFullscreen;
-            }
-
-            if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
-                Gdx.input.setCursorCatched(true);
-            } else {
-                Gdx.input.setCursorCatched(false);
-            }
+            changeWindowMode();
+            oldFullscreen = config.fullscreen;
         }
 
         //Window scale change
-        if (config.windowScale != oldWindowScale) {
+        if (config.windowSupported && config.windowScale != oldWindowScale) {
             if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
-                int width;
-                int height;
-
-                if (config.vscreenAutoSize) {
-                    width  = VSCREEN_MAX_WIDTH  * config.windowScale;
-                    height = VSCREEN_MAX_HEIGHT * config.windowScale;
-                } else {
-                    width  = config.vscreenWidth  * config.windowScale;
-                    height = config.vscreenHeight * config.windowScale;
-                }
-
-                Gdx.graphics.setWindowedMode(width, height);
+                changeWindowMode();
             }
 
             oldWindowScale = config.windowScale;
@@ -703,55 +661,75 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //--------------------------------------------------------------------------
 
+    void changeWindowMode() {
+        boolean modeChanged = false;
+
+        if (!config.windowSupported) return;
+
+        if (config.fullscreen) {
+            Monitor m = Gdx.graphics.getMonitor();
+            DisplayMode dm = Gdx.graphics.getDisplayMode(m);
+
+            modeChanged = Gdx.graphics.setFullscreenMode(dm);
+        } else {
+            int width;
+            int height;
+
+            if (config.vscreenAutoSize) {
+                width  = VSCREEN_MAX_WIDTH  * config.windowScale;
+                height = VSCREEN_MAX_HEIGHT * config.windowScale;
+            } else {
+                width  = config.vscreenWidth  * config.windowScale;
+                height = config.vscreenHeight * config.windowScale;
+            }
+
+            modeChanged = Gdx.graphics.setWindowedMode(width, height);
+        }
+
+        if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
+            Gdx.input.setCursorCatched(true);
+        } else {
+            Gdx.input.setCursorCatched(false);
+        }
+
+        if (!modeChanged) {
+            config.fullscreen = oldFullscreen;
+        }
+    }
+
     void autoSizeVscreen() {
         int physWidth  = displayParams.physWidth;
         int physHeight = displayParams.physHeight;
         int vscreenWidth  = 0;
         int vscreenHeight = 0;
-        int bestWidthDiff = 99999;
-        int bestHeightDiff = 99999;
-        int viewportWidth;
-        int viewportHeight;
+        int bestScaledWidth  = 0;
+        int bestScaledHeight = 0;
         int scale = 1;
         int i, j;
 
         //Determine the size for the virtual screen (vscreen) so that it best
         //fits in the physical screen or window
         for (i = 0; i < vscreenWidths.length; i++) {
-            for (j = 0; j < vscreenWidths.length; j++) {
+            for (j = 0; j < vscreenHeights.length; j++) {
                 int scaledWidth  = 0;
                 int scaledHeight = 0;
-                int widthDiff;
-                int heightDiff;
                 int w = vscreenWidths[i];
                 int h = vscreenHeights[j];
 
-                for (scale = 1; scale <= 8; scale++) {
-                    scaledWidth  = w * scale;
-                    scaledHeight = h * scale;
-
-                    if (scaledWidth > physWidth || scaledHeight > physHeight) {
-                        //With the scale being zero, nothing would appear on
-                        //the screen
-                        if (scale > 1) {
-                            scale -= 1;
-                        }
-
-                        scaledWidth  = w * scale;
-                        scaledHeight = h * scale;
-
+                for (scale = 8; scale > 1; scale--) {
+                    if ((w * scale) <= physWidth && (h * scale) <= physHeight) {
                         break;
                     }
                 }
 
-                widthDiff  = physWidth  - scaledWidth;
-                heightDiff = physHeight - scaledHeight;
+                scaledWidth  = w * scale;
+                scaledHeight = h * scale;
 
-                if (widthDiff < bestWidthDiff && heightDiff < bestHeightDiff) {
-                    bestWidthDiff  = widthDiff;
-                    bestHeightDiff = heightDiff;
-                    vscreenWidth   = w;
-                    vscreenHeight  = h;
+                if (scaledWidth > bestScaledWidth && scaledHeight > bestScaledHeight) {
+                    bestScaledWidth  = scaledWidth;
+                    bestScaledHeight = scaledHeight;
+                    vscreenWidth  = w;
+                    vscreenHeight = h;
                 }
             }
         }
@@ -766,22 +744,16 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         int vscreenHeight = config.vscreenHeight;
         int scale;
 
-        for (scale = 1; scale <= 8; scale++) {
-            int scaledWidth  = vscreenWidth  * scale;
-            int scaledHeight = vscreenHeight * scale;
+        for (scale = 8; scale > 1; scale--) {
+            int w = vscreenWidth;
+            int h = vscreenHeight;
 
-            if (scaledWidth > physWidth || scaledHeight > physHeight) {
-                //With the scale being zero, nothing would appear on the screen
-                if (scale > 1) {
-                    scale -= 1;
-                }
-
+            if ((w * scale) <= physWidth && (h * scale) <= physHeight) {
                 break;
             }
         }
 
         applyDisplayParams(physWidth, physHeight, vscreenWidth, vscreenHeight, scale);
-
     }
 
     void applyDisplayParams(int physWidth, int physHeight,

@@ -414,8 +414,8 @@ public class Defs {
     static final int LVLERR_INVALID = 3;
 
     //Maximum size of the virtual screen
-    public static final int VSCREEN_MAX_WIDTH  = 480;
-    public static final int VSCREEN_MAX_HEIGHT = 270;
+    static final int VSCREEN_MAX_WIDTH  = 480;
+    static final int VSCREEN_MAX_HEIGHT = 270;
 
     //Screen wiping commands
     static final int WIPECMD_IN = 0;

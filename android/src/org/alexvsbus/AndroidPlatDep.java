@@ -62,104 +62,46 @@ class AndroidPlatDep implements PlatDep {
     public void loadConfig() {
         int numLevels;
 
-        config.touchEnabled = true;
-        config.fullscreen = true;
-        config.windowSupported = false;
-        config.resizableWindow = false;
-        config.touchEnabled = true;
-        config.audioEnabled = true;
-        config.scanlinesEnabled = false;
-        config.vscreenAutoSize = true;
-        config.vscreenWidth  = -1;
-        config.vscreenHeight = -1;
-        config.progressLevel = 1;
-        config.progressDifficulty = DIFFICULTY_NORMAL;
-
         //Use the back key only on Android, as the value of the libGDX constant
         //Keys.BACK conflicts with that of Keys.META_SYM_ON (the Windows logo
         //key on desktop)
         config.useBackKey = true;
 
-        try {
-            config.audioEnabled = prefs.getBoolean("audio-enabled", true);
-        } catch (Exception e) {
-            config.audioEnabled = true;
-        }
+        config.fullscreen = true;
+        config.windowSupported = false;
+        config.resizableWindow = false;
+        config.touchEnabled = true;
+        config.touchButtonsEnabled = getPrefsBoolean("touch-buttons-enabled", true);
+        config.audioEnabled = getPrefsBoolean("audio-enabled", true);
+        config.scanlinesEnabled = getPrefsBoolean("scanlines-enabled", false);
+        config.vscreenAutoSize = getPrefsBoolean("vscreen-auto-size", true);
+        config.vscreenWidth  = -1;
+        config.vscreenHeight = -1;
 
-        try {
-            config.scanlinesEnabled = prefs.getBoolean("scanlines-enabled", false);
-        } catch (Exception e) {
-            config.scanlinesEnabled = false;
-        }
-
-        try {
-            config.touchButtonsEnabled =
-                prefs.getBoolean("touch-buttons-enabled", true);
-        } catch (Exception e) {
-            config.touchButtonsEnabled = true;
-        }
-
-        try {
-            config.vscreenAutoSize = prefs.getBoolean("vscreen-auto-size", true);
-        } catch (Exception e) {
-            config.vscreenAutoSize = true;
-        }
+        config.progressDifficulty = getPrefsInt("progress-difficulty",
+                        DIFFICULTY_NORMAL, DIFFICULTY_NORMAL, DIFFICULTY_MAX);
+        config.progressLevel = getPrefsInt("progress-level", 1, 1, 9);
 
         if (!config.vscreenAutoSize) {
-            try {
-                int val = prefs.getInt("vscreen-width", 480);
-                if (val >= 1 && val <= 999) {
-                    int i;
-                    for (i = 0; i < vscreenWidths.length; i++) {
-                        if (val == vscreenWidths[i]) {
-                            config.vscreenWidth = val;
-                            break;
-                        }
-                    }
+            int val;
+            int i;
+
+            val = getPrefsInt("vscreen-width", 480, 1, 999);
+            for (i = 0; i < vscreenWidths.length; i++) {
+                if (val == vscreenWidths[i]) {
+                    config.vscreenWidth = val;
+                    break;
                 }
-            } catch (Exception e) {
-                config.vscreenAutoSize = true;
             }
 
-            try {
-                int val = prefs.getInt("vscreen-height", 270);
-                if (val >= 1 && val <= 999) {
-                    int i;
-                    for (i = 0; i < vscreenHeights.length; i++) {
-                        if (val == vscreenHeights[i]) {
-                            config.vscreenHeight = val;
-                            break;
-                        }
-                    }
+            val = getPrefsInt("vscreen-height", 270, 1, 999);
+            for (i = 0; i < vscreenHeights.length; i++) {
+                if (val == vscreenHeights[i]) {
+                    config.vscreenHeight = val;
+                    break;
                 }
-            } catch (Exception e) {
-                config.vscreenAutoSize = true;
-            }
-        }
-
-        try {
-            int val = prefs.getInt("progress-difficulty", DIFFICULTY_NORMAL);
-            if (val < DIFFICULTY_NORMAL || val > DIFFICULTY_MAX) {
-                val = DIFFICULTY_NORMAL;
             }
 
-            config.progressDifficulty = val;
-        } catch (Exception e) {
-            config.progressDifficulty = DIFFICULTY_NORMAL;
-        }
-
-        try {
-            int val = prefs.getInt("progress-level", 1);
-            if (val < 1 || val > 9) {
-                val = 1;
-            }
-
-            config.progressLevel = val;
-        } catch (Exception e) {
-            config.progressLevel = 1;
-        }
-
-        if (!config.vscreenAutoSize) {
             if (config.vscreenWidth == -1 || config.vscreenHeight == -1) {
                 config.vscreenAutoSize = true;
             }
@@ -184,6 +126,34 @@ class AndroidPlatDep implements PlatDep {
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();
         editor = null;
+    }
+
+    boolean getPrefsBoolean(String key, boolean def) {
+        boolean ret = def;
+
+        try {
+            ret = prefs.getBoolean(key, def);
+        } catch (Exception e) {
+            ret = def;
+        }
+
+        return ret;
+    }
+
+    int getPrefsInt(String key, int def, int min, int max) {
+        int ret = def;
+
+        try {
+            ret = prefs.getInt(key, def);
+
+            if (ret < min || ret > max) {
+                ret = def;
+            }
+        } catch (Exception e) {
+            ret = def;
+        }
+
+        return ret;
     }
 }
 

@@ -24,16 +24,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import org.alexvsbus.Defs.Config;
 import org.alexvsbus.Defs.PlatDep;
 import org.alexvsbus.LineRead;
+import org.alexvsbus.Main;
 
 import static org.alexvsbus.Defs.NONE;
 import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
 import static org.alexvsbus.Defs.DIFFICULTY_HARD;
 import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
+import static org.alexvsbus.Defs.VERSION;
 import static org.alexvsbus.Defs.difficultyNumLevels;
 import static org.alexvsbus.Defs.vscreenWidths;
 import static org.alexvsbus.Defs.vscreenHeights;
@@ -43,10 +47,14 @@ class DesktopPlatDep implements PlatDep {
     Path configFilePath;
     Config config;
 
-    boolean help;
-    boolean version;
-    boolean resizable;
-    boolean touchEnabled;
+    Lwjgl3Window window;
+    int minWindowWidth;
+    int minWindowHeight;
+
+    boolean cliHelp;
+    boolean cliVersion;
+    boolean cliResizable;
+    boolean cliTouchEnabled;
     boolean cliFullscreen;
     boolean cliWindowed;
     int cliWindowScale; //0 = unset
@@ -54,10 +62,6 @@ class DesktopPlatDep implements PlatDep {
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliVscreenWidth;  //0 = unset; -1 = auto
     int cliVscreenHeight; //0 = unset; -1 = auto
-
-    Lwjgl3Window window;
-    int minWindowWidth;
-    int minWindowHeight;
 
     DesktopPlatDep() {
         config = new Config();
@@ -68,15 +72,112 @@ class DesktopPlatDep implements PlatDep {
         return config;
     }
 
+    void run(String[] args) {
+        int windowMinWidth;
+        int windowMinHeight;
+        Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
+
+        parseCli(args);
+        if (cliHelp) {
+            showHelp();
+            return;
+        } else if (cliVersion) {
+            showVersion();
+            return;
+        }
+
+        loadConfig();
+
+        appConfig.setTitle("Alex vs Bus: The Race");
+        appConfig.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon128.png");
+        appConfig.setResizable(config.resizableWindow);
+        appConfig.setInitialVisible(false);
+
+        new Lwjgl3Application(new Main(this), appConfig);
+    }
+
+    @Override
+    public void postInit() {
+        window = ((Lwjgl3Graphics)Gdx.graphics).getWindow();
+        window.setVisible(true);
+    }
+
+    @Override
+    public void setMinWindowSize(int width, int height) {
+        if (width != minWindowWidth || height != minWindowHeight) {
+            minWindowWidth  = width;
+            minWindowHeight = height;
+            window.setSizeLimits(width, height, -1, -1);
+        }
+    }
+
+    static void showHelp() {
+        int i;
+
+        System.out.println(
+        "Alex vs Bus: The Race\n" +
+        "\n" +
+        "-h, --help             Show this usage information and exit\n" +
+        "-v, --version          Show version and license information and exit\n" +
+        "-f, --fullscreen       Run in fullscreen mode\n" +
+        "-w, --windowed         Run in windowed mode\n" +
+        "--window-scale <scale> Set the window scale (1 to 3)\n" +
+        "--audio-on             Enable audio output\n" +
+        "--audio-off            Disable audio output\n" +
+        "--resizable            Make the window resizable\n" +
+        "--scanlines-on         Enable scanlines visual effect\n" +
+        "--scanlines-off        Disable scanlines visual effect\n" +
+        "--touch                Enable touchscreen controls, which can also be\n" +
+        "                       simulated by using the mouse\n" +
+        "--vscreen-size <size>  Set the size of the virtual screen (vscreen)\n" +
+        "\n" +
+        "For --vscreen-size, the size can be either \"auto\" or a width and a height\n" +
+        "separated by an \"x\" (example: 480x270), with the supported values listed\n" +
+        "below.\n"
+        );
+
+        System.out.println("Supported width values:");
+        for (i = 0; i < vscreenWidths.length; i++) {
+            System.out.println(vscreenWidths[i]);
+        }
+        System.out.println();
+
+        System.out.println("Supported height values:");
+        for (i = 0; i < vscreenHeights.length; i++) {
+            System.out.println(vscreenHeights[i]);
+        }
+    }
+
+    static void showVersion() {
+        System.out.println(
+        "Alex vs Bus: The Race\n" +
+        "Version " + VERSION + "\n" +
+        "\n" +
+        "Copyright (C) 2021-2023 M374LX\n" +
+        "\n" +
+        "This program is free software: you can redistribute it and/or modify\n" +
+        "it under the terms of the GNU General Public License as published by\n" +
+        "the Free Software Foundation, either version 3 of the License, or\n" +
+        "(at your option) any later version.\n" +
+        "\n" +
+        "This program is distributed in the hope that it will be useful,\n" +
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of\n" +
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" +
+        "GNU General Public License for more details.\n" +
+        "\n" +
+        "You should have received a copy of the GNU General Public License\n" +
+        "along with this program.  If not, see <https://www.gnu.org/licenses/>."
+        );
+    }
+
     void parseCli(String[] args) {
         int argc = args.length;
         int i;
 
-        help = false;
-        version = false;
-        resizable = false;
-        touchEnabled = false;
-
+        cliHelp = false;
+        cliVersion = false;
+        cliResizable = false;
+        cliTouchEnabled = false;
         cliFullscreen = false;
         cliWindowed = false;
         cliWindowScale = 0;
@@ -89,10 +190,10 @@ class DesktopPlatDep implements PlatDep {
             String a = args[i];
 
             if (a.equals("-h") || a.equals("--help")) {
-                help = true;
+                cliHelp = true;
                 return;
             } else if (a.equals("-v") || a.equals("--version")) {
-                version = true;
+                cliVersion = true;
                 return;
             } else if (a.equals("-f") || a.equals("--fullscreen")) {
                 cliFullscreen = true;
@@ -103,18 +204,18 @@ class DesktopPlatDep implements PlatDep {
             } else if (a.equals("--vscreen-size")) {
                 i++;
                 if (i >= argc) {
-                    help = true;
+                    cliHelp = true;
                     return;
                 }
 
                 if (!parseVscreenSizeArg(args[i])) {
-                    help = true;
+                    cliHelp = true;
                     return;
                 }
             } else if (a.equals("--window-scale")) {
                 i++;
                 if (i >= argc) {
-                    help = true;
+                    cliHelp = true;
                     return;
                 }
 
@@ -135,11 +236,11 @@ class DesktopPlatDep implements PlatDep {
             } else if (a.equals("--scanlines-off")) {
                 cliScanlinesEnabled = -1;
             } else if (a.equals("--resizable")) {
-                resizable = true;
+                cliResizable = true;
             } else if (a.equals("--touch")) {
-                touchEnabled = true;
+                cliTouchEnabled = true;
             } else {
-                help = true;
+                cliHelp = true;
                 return;
             }
         }
@@ -190,20 +291,6 @@ class DesktopPlatDep implements PlatDep {
         return true;
     }
 
-    @Override
-    public void postInit() {
-        window = ((Lwjgl3Graphics)Gdx.graphics).getWindow();
-    }
-
-    @Override
-    public void setMinWindowSize(int width, int height) {
-        if (width != minWindowWidth || height != minWindowHeight) {
-            minWindowWidth  = width;
-            minWindowHeight = height;
-            window.setSizeLimits(width, height, -1, -1);
-        }
-    }
-
     void loadConfig() {
         LineRead lineRead = new LineRead();
         String os = System.getProperty("os.name").toLowerCase();
@@ -246,7 +333,7 @@ class DesktopPlatDep implements PlatDep {
         if (cliScanlinesEnabled != 0) {
             config.scanlinesEnabled = (cliScanlinesEnabled == -1) ? false : true;
         }
-        if (touchEnabled) {
+        if (cliTouchEnabled) {
             config.touchEnabled = true;
         }
         if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
@@ -254,7 +341,7 @@ class DesktopPlatDep implements PlatDep {
             config.vscreenWidth = cliVscreenWidth;
             config.vscreenHeight = cliVscreenHeight;
         }
-        if (resizable) {
+        if (cliResizable) {
             config.resizableWindow = true;
         }
 
@@ -301,7 +388,7 @@ class DesktopPlatDep implements PlatDep {
             }
 
             if (tokens[0].equals("fullscreen")) {
-                //Do not check for fullscreen on config file if set from CLI
+                //If set from CLI, skip loading from config file
                 if (cliFullscreen || cliWindowed) {
                     continue;
                 }
@@ -313,8 +400,7 @@ class DesktopPlatDep implements PlatDep {
                 }
 
             } else if (tokens[0].equals("window-scale")) {
-                //If the window scale was set from CLI, do not load the
-                //configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliWindowScale > 0) {
                     continue;
                 }
@@ -327,8 +413,7 @@ class DesktopPlatDep implements PlatDep {
                     config.windowScale = 3;
                 }
             } else if (tokens[0].equals("audio-enabled")) {
-                //If the audio was enabled or disabled from CLI, do not load
-                //the configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliAudioEnabled != 0) {
                     continue;
                 }
@@ -339,8 +424,7 @@ class DesktopPlatDep implements PlatDep {
                     config.audioEnabled = false;
                 }
              } else if (tokens[0].equals("scanlines-enabled")) {
-                //If the scanlines were enabled or disabled from CLI, do not
-                //load the configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliScanlinesEnabled != 0) {
                     continue;
                 }
@@ -357,8 +441,7 @@ class DesktopPlatDep implements PlatDep {
                     config.touchButtonsEnabled = false;
                 }
             } else if (tokens[0].equals("vscreen-auto-size")) {
-                //If the virtual screen (vscreen) size was set from CLI, do not
-                //load the configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
                     continue;
                 }
@@ -369,8 +452,7 @@ class DesktopPlatDep implements PlatDep {
                     config.vscreenAutoSize = false;
                 }
             } else if (tokens[0].equals("vscreen-width")) {
-                //If the virtual screen (vscreen) size was set from CLI, do not
-                //load the configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
                     continue;
                 }
@@ -389,8 +471,7 @@ class DesktopPlatDep implements PlatDep {
                     //Do nothing
                 }
             } else if (tokens[0].equals("vscreen-height")) {
-                //If the virtual screen (vscreen) size was set from CLI, do not
-                //load the configuration from the config file
+                //If set from CLI, skip loading from config file
                 if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
                     continue;
                 }
