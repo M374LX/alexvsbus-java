@@ -200,6 +200,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             scaleManualVscreen();
         }
 
+        dialogs.adaptToScreenSize();
         renderer.onScreenResize();
         platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
 
@@ -715,6 +716,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 int scaledHeight = 0;
                 int w = vscreenWidths[i];
                 int h = vscreenHeights[j];
+
+                if (w < VSCREEN_AUTO_MIN_WIDTH)  continue;
+                if (h < VSCREEN_AUTO_MIN_HEIGHT) continue;
 
                 for (scale = 8; scale > 1; scale--) {
                     if ((w * scale) <= physWidth && (h * scale) <= physHeight) {

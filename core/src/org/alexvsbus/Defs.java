@@ -124,6 +124,7 @@ public class Defs {
         int textOffsetY;
         int textWidth; //Width and height in 8x8 tiles
         int textHeight;
+        boolean textBorder;
 
         boolean levelSelected;
         boolean selectedVisible;
@@ -413,9 +414,13 @@ public class Defs {
     static final int LVLERR_TOO_LARGE = 2;
     static final int LVLERR_INVALID = 3;
 
-    //Maximum size of the virtual screen
+    //Maximum supported size for the virtual screen
     static final int VSCREEN_MAX_WIDTH  = 480;
     static final int VSCREEN_MAX_HEIGHT = 270;
+
+    //Minimum size for the virtual screen when using automatic sizing
+    static final int VSCREEN_AUTO_MIN_WIDTH  = 424;
+    static final int VSCREEN_AUTO_MIN_HEIGHT = 240;
 
     //Screen wiping commands
     static final int WIPECMD_IN = 0;
@@ -861,12 +866,12 @@ public class Defs {
 
     //Supported virtual screen widths
     public static final int[] vscreenWidths = new int[]{
-        480, 432, 424
+        480, 432, 424, 320
     };
 
     //Supported virtual screen heights
     public static final int[] vscreenHeights = new int[]{
-        270, 256, 240
+        270, 256, 240, 224
     };
 
     //Number of levels per difficulty

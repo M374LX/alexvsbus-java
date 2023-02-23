@@ -505,14 +505,14 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                if (item < 3) {
+                if (item < 4) {
                     config.vscreenWidth = vscreenWidths[item];
                 }
                 close();
                 break;
 
             case DLG_VSCREEN_HEIGHT:
-                if (item < 3) {
+                if (item < 4) {
                     config.vscreenHeight = vscreenHeights[item];
                 }
                 close();
@@ -825,56 +825,7 @@ class Dialogs {
         }
         ctx.displayName = displayName;
 
-        //Load text
         switch (dialogType) {
-            case DLG_ABOUT:
-                ctx.text =
-                    (char)0x1B + "Alex vs Bus: The Race\n" +
-                    (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
-                    "\n" +
-                    (char)0x1B + "Version\n" +
-                    " " + VERSION + "\n" +
-                    "\n" +
-                    (char)0x1B + "Repository\n" +
-                    " " + REPOSITORY + "\n" +
-                    "\n" +
-                    (char)0x1B + "Licenses\n" +
-                    " The code is under GNU GPLv3, while the\n" +
-                    " assets are under CC BY-SA 4.0.\n" +
-                    "\n" +
-                    " https://www.gnu.org/licenses/gpl-3.0.en.html\n" +
-                    " https://creativecommons.org/licenses/by-sa/4.0";
-                ctx.textOffsetX = 0;
-                ctx.textOffsetY = 1;
-                ctx.textWidth = 47;
-                ctx.textHeight = 15;
-                break;
-
-            case DLG_CREDITS:
-                ctx.text =
-                    (char)0x1B + "M374LX" + (char)0x1B +
-                            " (http://m374lx.users.sourceforge.net)\n" +
-                    " Game design, programming, music, SFX, graphics\n" +
-                    "\n" +
-                    (char)0x1B + "Hoton Bastos\n" +
-                    " Additional game design\n" +
-                    "\n" +
-                    (char)0x1B + "Harim Pires\n" +
-                    " Testing\n" +
-                    "\n" +
-                    (char)0x1B + "Codeman38" + (char)0x1B +
-                            " (https://www.zone38.net)\n" +
-                    " \"Press Start 2P\" font\n" +
-                    "\n" +
-                    (char)0x1B + "YoWorks" + (char)0x1B +
-                            " (https://www.yoworks.com)\n" +
-                    " \"Telegrama\" font";
-                ctx.textOffsetX = 0;
-                ctx.textOffsetY = 1;
-                ctx.textWidth = 47;
-                ctx.textHeight = 15;
-                break;
-
             case DLG_TRYAGAIN_PAUSE:
             case DLG_TRYAGAIN_TIMEUP:
                 ctx.text = "TRY AGAIN?";
@@ -882,6 +833,7 @@ class Dialogs {
                 ctx.textOffsetY = -4;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
+                ctx.textBorder = true;
                 break;
 
             case DLG_QUIT:
@@ -890,6 +842,7 @@ class Dialogs {
                 ctx.textOffsetY = -4;
                 ctx.textWidth = 10;
                 ctx.textHeight = 1;
+                ctx.textBorder = true;
                 break;
         }
 
@@ -958,9 +911,9 @@ class Dialogs {
                 break;
 
             case DLG_SETTINGS:
-                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
+                setItem(0, 24,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 24,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 24,  3,  1,  3,  3,  3, NONE);
                 setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, true, 4, 0);
@@ -971,10 +924,10 @@ class Dialogs {
                 break;
 
             case DLG_DISPLAY_SETTINGS:
-                setItem(0, 32,  3,  4,  1,  5,  5, NONE);
-                setItem(1, 32,  3,  0,  2,  5,  5, NONE);
-                setItem(2, 32,  3,  1,  3,  5,  5, NONE);
-                setItem(3, 32,  3,  2,  4,  5,  5, NONE);
+                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
                 setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
                 positionItemsCenter(0, 3, true, 4, 0);
@@ -999,9 +952,9 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_SIZE:
-                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
+                setItem(0, 24,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 24,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 24,  3,  1,  3,  3,  3, NONE);
                 setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, true, 4, 0);
@@ -1012,35 +965,39 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
-                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 4;
-                positionItemsCenter(0, 2, true, 4, 0);
-                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
+                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 5;
+                positionItemsCenter(0, 3, true, 4, 0);
+                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the width options here should be the same as in the
                 //vscreenWidths array, found in the Defs class
                 ctx.items[0].caption = "480";
                 ctx.items[1].caption = "432";
                 ctx.items[2].caption = "424";
+                ctx.items[3].caption = "320";
                 break;
 
             case DLG_VSCREEN_HEIGHT:
-                setItem(0, 32,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 32,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 32,  3,  1,  3,  3,  3, NONE);
-                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 4;
-                positionItemsCenter(0, 2, true, 4, 0);
-                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
+                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 5;
+                positionItemsCenter(0, 3, true, 4, 0);
+                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the height options here should be the same as in the
                 //vscreenHeights array, found in the Defs class
                 ctx.items[0].caption = "270";
                 ctx.items[1].caption = "256";
                 ctx.items[2].caption = "240";
+                ctx.items[3].caption = "224";
                 break;
 
             case DLG_ABOUT:
@@ -1152,6 +1109,84 @@ class Dialogs {
             storeSelMin = 0;
         }
         storeSelMax = ctx.numItems - 2;
+
+        adaptToScreenSize();
+    }
+
+    void adaptToScreenSize() {
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+        int dialogType;
+
+        if (ctx.stackSize <= 0) return;
+
+        dialogType = ctx.stack[ctx.stackSize - 1].type;
+
+        //Set the text
+        if (dialogType == DLG_ABOUT) {
+            ctx.text =
+                (char)0x1B + "Alex vs Bus: The Race\n" +
+                (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
+                "\n" +
+                (char)0x1B + "Version\n" +
+                " " + VERSION + "\n" +
+                "\n" +
+                (char)0x1B + "Repository\n" +
+                " " + url(REPOSITORY) + "\n" +
+                "\n" +
+                (char)0x1B + "Licenses\n" +
+                " The code is under GNU GPLv3, while\n" +
+                " the assets are under CC BY-SA 4.0.\n" +
+                "\n" +
+                " " + url("https://www.gnu.org/licenses/gpl-3.0.en.html") + "\n" +
+                " " + url("https://creativecommons.org/licenses/by-sa/4.0");
+        } else if (dialogType == DLG_CREDITS) {
+            ctx.text =
+                (char)0x1B + "M374LX" + (char)0x1B +
+                        " (" + url("http://m374lx.users.sourceforge.net") + ")\n" +
+                " Game design, programming,\n" +
+                " music, SFX, graphics\n" +
+                "\n" +
+                (char)0x1B + "Hoton Bastos\n" +
+                " Additional game design\n" +
+                "\n" +
+                (char)0x1B + "Harim Pires\n" +
+                " Testing\n" +
+                "\n" +
+                (char)0x1B + "Codeman38" + (char)0x1B +
+                        " (" + url("https://www.zone38.net") + ")\n" +
+                " \"Press Start 2P\" font\n" +
+                "\n" +
+                (char)0x1B + "YoWorks" + (char)0x1B +
+                        " (" + url("https://www.yoworks.com") + ")\n" +
+                " \"Telegrama\" font";
+        }
+
+        //In smaller screens, move the "Credits" item upwards a bit
+        if (dialogType == DLG_ABOUT) {
+            ctx.items[0].offsetY = 14;
+
+            if (vscreenWidth <= 320 || vscreenHeight <= 224) {
+                ctx.items[0].offsetY = 12;
+            }
+        }
+
+        if (dialogType == DLG_ABOUT || dialogType == DLG_CREDITS) {
+            ctx.textBorder  = true;
+            ctx.textOffsetX = 0;
+            ctx.textOffsetY = 1;
+            ctx.textWidth   = 47;
+            ctx.textHeight  = 15;
+
+            if (vscreenWidth <= 320) {
+                ctx.textWidth = 36;
+            }
+
+            if (vscreenWidth <= 320 || vscreenHeight <= 224) {
+                ctx.textBorder = false;
+                ctx.textOffsetX = -1;
+            }
+        }
     }
 
     void setItemPosition(int item, int align, int offsetX, int offsetY) {
@@ -1211,6 +1246,20 @@ class Dialogs {
         it.targets[DLGDIR_LEFT] = targetLeft;
         it.targets[DLGDIR_RIGHT] = targetRight;
         it.iconSprite = iconSprite;
+    }
+
+    //Just removes the protocol (http:// or https://) from a URL if the width
+    //of the virtual screen (vscreen) is 320 or less
+    String url(String str) {
+        if (displayParams.vscreenWidth <= 320) {
+            if (str.startsWith("https://")) {
+                return str.substring(8);
+            } else if (str.startsWith("http://")) {
+                return str.substring(7);
+            }
+        }
+
+        return str;
     }
 }
 

@@ -171,6 +171,9 @@ class Renderer {
         drawSpriteRepeat(SPR_BACKGROUND, -ctx.bgOffsetX, BACKGROUND_DRAW_Y, 6, 1);
 
         drawOffsetX = (int)ctx.cam.x;
+        if (vscreenWidth <= 320 && ctx.levelNum == LVLNUM_ENDING) {
+            drawOffsetX += 104;
+        }
 
         //Holes (background part)
         for (i = 0; i < MAX_HOLES; i++) {
@@ -633,17 +636,20 @@ class Renderer {
         }
 
         if (dialogCtx.showLogo) {
-            drawSprite(SPR_LOGO, (displayParams.vscreenWidth - LOGO_WIDTH) / 2 + 4, 16);
+            int x = (displayParams.vscreenWidth - LOGO_WIDTH) / 2 + 4;
+            int y = (displayParams.vscreenHeight <= 240) ? 8 : 16;
+
+            drawSprite(SPR_LOGO, x, y);
         }
 
         if (dialogCtx.displayName.length() > 0) {
             //Text position in tiles
-            int tx = cx - 14;
+            int tx = cx - 10;
             int ty = 3;
 
             int x = tx * TILE_SIZE;
             int y = ty * TILE_SIZE;
-            int w = 28;
+            int w = 20;
 
             drawDialogBorder(x - 16, y - 16, w + 4, 5, false, false);
             drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
@@ -659,7 +665,10 @@ class Renderer {
             int w = dialogCtx.textWidth;
             int h = dialogCtx.textHeight;
 
-            drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
+            if (dialogCtx.textBorder) {
+                drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
+            }
+
             drawText(dialogCtx.text, TXTCOL_WHITE, x, y);
 
             if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
