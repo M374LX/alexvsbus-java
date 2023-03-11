@@ -47,7 +47,7 @@ When using a keyboard, the controls are:
 
 **Escape:** Pause; close dialog
 
-**F5:** Change window size (PC only)
+**F5:** Toggle fullscreen (PC only)
 
 **F6:** Toggle audio
 
@@ -59,9 +59,9 @@ On French (AZERTY) keyboards, W becomes Z and A becomes Q.
 
 On Android, the Back button has the same effect as Escape.
 
-Touchscreen buttons always appear on Android, while these can be enabled on PC
-by using the command line option ``--touch``. Dialog items can also be selected
-by touching them.
+Touchscreen buttons appear by default on Android, while these can be enabled on
+PC by using the command line option ``--touch``. Dialog items can also be
+selected by touching them.
 
 
 ## Downloading
@@ -119,11 +119,13 @@ Supported width values:
 480
 432
 424
+320
 
 Supported height values:
 270
 256
 240
+224
 ```
 
 **Note:** The options above refer to the latest commit and have changed since
