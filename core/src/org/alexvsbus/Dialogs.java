@@ -102,7 +102,16 @@ class Dialogs {
         int y = item.offsetY;
 
         if (item.align == ALIGN_CENTER) {
-            y += ((displayParams.vscreenHeight / TILE_SIZE) - item.height) / 2;
+            //The heights here are in tiles
+            //
+            //The top area is the area on which the dialog's name and return
+            //item are displayed, while the main area is where the dialog's
+            //text and other items are displayed
+            int vscreenHeight = (displayParams.vscreenHeight / TILE_SIZE);
+            int topAreaHeight = 7;
+            int mainAreaHeight = vscreenHeight - topAreaHeight;
+
+            y += (mainAreaHeight - item.height) / 2 + topAreaHeight;
         }
 
         return y * TILE_SIZE;
@@ -869,8 +878,8 @@ class Dialogs {
                 setItem(4,  6,  6,  0,  5,  3,  5, SPR_DIALOG_QUIT);
                 setItem(5,  5,  5, -2,  0,  4,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 6;
-                setItemPosition(0, ALIGN_CENTER, 0, 0); //Play
-                positionItemsCenter(1, 4, false, 8, 8);
+                setItemPosition(0, ALIGN_CENTER, 0, -2); //Play
+                positionItemsCenter(1, 4, false, 8, 6);
                 setItemPosition(5, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
@@ -911,9 +920,9 @@ class Dialogs {
                 break;
 
             case DLG_SETTINGS:
-                setItem(0, 24,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 24,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 24,  3,  1,  3,  3,  3, NONE);
+                setItem(0, 26,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 26,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 26,  3,  1,  3,  3,  3, NONE);
                 setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, true, 4, 0);
@@ -924,10 +933,10 @@ class Dialogs {
                 break;
 
             case DLG_DISPLAY_SETTINGS:
-                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
+                setItem(0, 26,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 26,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 26,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 26,  3,  2,  4,  4,  4, NONE);
                 setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
                 positionItemsCenter(0, 3, true, 4, 0);
@@ -952,9 +961,9 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_SIZE:
-                setItem(0, 24,  3,  3,  1,  3,  3, NONE);
-                setItem(1, 24,  3,  0,  2,  3,  3, NONE);
-                setItem(2, 24,  3,  1,  3,  3,  3, NONE);
+                setItem(0, 26,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 26,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 26,  3,  1,  3,  3,  3, NONE);
                 setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, true, 4, 0);
@@ -965,10 +974,10 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
+                setItem(0, 26,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 26,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 26,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 26,  3,  2,  4,  4,  4, NONE);
                 setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
                 positionItemsCenter(0, 3, true, 4, 0);
@@ -983,10 +992,10 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_HEIGHT:
-                setItem(0, 24,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 24,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 24,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 24,  3,  2,  4,  4,  4, NONE);
+                setItem(0, 26,  3,  4,  1,  4,  4, NONE);
+                setItem(1, 26,  3,  0,  2,  4,  4, NONE);
+                setItem(2, 26,  3,  1,  3,  4,  4, NONE);
+                setItem(3, 26,  3,  2,  4,  4,  4, NONE);
                 setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
                 positionItemsCenter(0, 3, true, 4, 0);
@@ -1164,17 +1173,20 @@ class Dialogs {
 
         //In smaller screens, move the "Credits" item upwards a bit
         if (dialogType == DLG_ABOUT) {
-            ctx.items[0].offsetY = 14;
+            ctx.items[0].offsetY = 11;
 
-            if (vscreenWidth <= 320 || vscreenHeight <= 224) {
-                ctx.items[0].offsetY = 12;
+            if (vscreenHeight <= 256) {
+                ctx.items[0].offsetY = 10;
+            }
+            if (vscreenHeight <= 224) {
+                ctx.items[0].offsetY = 8;
             }
         }
 
         if (dialogType == DLG_ABOUT || dialogType == DLG_CREDITS) {
             ctx.textBorder  = true;
             ctx.textOffsetX = 0;
-            ctx.textOffsetY = 1;
+            ctx.textOffsetY = -2;
             ctx.textWidth   = 47;
             ctx.textHeight  = 15;
 
