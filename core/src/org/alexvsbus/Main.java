@@ -189,8 +189,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         displayParams.physHeight = newHeight;
 
         if (config.vscreenAutoSize) {
-            minWindowWidth  = VSCREEN_MAX_WIDTH;
-            minWindowHeight = VSCREEN_MAX_HEIGHT;
+            minWindowWidth  = VSCREEN_MIN_WIDTH;
+            minWindowHeight = VSCREEN_MIN_HEIGHT;
 
             autoSizeVscreen();
         } else {
@@ -699,6 +699,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void autoSizeVscreen() {
+        boolean smallScreen = false;
         int physWidth  = displayParams.physWidth;
         int physHeight = displayParams.physHeight;
         int vscreenWidth  = 0;
@@ -707,6 +708,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         int bestScaledHeight = 0;
         int scale = 1;
         int i, j;
+
+        if (physWidth < VSCREEN_AUTO_MIN_WIDTH) {
+            smallScreen = true;
+        }
+        if (physHeight < VSCREEN_AUTO_MIN_HEIGHT) {
+            smallScreen = true;
+        }
 
         //Determine the size for the virtual screen (vscreen) so that it best
         //fits in the physical screen or window
@@ -717,8 +725,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 int w = vscreenWidths[i];
                 int h = vscreenHeights[j];
 
-                if (w < VSCREEN_AUTO_MIN_WIDTH)  continue;
-                if (h < VSCREEN_AUTO_MIN_HEIGHT) continue;
+                if (!smallScreen && w < VSCREEN_AUTO_MIN_WIDTH)  continue;
+                if (!smallScreen && h < VSCREEN_AUTO_MIN_HEIGHT) continue;
 
                 for (scale = 8; scale > 1; scale--) {
                     if ((w * scale) <= physWidth && (h * scale) <= physHeight) {
@@ -728,6 +736,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                 scaledWidth  = w * scale;
                 scaledHeight = h * scale;
+
+                if (scaledWidth > physWidth || scaledHeight > physHeight) {
+                    continue;
+                }
 
                 if (scaledWidth > bestScaledWidth && scaledHeight > bestScaledHeight) {
                     bestScaledWidth  = scaledWidth;

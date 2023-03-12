@@ -418,7 +418,12 @@ public class Defs {
     static final int VSCREEN_MAX_WIDTH  = 480;
     static final int VSCREEN_MAX_HEIGHT = 270;
 
-    //Minimum size for the virtual screen when using automatic sizing
+    //Minimum supported size for the virtual screen
+    static final int VSCREEN_MIN_WIDTH  = 320;
+    static final int VSCREEN_MIN_HEIGHT = 224;
+
+    //Minimum size for the virtual screen when using automatic sizing (except
+    //if the screen is very small)
     static final int VSCREEN_AUTO_MIN_WIDTH  = 424;
     static final int VSCREEN_AUTO_MIN_HEIGHT = 240;
 
