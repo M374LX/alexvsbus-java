@@ -749,9 +749,10 @@ class Dialogs {
         ctx.text = "\n\n" + msg;
 
         ctx.textOffsetX = 0;
-        ctx.textOffsetY = 0;
-        ctx.textWidth = 32;
+        ctx.textOffsetY = -3;
+        ctx.textWidth = 26;
         ctx.textHeight = 4;
+        ctx.textBorder = true;
     }
 
     //Loads a specific dialog
@@ -840,18 +841,18 @@ class Dialogs {
                 ctx.text = "TRY AGAIN?";
                 ctx.textOffsetX = 0;
                 ctx.textOffsetY = -4;
-                ctx.textWidth = 10;
-                ctx.textHeight = 1;
-                ctx.textBorder = true;
+                ctx.textWidth   = 10;
+                ctx.textHeight  = 1;
+                ctx.textBorder  = true;
                 break;
 
             case DLG_QUIT:
                 ctx.text = "QUIT?";
                 ctx.textOffsetX = 0;
                 ctx.textOffsetY = -4;
-                ctx.textWidth = 10;
-                ctx.textHeight = 1;
-                ctx.textBorder = true;
+                ctx.textWidth   = 10;
+                ctx.textHeight  = 1;
+                ctx.textBorder  = true;
                 break;
         }
 
@@ -871,25 +872,25 @@ class Dialogs {
         //Load items
         switch (dialogType) {
             case DLG_MAIN:
-                setItem(0, 14,  6,  5, -2,  5,  1, SPR_DIALOG_PLAY);
-                setItem(1,  6,  6,  0,  5,  0,  2, SPR_DIALOG_JUKEBOX);
-                setItem(2,  6,  6,  0,  5,  1,  3, SPR_DIALOG_SETTINGS);
-                setItem(3,  6,  6,  0,  5,  2,  4, SPR_DIALOG_ABOUT);
-                setItem(4,  6,  6,  0,  5,  3,  5, SPR_DIALOG_QUIT);
+                setItem(0, 12,  5,  5, -2,  5,  1, SPR_DIALOG_PLAY);
+                setItem(1,  5,  5,  0,  5,  0,  2, SPR_DIALOG_JUKEBOX);
+                setItem(2,  5,  5,  0,  5,  1,  3, SPR_DIALOG_SETTINGS);
+                setItem(3,  5,  5,  0,  5,  2,  4, SPR_DIALOG_ABOUT);
+                setItem(4,  5,  5,  0,  5,  3,  5, SPR_DIALOG_QUIT);
                 setItem(5,  5,  5, -2,  0,  4,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 6;
                 setItemPosition(0, ALIGN_CENTER, 0, -2); //Play
-                positionItemsCenter(1, 4, false, 8, 6);
+                positionItemsCenter(1, 4, false, 7, 5);
                 setItemPosition(5, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
             case DLG_DIFFICULTY:
-                setItem(0, 10,  5,  3,  3,  3,  1, NONE);
-                setItem(1, 10,  5,  3,  3,  0,  2, NONE);
-                setItem(2, 10,  5,  3,  3,  1,  3, NONE);
+                setItem(0, 8,  5,  3,  3,  3,  1, NONE);
+                setItem(1, 8,  5,  3,  3,  0,  2, NONE);
+                setItem(2, 8,  5,  3,  3,  1,  3, NONE);
                 setItem(3,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
-                positionItemsCenter(0, 2, false, 12, 0);
+                positionItemsCenter(0, 2, false, 10, 0);
                 setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "NORMAL";
                 ctx.items[1].caption = "HARD";
@@ -897,25 +898,25 @@ class Dialogs {
                 break;
 
             case DLG_LEVEL:
-                setItem(0,  6,  6,  5,  5,  5,  1, SPR_DIALOG_1);
-                setItem(1,  6,  6,  5,  5,  0,  2, SPR_DIALOG_2);
-                setItem(2,  6,  6,  5,  5,  1,  3, SPR_DIALOG_3);
-                setItem(3,  6,  6,  5,  5,  2,  4, SPR_DIALOG_4);
-                setItem(4,  6,  6,  5,  5,  3,  5, SPR_DIALOG_5);
+                setItem(0,  5,  6,  5,  5,  5,  1, SPR_DIALOG_1);
+                setItem(1,  5,  6,  5,  5,  0,  2, SPR_DIALOG_2);
+                setItem(2,  5,  6,  5,  5,  1,  3, SPR_DIALOG_3);
+                setItem(3,  5,  6,  5,  5,  2,  4, SPR_DIALOG_4);
+                setItem(4,  5,  6,  5,  5,  3,  5, SPR_DIALOG_5);
                 setItem(5,  5,  5, -2, -2,  4,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 6;
-                positionItemsCenter(0, 4, false, 8, 0);
+                positionItemsCenter(0, 4, false, 6, 0);
                 setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_JUKEBOX:
-                setItem(0,  6,  6,  4,  4,  4,  1, SPR_DIALOG_1);
-                setItem(1,  6,  6,  4,  4,  0,  2, SPR_DIALOG_2);
-                setItem(2,  6,  6,  4,  4,  1,  3, SPR_DIALOG_3);
-                setItem(3,  6,  6,  4,  4,  2,  4, SPR_DIALOG_4);
+                setItem(0,  5,  6,  4,  4,  4,  1, SPR_DIALOG_1);
+                setItem(1,  5,  6,  4,  4,  0,  2, SPR_DIALOG_2);
+                setItem(2,  5,  6,  4,  4,  1,  3, SPR_DIALOG_3);
+                setItem(3,  5,  6,  4,  4,  2,  4, SPR_DIALOG_4);
                 setItem(4,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
-                positionItemsCenter(0, 3, false, 8, 0);
+                positionItemsCenter(0, 3, false, 6, 0);
                 setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
@@ -1025,46 +1026,46 @@ class Dialogs {
                 break;
 
             case DLG_PAUSE:
-                setItem(0, 14,  6,  4, -2,  4,  1, SPR_DIALOG_PLAY);
-                setItem(1,  6,  6,  0,  4,  0,  2, SPR_DIALOG_TRYAGAIN);
-                setItem(2,  6,  6,  0,  4,  1,  3, SPR_DIALOG_SETTINGS);
-                setItem(3,  6,  6,  0,  4,  2,  4, SPR_DIALOG_QUIT);
+                setItem(0, 12,  5,  4, -2,  4,  1, SPR_DIALOG_PLAY);
+                setItem(1,  5,  5,  0,  4,  0,  2, SPR_DIALOG_TRYAGAIN);
+                setItem(2,  5,  5,  0,  4,  1,  3, SPR_DIALOG_SETTINGS);
+                setItem(3,  5,  5,  0,  4,  2,  4, SPR_DIALOG_QUIT);
                 setItem(4,  5,  5, -2,  0,  3,  0, SPR_DIALOG_AUDIO_ON);
                 ctx.numItems = 5;
                 setItemPosition(0, ALIGN_CENTER, 0, -4); //Play
-                positionItemsCenter(1, 3, false, 8, 4);
+                positionItemsCenter(1, 3, false, 7, 3);
                 setItemPosition(4, ALIGN_TOPRIGHT, -1, 1); //Audio toggle
                 break;
 
             case DLG_TRYAGAIN_PAUSE:
-                setItem(0,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
-                setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                setItem(0,  5,  5,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  5,  5,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
                 setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
-                positionItemsCenter(0, 1, false, 8, 4);
+                positionItemsCenter(0, 1, false, 9, 4);
                 setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_TRYAGAIN_TIMEUP:
-                setItem(0,  6,  6,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
-                setItem(1,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
+                setItem(0,  5,  5,  1,  1,  1,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  5,  5,  0,  0,  0,  0, SPR_DIALOG_CANCEL);
                 ctx.numItems = 2;
-                positionItemsCenter(0, 1, false, 8, 4);
+                positionItemsCenter(0, 1, false, 9, 4);
                 break;
 
             case DLG_QUIT:
-                setItem(0,  6,  6,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
-                setItem(1,  6,  6,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
+                setItem(0,  5,  5,  2,  2,  2,  1, SPR_DIALOG_CONFIRM);
+                setItem(1,  5,  5,  2,  2,  0,  2, SPR_DIALOG_CANCEL);
                 setItem(2,  5,  5, -2, -2,  1,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 3;
-                positionItemsCenter(0, 1, false, 8, 4);
+                positionItemsCenter(0, 1, false, 9, 4);
                 setItemPosition(2, ALIGN_TOPLEFT, 1, 1); //Return
                 break;
 
             case DLG_ERROR:
-                setItem(0,  6,  6,  0,  0,  0,  0, SPR_DIALOG_CONFIRM);
+                setItem(0,  5,  5,  0,  0,  0,  0, SPR_DIALOG_CONFIRM);
                 ctx.numItems = 1;
-                setItemPosition(0, ALIGN_CENTER, 0, 8); //Confirm
+                setItemPosition(0, ALIGN_CENTER, 0, 5); //Confirm
         }
 
         //Determine items to be hidden or disabled
@@ -1100,7 +1101,7 @@ class Dialogs {
                     ctx.items[i].hidden = true;
                 }
             }
-            positionItemsCenter(0, 4, false, 8, 0);
+            positionItemsCenter(0, 4, false, 6, 0);
 
             if (difficulty == config.progressDifficulty && !config.progressCheat) {
                 //Disable selection of locked levels

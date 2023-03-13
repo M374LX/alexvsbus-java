@@ -577,87 +577,88 @@ public class Defs {
     static final int SPR_HUD_SCORE = 42;
     static final int SPR_HUD_TIME = 43;
     static final int SPR_HYDRANT = 44;
-    static final int SPR_LOGO = 45;
-    static final int SPR_MEDAL1 = 46;
-    static final int SPR_MEDAL2 = 47;
-    static final int SPR_MEDAL3 = 48;
-    static final int SPR_OVERHEAD_SIGN = 49;
-    static final int SPR_OVERHEAD_SIGN_BASE = 50;
-    static final int SPR_OVERHEAD_SIGN_BASE_TOP = 51;
-    static final int SPR_PASSAGEWAY_LEFT = 52;
-    static final int SPR_PASSAGEWAY_LEFT_FG = 53;
-    static final int SPR_PASSAGEWAY_MIDDLE = 54;
-    static final int SPR_PASSAGEWAY_RIGHT = 55;
-    static final int SPR_PASSAGEWAY_RIGHT_FG = 56;
-    static final int SPR_PASSAGEWAY_RIGHT_CLOSED = 57;
-    static final int SPR_PAUSE = 58;
-    static final int SPR_PLAYER_STAND = 59;
-    static final int SPR_PLAYER_WALK = 60;
-    static final int SPR_PLAYER_JUMP = 61;
-    static final int SPR_PLAYER_GRABROPE = 62;
-    static final int SPR_PLAYER_THROWBACK = 63;
-    static final int SPR_PLAYER_SLIP = 64;
-    static final int SPR_PLAYER_RUN = 65;
-    static final int SPR_PLAYER_CLEAN_DUNG = 66;
-    static final int SPR_POLE = 67;
-    static final int SPR_PUSH_ARROW = 68;
-    static final int SPR_ROPE_HORIZONTAL = 69;
-    static final int SPR_ROPE_VERTICAL = 70;
-    static final int SPR_SPRING = 71;
-    static final int SPR_TOUCH_LEFT = 72;
-    static final int SPR_TOUCH_LEFT_HELD = 73;
-    static final int SPR_TOUCH_RIGHT = 74;
-    static final int SPR_TOUCH_RIGHT_HELD = 75;
-    static final int SPR_TOUCH_JUMP = 76;
-    static final int SPR_TOUCH_JUMP_HELD = 77;
-    static final int SPR_TRUCK = 78;
-    static final int SPR_DIALOG_PLAY = 79;
-    static final int SPR_DIALOG_PLAY_SELECTED = 80;
-    static final int SPR_DIALOG_JUKEBOX = 81;
-    static final int SPR_DIALOG_JUKEBOX_SELECTED = 82;
-    static final int SPR_DIALOG_SETTINGS = 83;
-    static final int SPR_DIALOG_SETTINGS_SELECTED = 84;
-    static final int SPR_DIALOG_ABOUT = 85;
-    static final int SPR_DIALOG_ABOUT_SELECTED = 86;
-    static final int SPR_DIALOG_QUIT = 87;
-    static final int SPR_DIALOG_QUIT_SELECTED = 88;
-    static final int SPR_DIALOG_RETURN = 89;
-    static final int SPR_DIALOG_RETURN_SELECTED = 90;
-    static final int SPR_DIALOG_RESET = 91;
-    static final int SPR_DIALOG_RESET_SELECTED = 92;
-    static final int SPR_DIALOG_AUDIO_ON = 93;
-    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 94;
-    static final int SPR_DIALOG_AUDIO_OFF = 95;
-    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 96;
-    static final int SPR_DIALOG_TRYAGAIN = 97;
-    static final int SPR_DIALOG_TRYAGAIN_SELECTED = 98;
-    static final int SPR_DIALOG_CONFIRM = 99;
-    static final int SPR_DIALOG_CONFIRM_SELECTED = 100;
-    static final int SPR_DIALOG_CANCEL = 101;
-    static final int SPR_DIALOG_CANCEL_SELECTED = 102;
-    static final int SPR_DIALOG_1 = 103;
-    static final int SPR_DIALOG_1_SELECTED = 104;
-    static final int SPR_DIALOG_2 = 105;
-    static final int SPR_DIALOG_2_SELECTED = 106;
-    static final int SPR_DIALOG_3 = 107;
-    static final int SPR_DIALOG_3_SELECTED = 108;
-    static final int SPR_DIALOG_4 = 109;
-    static final int SPR_DIALOG_4_SELECTED = 110;
-    static final int SPR_DIALOG_5 = 111;
-    static final int SPR_DIALOG_5_SELECTED = 112;
-    static final int SPR_DIALOG_LOCKED = 113;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 114;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 115;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 116;
-    static final int SPR_DIALOG_BORDER_TOP = 117;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 118;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 119;
-    static final int SPR_DIALOG_BORDER_LEFT = 120;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 121;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 122;
-    static final int SPR_SCANLINE = 123;
+    static final int SPR_LOGO_SMALL = 45;
+    static final int SPR_LOGO_LARGE = 46;
+    static final int SPR_MEDAL1 = 47;
+    static final int SPR_MEDAL2 = 48;
+    static final int SPR_MEDAL3 = 49;
+    static final int SPR_OVERHEAD_SIGN = 50;
+    static final int SPR_OVERHEAD_SIGN_BASE = 51;
+    static final int SPR_OVERHEAD_SIGN_BASE_TOP = 52;
+    static final int SPR_PASSAGEWAY_LEFT = 53;
+    static final int SPR_PASSAGEWAY_LEFT_FG = 54;
+    static final int SPR_PASSAGEWAY_MIDDLE = 55;
+    static final int SPR_PASSAGEWAY_RIGHT = 56;
+    static final int SPR_PASSAGEWAY_RIGHT_FG = 57;
+    static final int SPR_PASSAGEWAY_RIGHT_CLOSED = 58;
+    static final int SPR_PAUSE = 59;
+    static final int SPR_PLAYER_STAND = 60;
+    static final int SPR_PLAYER_WALK = 61;
+    static final int SPR_PLAYER_JUMP = 62;
+    static final int SPR_PLAYER_GRABROPE = 63;
+    static final int SPR_PLAYER_THROWBACK = 64;
+    static final int SPR_PLAYER_SLIP = 65;
+    static final int SPR_PLAYER_RUN = 66;
+    static final int SPR_PLAYER_CLEAN_DUNG = 67;
+    static final int SPR_POLE = 68;
+    static final int SPR_PUSH_ARROW = 69;
+    static final int SPR_ROPE_HORIZONTAL = 70;
+    static final int SPR_ROPE_VERTICAL = 71;
+    static final int SPR_SPRING = 72;
+    static final int SPR_TOUCH_LEFT = 73;
+    static final int SPR_TOUCH_LEFT_HELD = 74;
+    static final int SPR_TOUCH_RIGHT = 75;
+    static final int SPR_TOUCH_RIGHT_HELD = 76;
+    static final int SPR_TOUCH_JUMP = 77;
+    static final int SPR_TOUCH_JUMP_HELD = 78;
+    static final int SPR_TRUCK = 79;
+    static final int SPR_DIALOG_PLAY = 80;
+    static final int SPR_DIALOG_PLAY_SELECTED = 81;
+    static final int SPR_DIALOG_TRYAGAIN = 82;
+    static final int SPR_DIALOG_TRYAGAIN_SELECTED = 83;
+    static final int SPR_DIALOG_JUKEBOX = 84;
+    static final int SPR_DIALOG_JUKEBOX_SELECTED = 85;
+    static final int SPR_DIALOG_SETTINGS = 86;
+    static final int SPR_DIALOG_SETTINGS_SELECTED = 87;
+    static final int SPR_DIALOG_ABOUT = 88;
+    static final int SPR_DIALOG_ABOUT_SELECTED = 89;
+    static final int SPR_DIALOG_QUIT = 90;
+    static final int SPR_DIALOG_QUIT_SELECTED = 91;
+    static final int SPR_DIALOG_RETURN = 92;
+    static final int SPR_DIALOG_RETURN_SELECTED = 93;
+    static final int SPR_DIALOG_AUDIO_ON = 94;
+    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 95;
+    static final int SPR_DIALOG_AUDIO_OFF = 96;
+    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 97;
+    static final int SPR_DIALOG_CONFIRM = 98;
+    static final int SPR_DIALOG_CONFIRM_SELECTED = 99;
+    static final int SPR_DIALOG_CANCEL = 100;
+    static final int SPR_DIALOG_CANCEL_SELECTED = 101;
+    static final int SPR_DIALOG_1 = 102;
+    static final int SPR_DIALOG_1_SELECTED = 103;
+    static final int SPR_DIALOG_2 = 104;
+    static final int SPR_DIALOG_2_SELECTED = 105;
+    static final int SPR_DIALOG_3 = 106;
+    static final int SPR_DIALOG_3_SELECTED = 107;
+    static final int SPR_DIALOG_4 = 108;
+    static final int SPR_DIALOG_4_SELECTED = 109;
+    static final int SPR_DIALOG_5 = 110;
+    static final int SPR_DIALOG_5_SELECTED = 111;
+    static final int SPR_DIALOG_LOCKED = 112;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 113;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 114;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 115;
+    static final int SPR_DIALOG_BORDER_TOP = 116;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 117;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 118;
+    static final int SPR_DIALOG_BORDER_LEFT = 119;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 120;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 121;
+    static final int SPR_SCANLINE = 122;
 
-    static final int LOGO_WIDTH = 296;
+    //Logo width in pixels
+    static final int LOGO_WIDTH_SMALL = 224;
+    static final int LOGO_WIDTH_LARGE = 296;
 
 
 
@@ -911,16 +912,16 @@ public class Defs {
         624,  424,  24,  64,  //SPR_BUS_CHARACTER_2
         648,  424,  24,  64,  //SPR_BUS_CHARACTER_3
         840,  424,  40,  88,  //SPR_BUS_DOOR
-        672,  472,  32,  32,  //SPR_BUS_ROUTE
+        672,  472,  24,  32,  //SPR_BUS_ROUTE
         736,  0,    16,  88,  //SPR_BUS_STOP_SIGN
         688,  424,  48,  40,  //SPR_BUS_WHEEL
         448,  288,  136, 56,  //SPR_CAR_BLUE
         448,  352,  136, 56,  //SPR_CAR_SILVER
         448,  416,  136, 56,  //SPR_CAR_YELLOW
         528,  480,  24,  24,  //SPR_CAR_WHEEL
-        304,  680,  8,   8,   //SPR_CHARSET_WHITE
-        440,  680,  8,   8,   //SPR_CHARSET_GREEN
-        576,  680,  8,   8,   //SPR_CHARSET_GRAY
+        304,  632,  8,   8,   //SPR_CHARSET_WHITE
+        440,  632,  8,   8,   //SPR_CHARSET_GREEN
+        576,  632,  8,   8,   //SPR_CHARSET_GRAY
         928,  112,  8,   8,   //SPR_COIN_SILVER
         928,  128,  8,   8,   //SPR_COIN_GOLD
         976,  112,  8,   8,   //SPR_COIN_SPARK_SILVER
@@ -941,7 +942,8 @@ public class Defs {
         776,  520,  40,  8,   //SPR_HUD_SCORE
         784,  536,  32,  8,   //SPR_HUD_TIME
         872,  32,   16,  24,  //SPR_HYDRANT
-        712,  680,  296, 80,  //SPR_LOGO
+        480,  696,  224, 64,  //SPR_LOGO_SMALL
+        712,  680,  296, 80,  //SPR_LOGO_LARGE
         288,  168,  32,  32,  //SPR_MEDAL1
         328,  168,  32,  32,  //SPR_MEDAL2
         368,  168,  32,  32,  //SPR_MEDAL3
@@ -975,41 +977,39 @@ public class Defs {
         952,  520,  64,  64,  //SPR_TOUCH_JUMP
         952,  584,  64,  64,  //SPR_TOUCH_JUMP_HELD
         720,  184,  280, 128, //SPR_TRUCK
-        8,    512,  96,  32,  //SPR_DIALOG_PLAY
-        296,  512,  96,  32,  //SPR_DIALOG_PLAY_SELECTED
-        112,  512,  32,  32,  //SPR_DIALOG_JUKEBOX
-        400,  512,  32,  32,  //SPR_DIALOG_JUKEBOX_SELECTED
-        152,  512,  32,  32,  //SPR_DIALOG_SETTINGS
-        440,  512,  32,  32,  //SPR_DIALOG_SETTINGS_SELECTED
-        192,  512,  32,  32,  //SPR_DIALOG_ABOUT
-        480,  512,  32,  32,  //SPR_DIALOG_ABOUT_SELECTED
-        232,  512,  32,  32,  //SPR_DIALOG_QUIT
-        520,  512,  32,  32,  //SPR_DIALOG_QUIT_SELECTED
-        8,    552,  24,  24,  //SPR_DIALOG_RETURN
-        296,  552,  24,  24,  //SPR_DIALOG_RETURN_SELECTED
-        40,   552,  24,  24,  //SPR_DIALOG_RESET
-        328,  552,  24,  24,  //SPR_DIALOG_RESET_SELECTED
-        72,   552,  24,  24,  //SPR_DIALOG_AUDIO_ON
-        360,  552,  24,  24,  //SPR_DIALOG_AUDIO_ON_SELECTED
-        104,  552,  24,  24,  //SPR_DIALOG_AUDIO_OFF
-        392,  552,  24,  24,  //SPR_DIALOG_AUDIO_OFF_SELECTED
-        208,  592,  32,  32,  //SPR_DIALOG_TRYAGAIN
-        496,  592,  32,  32,  //SPR_DIALOG_TRYAGAIN_SELECTED
-        152,  552,  32,  32,  //SPR_DIALOG_CONFIRM
-        440,  552,  32,  32,  //SPR_DIALOG_CONFIRM_SELECTED
-        192,  552,  32,  32,  //SPR_DIALOG_CANCEL
-        480,  552,  32,  32,  //SPR_DIALOG_CANCEL_SELECTED
-        8,    592,  32,  32,  //SPR_DIALOG_1
-        296,  592,  32,  32,  //SPR_DIALOG_1_SELECTED
-        48,   592,  32,  32,  //SPR_DIALOG_2
-        336,  592,  32,  32,  //SPR_DIALOG_2_SELECTED
-        88,   592,  32,  32,  //SPR_DIALOG_3
-        376,  592,  32,  32,  //SPR_DIALOG_3_SELECTED
-        128,  592,  32,  32,  //SPR_DIALOG_4
-        416,  592,  32,  32,  //SPR_DIALOG_4_SELECTED
-        168,  592,  32,  32,  //SPR_DIALOG_5
-        456,  592,  32,  32,  //SPR_DIALOG_5_SELECTED
-        232,  552,  32,  32,  //SPR_DIALOG_LOCKED
+        8,    512,  80,  24,  //SPR_DIALOG_PLAY
+        296,  512,  80,  24,  //SPR_DIALOG_PLAY_SELECTED
+        104,  512,  24,  24,  //SPR_DIALOG_TRYAGAIN
+        392,  512,  24,  24,  //SPR_DIALOG_TRYAGAIN_SELECTED
+        136,  512,  24,  24,  //SPR_DIALOG_JUKEBOX
+        424,  512,  24,  24,  //SPR_DIALOG_JUKEBOX_SELECTED
+        168,  512,  24,  24,  //SPR_DIALOG_SETTINGS
+        456,  512,  24,  24,  //SPR_DIALOG_SETTINGS_SELECTED
+        200,  512,  24,  24,  //SPR_DIALOG_ABOUT
+        488,  512,  24,  24,  //SPR_DIALOG_ABOUT_SELECTED
+        232,  512,  24,  24,  //SPR_DIALOG_QUIT
+        520,  512,  24,  24,  //SPR_DIALOG_QUIT_SELECTED
+        8,    544,  24,  24,  //SPR_DIALOG_RETURN
+        296,  544,  24,  24,  //SPR_DIALOG_RETURN_SELECTED
+        40,   544,  24,  24,  //SPR_DIALOG_AUDIO_ON
+        328,  544,  24,  24,  //SPR_DIALOG_AUDIO_ON_SELECTED
+        72,   544,  24,  24,  //SPR_DIALOG_AUDIO_OFF
+        360,  544,  24,  24,  //SPR_DIALOG_AUDIO_OFF_SELECTED
+        104,  544,  24,  24,  //SPR_DIALOG_CONFIRM
+        392,  544,  24,  24,  //SPR_DIALOG_CONFIRM_SELECTED
+        136,  544,  24,  24,  //SPR_DIALOG_CANCEL
+        424,  544,  24,  24,  //SPR_DIALOG_CANCEL_SELECTED
+        8,    576,  24,  32,  //SPR_DIALOG_1
+        296,  576,  24,  32,  //SPR_DIALOG_1_SELECTED
+        40,   576,  24,  32,  //SPR_DIALOG_2
+        328,  576,  24,  32,  //SPR_DIALOG_2_SELECTED
+        72,   576,  24,  32,  //SPR_DIALOG_3
+        360,  576,  24,  32,  //SPR_DIALOG_3_SELECTED
+        104,  576,  24,  32,  //SPR_DIALOG_4
+        392,  576,  24,  32,  //SPR_DIALOG_4_SELECTED
+        136,  576,  24,  32,  //SPR_DIALOG_5
+        424,  576,  24,  32,  //SPR_DIALOG_5_SELECTED
+        168,  576,  24,  32,  //SPR_DIALOG_LOCKED
         8,    696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT
         56,   696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_SELECTED
         104,  696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_DISABLED

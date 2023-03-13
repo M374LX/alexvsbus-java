@@ -645,10 +645,20 @@ class Renderer {
         }
 
         if (dialogCtx.showLogo) {
-            int x = (displayParams.vscreenWidth - LOGO_WIDTH) / 2 + 4;
-            int y = (displayParams.vscreenHeight <= 240) ? 8 : 16;
+            int spr, logoWidth, x, y;
 
-            drawSprite(SPR_LOGO, x, y);
+            if (displayParams.vscreenWidth <= 320 || displayParams.vscreenHeight <= 224) {
+                spr = SPR_LOGO_SMALL;
+                logoWidth = LOGO_WIDTH_SMALL;
+            } else {
+                spr = SPR_LOGO_LARGE;
+                logoWidth = LOGO_WIDTH_LARGE;
+            }
+
+            x = (displayParams.vscreenWidth - logoWidth) / 2 + 4;
+            y = 16;
+
+            drawSprite(spr, x, y);
         }
 
         if (dialogCtx.displayName.length() > 0) {
