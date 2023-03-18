@@ -119,8 +119,8 @@ class Dialogs {
 
     //Called when the touchscreen is tapped
     void onTap(int x, int y) {
-        //Nothing to do if no dialog is open
-        if (ctx.stackSize <= 0) return;
+        //Nothing to do if no dialog is open or a level has been selected
+        if (ctx.stackSize <= 0 || ctx.levelSelected) return;
 
         int dialogType = ctx.stack[ctx.stackSize - 1].type;
         boolean changeItem = true;
