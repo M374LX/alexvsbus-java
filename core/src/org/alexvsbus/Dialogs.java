@@ -84,6 +84,14 @@ class Dialogs {
         return ctx;
     }
 
+    //Returns the height of the dialog's top area in tiles
+    //
+    //The top area is where the dialog's name, as well as the return item, are
+    //placed
+    static int topAreaHeight() {
+        return (displayParams.vscreenHeight <= 192) ? 3 : 7;
+    }
+
     //Returns the absolute X position of an item on the screen in pixels
     static int itemX(DialogItem item) {
         int x = item.offsetX;
@@ -108,10 +116,9 @@ class Dialogs {
             //item are displayed, while the main area is where the dialog's
             //text and other items are displayed
             int vscreenHeight = (displayParams.vscreenHeight / TILE_SIZE);
-            int topAreaHeight = 7;
-            int mainAreaHeight = vscreenHeight - topAreaHeight;
+            int mainAreaHeight = vscreenHeight - topAreaHeight();
 
-            y += (mainAreaHeight - item.height) / 2 + topAreaHeight;
+            y += (mainAreaHeight - item.height) / 2 + topAreaHeight();
         }
 
         return y * TILE_SIZE;
@@ -521,7 +528,7 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_HEIGHT:
-                if (item < 4) {
+                if (item < 5) {
                     config.vscreenHeight = vscreenHeights[item];
                 }
                 close();
@@ -975,13 +982,13 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                setItem(0, 26,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 26,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 26,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 26,  3,  2,  4,  4,  4, NONE);
-                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
+                setItem(0,  5,  3,  4,  4,  4,  1, NONE);
+                setItem(1,  5,  3,  4,  4,  0,  2, NONE);
+                setItem(2,  5,  3,  4,  4,  1,  3, NONE);
+                setItem(3,  5,  3,  4,  4,  2,  4, NONE);
+                setItem(4,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 5;
-                positionItemsCenter(0, 3, true, 4, 0);
+                positionItemsCenter(0, 3, false, 6, 0);
                 setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the width options here should be the same as in the
@@ -993,14 +1000,15 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_HEIGHT:
-                setItem(0, 26,  3,  4,  1,  4,  4, NONE);
-                setItem(1, 26,  3,  0,  2,  4,  4, NONE);
-                setItem(2, 26,  3,  1,  3,  4,  4, NONE);
-                setItem(3, 26,  3,  2,  4,  4,  4, NONE);
-                setItem(4,  5,  5,  3,  0, -2, -2, SPR_DIALOG_RETURN);
-                ctx.numItems = 5;
-                positionItemsCenter(0, 3, true, 4, 0);
-                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
+                setItem(0,  5,  3,  5,  5,  5,  1, NONE);
+                setItem(1,  5,  3,  5,  5,  0,  2, NONE);
+                setItem(2,  5,  3,  5,  5,  1,  3, NONE);
+                setItem(3,  5,  3,  5,  5,  2,  4, NONE);
+                setItem(4,  5,  3,  5,  5,  3,  5, NONE);
+                setItem(5,  5,  5, -2, -2,  4,  0, SPR_DIALOG_RETURN);
+                ctx.numItems = 6;
+                positionItemsCenter(0, 4, false, 6, 0);
+                setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the height options here should be the same as in the
                 //vscreenHeights array, found in the Defs class
@@ -1008,6 +1016,7 @@ class Dialogs {
                 ctx.items[1].caption = "256";
                 ctx.items[2].caption = "240";
                 ctx.items[3].caption = "224";
+                ctx.items[4].caption = "192";
                 break;
 
             case DLG_ABOUT:
@@ -1127,10 +1136,27 @@ class Dialogs {
         int vscreenWidth  = displayParams.vscreenWidth;
         int vscreenHeight = displayParams.vscreenHeight;
         int dialogType;
+        int numItems;
+        int i;
 
         if (ctx.stackSize <= 0) return;
 
         dialogType = ctx.stack[ctx.stackSize - 1].type;
+
+        //Set the size of the return icon
+        for (i = 0; i < ctx.numItems; i++) {
+            int iconSprite = ctx.items[i].iconSprite;
+
+            if (iconSprite == SPR_DIALOG_RETURN || iconSprite == SPR_DIALOG_RETURN_SMALL) {
+                if (vscreenHeight <= 192) {
+                    ctx.items[i].iconSprite = SPR_DIALOG_RETURN_SMALL;
+                    ctx.items[i].height = 3;
+                } else {
+                    ctx.items[i].iconSprite = SPR_DIALOG_RETURN;
+                    ctx.items[i].height = 5;
+                }
+            }
+        }
 
         //Set the text
         if (dialogType == DLG_ABOUT) {
@@ -1182,6 +1208,9 @@ class Dialogs {
             if (vscreenHeight <= 224) {
                 ctx.items[0].offsetY = 8;
             }
+            if (vscreenHeight <= 192) {
+                ctx.items[0].offsetY = 9;
+            }
         }
 
         if (dialogType == DLG_ABOUT || dialogType == DLG_CREDITS) {
@@ -1198,6 +1227,10 @@ class Dialogs {
             if (vscreenWidth <= 320 || vscreenHeight <= 224) {
                 ctx.textBorder = false;
                 ctx.textOffsetX = -1;
+            }
+
+            if (vscreenHeight <= 192) {
+                ctx.textOffsetY = -1;
             }
         }
     }

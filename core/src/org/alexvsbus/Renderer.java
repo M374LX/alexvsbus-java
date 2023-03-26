@@ -160,12 +160,26 @@ class Renderer {
 
         PlayCtx ctx = playCtx;
         int x, y, spr, frame;
+        int camy, topcamy; //Current and topmost camera Y position
         int i;
 
         //Background color
         drawSpriteStretch(ctx.bgColor, 0, 0, vscreenWidth, vscreenHeight);
 
-        drawOffsetY = (int)ctx.cam.y - (vscreenHeight - VSCREEN_MAX_HEIGHT);
+        camy = (int)ctx.cam.y;
+
+        //Determine topmost camera Y position from virtual screen (vscreen)
+        //height
+        topcamy = 0;
+        if (vscreenHeight < 224) {
+            topcamy = vscreenHeight - 224;
+        }
+
+        if (camy < topcamy) {
+            camy = topcamy;
+        }
+
+        drawOffsetY = camy - (vscreenHeight - VSCREEN_MAX_HEIGHT);
 
         //Background image
         drawSpriteRepeat(SPR_BACKGROUND, -ctx.bgOffsetX, BACKGROUND_DRAW_Y, 6, 1);
@@ -622,7 +636,7 @@ class Renderer {
         //item are displayed, while the main area is where the dialog's
         //text and other items are displayed
         int vscreenHeight = (displayParams.vscreenHeight / TILE_SIZE);
-        int topAreaHeight = 7;
+        int topAreaHeight = Dialogs.topAreaHeight();
         int mainAreaHeight = vscreenHeight - topAreaHeight;
 
         //Center of the main area of the dialog in tiles
@@ -632,7 +646,7 @@ class Renderer {
         if (dialogCtx.showFrame) {
             //Frame size and position in tiles
             int tw = 36;
-            int th = 20;
+            int th = 18;
             int tx = cx - (tw / 2);
             int ty = cy - (th / 2);
 
@@ -656,7 +670,7 @@ class Renderer {
             }
 
             x = (displayParams.vscreenWidth - logoWidth) / 2 + 4;
-            y = 16;
+            y = (displayParams.vscreenHeight <= 192) ? 0 : 16;
 
             drawSprite(spr, x, y);
         }
@@ -664,13 +678,14 @@ class Renderer {
         if (dialogCtx.displayName.length() > 0) {
             //Text position in tiles
             int tx = cx - 10;
-            int ty = 3;
+            int ty = (displayParams.vscreenHeight <= 192) ? 2 : 3;
 
             int x = tx * TILE_SIZE;
             int y = ty * TILE_SIZE;
             int w = 20;
+            int h = (displayParams.vscreenHeight <= 192) ? 3 : 5;
 
-            drawDialogBorder(x - 16, y - 16, w + 4, 5, false, false);
+            drawDialogBorder(x - 16, 8, w + 4, h, false, false);
             drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
         }
 

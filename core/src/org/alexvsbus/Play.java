@@ -1430,13 +1430,22 @@ class Play {
         }
 
         //Vertical camera movement
-        cam.y += cam.yvel * dt;
-        if (cam.yvel < 0 && cam.y <= 0) {
-            cam.y = 0;
-            cam.yvel = 0;
-        } else if (cam.yvel > 0 && cam.y >= 95) {
-            cam.y = 95;
-            cam.yvel = 0;
+        if (cam.yvel != 0) {
+            cam.y += cam.yvel * dt;
+            if (cam.yvel < 0 && cam.y <= 0) {
+                cam.y = 0;
+                cam.yvel = 0;
+            } else if (cam.yvel > 0 && cam.y >= 95) {
+                cam.y = 95;
+                cam.yvel = 0;
+            }
+        } else if (cam.followPlayer) {
+            //This is not the final Y position of the camera, as the camera's
+            //vertical movement is ignored if it is over the floor and the
+            //virtual screen (vscreen) is high enough
+            if (ctx.player.y < 104) {
+                cam.y = ctx.player.y - 104;
+            }
         }
     }
 

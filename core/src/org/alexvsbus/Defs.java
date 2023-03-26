@@ -420,7 +420,7 @@ public class Defs {
 
     //Minimum supported size for the virtual screen
     static final int VSCREEN_MIN_WIDTH  = 320;
-    static final int VSCREEN_MIN_HEIGHT = 224;
+    static final int VSCREEN_MIN_HEIGHT = 192;
 
     //Minimum size for the virtual screen when using automatic sizing (except
     //if the screen is very small)
@@ -634,27 +634,29 @@ public class Defs {
     static final int SPR_DIALOG_CONFIRM_SELECTED = 99;
     static final int SPR_DIALOG_CANCEL = 100;
     static final int SPR_DIALOG_CANCEL_SELECTED = 101;
-    static final int SPR_DIALOG_1 = 102;
-    static final int SPR_DIALOG_1_SELECTED = 103;
-    static final int SPR_DIALOG_2 = 104;
-    static final int SPR_DIALOG_2_SELECTED = 105;
-    static final int SPR_DIALOG_3 = 106;
-    static final int SPR_DIALOG_3_SELECTED = 107;
-    static final int SPR_DIALOG_4 = 108;
-    static final int SPR_DIALOG_4_SELECTED = 109;
-    static final int SPR_DIALOG_5 = 110;
-    static final int SPR_DIALOG_5_SELECTED = 111;
-    static final int SPR_DIALOG_LOCKED = 112;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 113;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 114;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 115;
-    static final int SPR_DIALOG_BORDER_TOP = 116;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 117;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 118;
-    static final int SPR_DIALOG_BORDER_LEFT = 119;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 120;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 121;
-    static final int SPR_SCANLINE = 122;
+    static final int SPR_DIALOG_RETURN_SMALL = 102;
+    static final int SPR_DIALOG_RETURN_SMALL_SELECTED = 103;
+    static final int SPR_DIALOG_1 = 104;
+    static final int SPR_DIALOG_1_SELECTED = 105;
+    static final int SPR_DIALOG_2 = 106;
+    static final int SPR_DIALOG_2_SELECTED = 107;
+    static final int SPR_DIALOG_3 = 108;
+    static final int SPR_DIALOG_3_SELECTED = 109;
+    static final int SPR_DIALOG_4 = 110;
+    static final int SPR_DIALOG_4_SELECTED = 111;
+    static final int SPR_DIALOG_5 = 112;
+    static final int SPR_DIALOG_5_SELECTED = 113;
+    static final int SPR_DIALOG_LOCKED = 114;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 115;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 116;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 117;
+    static final int SPR_DIALOG_BORDER_TOP = 118;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 119;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 120;
+    static final int SPR_DIALOG_BORDER_LEFT = 121;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 122;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 123;
+    static final int SPR_SCANLINE = 124;
 
     //Logo width in pixels
     static final int LOGO_WIDTH_SMALL = 224;
@@ -877,7 +879,7 @@ public class Defs {
 
     //Supported virtual screen heights
     public static final int[] vscreenHeights = new int[]{
-        270, 256, 240, 224
+        270, 256, 240, 224, 192
     };
 
     //Number of levels per difficulty
@@ -999,6 +1001,8 @@ public class Defs {
         392,  544,  24,  24,  //SPR_DIALOG_CONFIRM_SELECTED
         136,  544,  24,  24,  //SPR_DIALOG_CANCEL
         424,  544,  24,  24,  //SPR_DIALOG_CANCEL_SELECTED
+        168,  544,  24,  24,  //SPR_DIALOG_RETURN_SMALL
+        456,  544,  24,  24,  //SPR_DIALOG_RETURN_SMALL_SELECTED
         8,    576,  24,  32,  //SPR_DIALOG_1
         296,  576,  24,  32,  //SPR_DIALOG_1_SELECTED
         40,   576,  24,  32,  //SPR_DIALOG_2
