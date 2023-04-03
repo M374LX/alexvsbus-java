@@ -419,7 +419,7 @@ public class Defs {
     static final int VSCREEN_MAX_HEIGHT = 270;
 
     //Minimum supported size for the virtual screen
-    static final int VSCREEN_MIN_WIDTH  = 320;
+    static final int VSCREEN_MIN_WIDTH  = 256;
     static final int VSCREEN_MIN_HEIGHT = 192;
 
     //Minimum size for the virtual screen when using automatic sizing (except
@@ -874,7 +874,7 @@ public class Defs {
 
     //Supported virtual screen widths
     public static final int[] vscreenWidths = new int[]{
-        480, 432, 424, 320
+        480, 432, 424, 320, 256
     };
 
     //Supported virtual screen heights

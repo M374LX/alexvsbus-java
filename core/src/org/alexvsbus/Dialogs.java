@@ -521,7 +521,7 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                if (item < 4) {
+                if (item < 5) {
                     config.vscreenWidth = vscreenWidths[item];
                 }
                 close();
@@ -982,14 +982,15 @@ class Dialogs {
                 break;
 
             case DLG_VSCREEN_WIDTH:
-                setItem(0,  5,  3,  4,  4,  4,  1, NONE);
-                setItem(1,  5,  3,  4,  4,  0,  2, NONE);
-                setItem(2,  5,  3,  4,  4,  1,  3, NONE);
-                setItem(3,  5,  3,  4,  4,  2,  4, NONE);
-                setItem(4,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
-                ctx.numItems = 5;
-                positionItemsCenter(0, 3, false, 6, 0);
-                setItemPosition(4, ALIGN_TOPLEFT, 1, 1); //Return
+                setItem(0,  5,  3,  5,  5,  4,  1, NONE);
+                setItem(1,  5,  3,  5,  5,  0,  2, NONE);
+                setItem(2,  5,  3,  5,  5,  1,  3, NONE);
+                setItem(3,  5,  3,  5,  5,  2,  4, NONE);
+                setItem(4,  5,  3,  5,  5,  3,  5, NONE);
+                setItem(5,  5,  5, -2, -2,  3,  0, SPR_DIALOG_RETURN);
+                ctx.numItems = 6;
+                positionItemsCenter(0, 4, false, 6, 0);
+                setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the width options here should be the same as in the
                 //vscreenWidths array, found in the Defs class
@@ -997,6 +998,7 @@ class Dialogs {
                 ctx.items[1].caption = "432";
                 ctx.items[2].caption = "424";
                 ctx.items[3].caption = "320";
+                ctx.items[4].caption = "256";
                 break;
 
             case DLG_VSCREEN_HEIGHT:
@@ -1159,43 +1161,92 @@ class Dialogs {
         }
 
         //Set the text
-        if (dialogType == DLG_ABOUT) {
-            ctx.text =
-                (char)0x1B + "Alex vs Bus: The Race\n" +
-                (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
-                "\n" +
-                (char)0x1B + "Version\n" +
-                " " + VERSION + "\n" +
-                "\n" +
-                (char)0x1B + "Repository\n" +
-                " " + url(REPOSITORY) + "\n" +
-                "\n" +
-                (char)0x1B + "Licenses\n" +
-                " The code is under GNU GPLv3, while\n" +
-                " the assets are under CC BY-SA 4.0.\n" +
-                "\n" +
-                " " + url("https://www.gnu.org/licenses/gpl-3.0.en.html") + "\n" +
-                " " + url("https://creativecommons.org/licenses/by-sa/4.0");
-        } else if (dialogType == DLG_CREDITS) {
-            ctx.text =
-                (char)0x1B + "M374LX" + (char)0x1B +
-                        " (" + url("http://m374lx.users.sourceforge.net") + ")\n" +
-                " Game design, programming,\n" +
-                " music, SFX, graphics\n" +
-                "\n" +
-                (char)0x1B + "Hoton Bastos\n" +
-                " Additional game design\n" +
-                "\n" +
-                (char)0x1B + "Harim Pires\n" +
-                " Testing\n" +
-                "\n" +
-                (char)0x1B + "Codeman38" + (char)0x1B +
-                        " (" + url("https://www.zone38.net") + ")\n" +
-                " \"Press Start 2P\" font\n" +
-                "\n" +
-                (char)0x1B + "YoWorks" + (char)0x1B +
-                        " (" + url("https://www.yoworks.com") + ")\n" +
-                " \"Telegrama\" font";
+        if (vscreenWidth <= 256) {
+            if (dialogType == DLG_ABOUT) {
+                ctx.text =
+                    (char)0x1B + "Alex vs Bus: The Race\n" +
+                    (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
+                    "\n" +
+                    (char)0x1B + "Version\n" +
+                    " " + VERSION + "\n" +
+                    "\n" +
+                    (char)0x1B + "Licenses\n" +
+                    " The code is under GNU GPLv3,\n" +
+                    " while the assets are under\n" +
+                    " CC BY-SA 4.0.";
+            } else if (dialogType == DLG_CREDITS) {
+                ctx.text =
+                    (char)0x1B + "M374LX\n" +
+                    " Game design, programming,\n" +
+                    " music, SFX, graphics\n" +
+                    "\n" +
+                    (char)0x1B + "Hoton Bastos\n" +
+                    " Additional game design\n" +
+                    "\n" +
+                    (char)0x1B + "Harim Pires\n" +
+                    " Testing\n" +
+                    "\n" +
+                    (char)0x1B + "Codeman38\n" +
+                    " \"Press Start 2P\" font\n" +
+                    "\n" +
+                    (char)0x1B + "YoWorks\n" +
+                    " \"Telegrama\" font";
+            }
+        } else {
+            if (dialogType == DLG_ABOUT) {
+                ctx.text =
+                    (char)0x1B + "Alex vs Bus: The Race\n" +
+                    (char)0x7F + " 2021-2023 M374LX\n" + //0x7F = copyright symbol
+                    "\n" +
+                    (char)0x1B + "Version\n" +
+                    " " + VERSION + "\n" +
+                    "\n" +
+                    (char)0x1B + "Repository\n" +
+                    " " + url(REPOSITORY) + "\n" +
+                    "\n" +
+                    (char)0x1B + "Licenses\n" +
+                    " The code is under GNU GPLv3, while\n" +
+                    " the assets are under CC BY-SA 4.0.\n" +
+                    "\n" +
+                    " " + url("https://www.gnu.org/licenses/gpl-3.0.en.html") + "\n" +
+                    " " + url("https://creativecommons.org/licenses/by-sa/4.0");
+            } else if (dialogType == DLG_CREDITS) {
+                ctx.text =
+                    (char)0x1B + "M374LX" + (char)0x1B +
+                            " (" + url("http://m374lx.users.sourceforge.net") + ")\n" +
+                    " Game design, programming,\n" +
+                    " music, SFX, graphics\n" +
+                    "\n" +
+                    (char)0x1B + "Hoton Bastos\n" +
+                    " Additional game design\n" +
+                    "\n" +
+                    (char)0x1B + "Harim Pires\n" +
+                    " Testing\n" +
+                    "\n" +
+                    (char)0x1B + "Codeman38" + (char)0x1B +
+                            " (" + url("https://www.zone38.net") + ")\n" +
+                    " \"Press Start 2P\" font\n" +
+                    "\n" +
+                    (char)0x1B + "YoWorks" + (char)0x1B +
+                            " (" + url("https://www.yoworks.com") + ")\n" +
+                    " \"Telegrama\" font";
+            }
+        }
+
+        //If the screen is too small, hide the audio toggle icon on the main
+        //dialog
+        if (dialogType == DLG_MAIN) {
+            ctx.items[5].hidden = false;
+
+            if (vscreenWidth <= 256) {
+                ctx.items[5].hidden = true;
+
+                if (ctx.useCursor) {
+                    if (ctx.stack[ctx.stackSize - 1].selectedItem == 5) {
+                        ctx.stack[ctx.stackSize - 1].selectedItem = 0;
+                    }
+                }
+            }
         }
 
         //In smaller screens, move the "Credits" item upwards a bit
@@ -1222,6 +1273,9 @@ class Dialogs {
 
             if (vscreenWidth <= 320) {
                 ctx.textWidth = 36;
+            }
+            if (vscreenWidth <= 256) {
+                ctx.textWidth = 28;
             }
 
             if (vscreenWidth <= 320 || vscreenHeight <= 224) {

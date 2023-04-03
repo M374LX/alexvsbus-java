@@ -186,7 +186,7 @@ class Renderer {
 
         drawOffsetX = (int)ctx.cam.x;
         if (vscreenWidth <= 320 && ctx.levelNum == LVLNUM_ENDING) {
-            drawOffsetX += 104;
+            drawOffsetX += 168;
         }
 
         //Holes (background part)
@@ -645,7 +645,7 @@ class Renderer {
 
         if (dialogCtx.showFrame) {
             //Frame size and position in tiles
-            int tw = 36;
+            int tw = 28;
             int th = 18;
             int tx = cx - (tw / 2);
             int ty = cy - (th / 2);
@@ -684,6 +684,12 @@ class Renderer {
             int y = ty * TILE_SIZE;
             int w = 20;
             int h = (displayParams.vscreenHeight <= 192) ? 3 : 5;
+
+            if (displayParams.vscreenWidth <= 256) {
+                tx = cx - 7;
+                w = 17;
+                x = tx * TILE_SIZE;
+            }
 
             drawDialogBorder(x - 16, 8, w + 4, h, false, false);
             drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
