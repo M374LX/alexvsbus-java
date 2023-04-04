@@ -106,6 +106,10 @@ public class Input extends ControllerAdapter {
     void onTouch(float x, float y) {
         if (!config.touchEnabled || !config.showTouchControls) return;
 
+        //Ignore touches outside the virtual screen (vscreen)
+        if (x < 0 || x > displayParams.vscreenWidth)  return;
+        if (y < 0 || y > displayParams.vscreenHeight) return;
+
         //Pause
         if (x >= displayParams.vscreenWidth - 32 && y <= 32) {
             pauseTouched = true;
