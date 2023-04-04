@@ -536,20 +536,25 @@ class Renderer {
     }
 
     void drawHud() {
-        int x;
+        int x, h;
 
-        drawSpriteStretch(SPR_BG_BLACK, 0, 0, displayParams.vscreenWidth, 24);
+        h = 16;
+        if (config.touchEnabled && displayParams.vscreenHeight > 224) {
+            h = 24;
+        }
 
-        drawSprite(SPR_HUD_SCORE, 1, 1);
-        drawDigits(playCtx.score, 6, 1, 9);
+        drawSpriteStretch(SPR_BG_BLACK, 0, 0, displayParams.vscreenWidth, h);
 
-        x = (displayParams.vscreenWidth / 2) - (2 * TILE_SIZE) + 1;
+        drawText("SCORE", TXTCOL_WHITE, 0, 0);
+        drawDigits(playCtx.score, 6, 0, 8);
 
-        drawSprite(SPR_HUD_TIME, x, 1);
+        x = (displayParams.vscreenWidth / 2) - (2 * TILE_SIZE);
+
+        drawText("TIME", TXTCOL_WHITE, x, 0);
         if (playCtx.levelNum == LVLNUM_ENDING) {
-            drawText("--", TXTCOL_WHITE, x + TILE_SIZE, 9);
+            drawText("--", TXTCOL_WHITE, x + TILE_SIZE, 8);
         } else {
-            drawDigits(playCtx.time, 2, x + TILE_SIZE, 9);
+            drawDigits(playCtx.time, 2, x + TILE_SIZE, 8);
         }
     }
 
