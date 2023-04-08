@@ -148,7 +148,15 @@ public class Defs {
         float x, y;
         float xvel, yvel;
         float xdest;
+        float xmin;
+        float xmax;
+
         boolean followPlayer;
+        float followPlayerMinX;
+        float followPlayerMaxX;
+
+        boolean fixedAtLeftmost;
+        boolean fixedAtRightmost;
     }
 
     static class Player {

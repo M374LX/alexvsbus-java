@@ -200,6 +200,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             scaleManualVscreen();
         }
 
+        if (screenType == SCR_PLAY || screenType == SCR_PLAY_FREEZE) {
+            play.onScreenResize();
+        }
+
         dialogs.adaptToScreenSize();
         renderer.onScreenResize();
         platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
@@ -635,9 +639,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         playCtx.bus.routeSign = levelNum;
+        playCtx.cam.fixedAtLeftmost = true;
 
         audio.playBgm(playCtx.bgm);
         wipeCmd = WIPECMD_IN;
+
+        play.onScreenResize();
     }
 
     void startEndingSequence() {

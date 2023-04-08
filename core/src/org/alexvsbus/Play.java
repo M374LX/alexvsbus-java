@@ -150,6 +150,8 @@ class Play {
         ctx.cam.xvel = 0;
         ctx.cam.yvel = 0;
         ctx.cam.followPlayer = false;
+        ctx.cam.fixedAtLeftmost = false;
+        ctx.cam.fixedAtRightmost = false;
 
         ctx.player.x = 96;
         ctx.player.oldx = 96;
@@ -310,6 +312,33 @@ class Play {
     }
 
     //--------------------------------------------------------------------------
+
+    void onScreenResize() {
+        Camera cam = ctx.cam;
+        int vscreenWidth = displayParams.vscreenWidth;
+
+        ctx.cam.xmin = 0;
+        ctx.cam.xmax = ctx.levelSize - vscreenWidth;
+        ctx.cam.followPlayerMinX = 64;
+        ctx.cam.followPlayerMaxX = vscreenWidth / 2;
+
+        if (vscreenWidth <= 256) {
+            ctx.cam.followPlayerMinX  = 32;
+            ctx.cam.followPlayerMaxX -= 64;
+            ctx.cam.xmin = 40;
+        } else if (vscreenWidth <= 320) {
+            ctx.cam.followPlayerMinX  = 32;
+            ctx.cam.followPlayerMaxX -= 56;
+            ctx.cam.xmin = 40;
+        }
+
+        if (ctx.cam.fixedAtLeftmost || ctx.cam.x < ctx.cam.xmin) {
+            ctx.cam.x = ctx.cam.xmin;
+        }
+        if (ctx.cam.fixedAtRightmost || ctx.cam.x > ctx.cam.xmax) {
+            ctx.cam.x = ctx.cam.xmax;
+        }
+    }
 
     void setAnimation(int anim, boolean running, boolean loop, boolean reverse,
                                                 int numFrames, float delay) {
@@ -1398,7 +1427,6 @@ class Play {
     //Updates the position of the camera
     void moveCamera() {
         Camera cam = ctx.cam;
-        int rightmost = ctx.levelSize - displayParams.vscreenWidth;
 
         //Horizontal camera movement
         if (cam.xvel != 0) {
@@ -1410,22 +1438,22 @@ class Play {
                 cam.xvel = 0;
             }
         } else if (cam.followPlayer) {
-            if (ctx.player.x > cam.x + displayParams.vscreenWidth / 2) {
+            if (ctx.player.x > cam.x + cam.followPlayerMaxX) {
                 //Move right
-                cam.x = ctx.player.x - displayParams.vscreenWidth / 2;
-            } else if (ctx.player.x < cam.x + 64) {
+                cam.x = ctx.player.x - cam.followPlayerMaxX;
+            } else if (ctx.player.x < cam.x + cam.followPlayerMinX) {
                 //Move left
-                cam.x = ctx.player.x - 64;
+                cam.x = ctx.player.x - cam.followPlayerMinX;
             }
         }
 
         //Keep the camera within the level boundaries
-        if (cam.x > rightmost) {
-            cam.x = rightmost;
+        if (cam.x > cam.xmax) {
+            cam.x = cam.xmax;
             cam.xvel = 0;
         }
-        if (cam.x < 0) {
-            cam.x = 0;
+        if (cam.x < cam.xmin) {
+            cam.x = cam.xmin;
             cam.xvel = 0;
         }
 
@@ -1631,6 +1659,7 @@ class Play {
                 moveBusToEnd();
                 ignoreUserInput = false;
                 ctx.cam.followPlayer = true;
+                ctx.cam.fixedAtLeftmost = false;
                 ctx.timeRunning = true;
                 ctx.timeDelay = 1;
                 ctx.canPause = true;
@@ -1729,7 +1758,7 @@ class Play {
                 if (ctx.car.x != NONE) break; //Wait until the car and hen are
                 if (ctx.hen.x != NONE) break; //not visible anymore
                 cam.followPlayer = false;
-                cam.xdest = levelSize - (vscreenWidth / 2);
+                cam.xdest = levelSize;
                 cam.xvel = CAMERA_XVEL;
                 cam.yvel = 0;
                 ctx.sequenceStep++;
@@ -1739,6 +1768,7 @@ class Play {
                 //Camera stops and bus leaves
                 if (cam.xvel != 0) break;
                 if (cam.yvel != 0) break;
+                cam.fixedAtRightmost = true;
                 ctx.sequenceDelay = 0.2f;
                 ctx.sequenceStep = SEQ_BUS_LEAVING;
                 break;
@@ -1761,8 +1791,9 @@ class Play {
                 //Camera is placed so the bus is visible and screen wipes from
                 //black
                 pl.state = PLAYER_STATE_INACTIVE;
-                cam.x = levelSize - (vscreenWidth / 2);
+                cam.x = cam.xmax;
                 cam.y = 0;
+                cam.fixedAtRightmost = true;
                 ctx.wipeIn = true;
                 ctx.sequenceDelay = 0.6f;
                 ctx.sequenceStep++;
