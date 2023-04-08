@@ -332,11 +332,42 @@ class Play {
             ctx.cam.xmin = 40;
         }
 
-        if (ctx.cam.fixedAtLeftmost || ctx.cam.x < ctx.cam.xmin) {
-            ctx.cam.x = ctx.cam.xmin;
+        positionCamera();
+        applyBackgroundOffset();
+    }
+
+    void positionCamera() {
+        Camera cam = ctx.cam;
+
+        if (cam.followPlayer) {
+            if (cam.xvel == 0) {
+                if (ctx.player.x > cam.x + cam.followPlayerMaxX) {
+                    //Move right
+                    cam.x = ctx.player.x - cam.followPlayerMaxX;
+                } else if (ctx.player.x < cam.x + cam.followPlayerMinX) {
+                    //Move left
+                    cam.x = ctx.player.x - cam.followPlayerMinX;
+                }
+            }
+
+            if (cam.yvel == 0) {
+                //This is not the final Y position of the camera, as the camera's
+                //vertical movement is ignored if it is over the floor and the
+                //virtual screen (vscreen) is high enough
+                if (ctx.player.y < 104) {
+                    cam.y = ctx.player.y - 104;
+                }
+            }
         }
-        if (ctx.cam.fixedAtRightmost || ctx.cam.x > ctx.cam.xmax) {
-            ctx.cam.x = ctx.cam.xmax;
+
+        //Keep the camera within the level boundaries
+        if (cam.fixedAtRightmost || cam.x > cam.xmax) {
+            cam.x = cam.xmax;
+            cam.xvel = 0;
+        }
+        if (cam.fixedAtLeftmost || cam.x < cam.xmin) {
+            cam.x = cam.xmin;
+            cam.xvel = 0;
         }
     }
 
@@ -1437,24 +1468,6 @@ class Play {
             } else if (cam.xvel < 0 && cam.x <= cam.xdest) {
                 cam.xvel = 0;
             }
-        } else if (cam.followPlayer) {
-            if (ctx.player.x > cam.x + cam.followPlayerMaxX) {
-                //Move right
-                cam.x = ctx.player.x - cam.followPlayerMaxX;
-            } else if (ctx.player.x < cam.x + cam.followPlayerMinX) {
-                //Move left
-                cam.x = ctx.player.x - cam.followPlayerMinX;
-            }
-        }
-
-        //Keep the camera within the level boundaries
-        if (cam.x > cam.xmax) {
-            cam.x = cam.xmax;
-            cam.xvel = 0;
-        }
-        if (cam.x < cam.xmin) {
-            cam.x = cam.xmin;
-            cam.xvel = 0;
         }
 
         //Vertical camera movement
@@ -1467,14 +1480,9 @@ class Play {
                 cam.y = 95;
                 cam.yvel = 0;
             }
-        } else if (cam.followPlayer) {
-            //This is not the final Y position of the camera, as the camera's
-            //vertical movement is ignored if it is over the floor and the
-            //virtual screen (vscreen) is high enough
-            if (ctx.player.y < 104) {
-                cam.y = ctx.player.y - 104;
-            }
         }
+
+        positionCamera();
     }
 
     //Prevents the player character from moving off the level's boundaries
