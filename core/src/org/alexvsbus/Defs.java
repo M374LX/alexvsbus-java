@@ -432,7 +432,7 @@ public class Defs {
 
     //Minimum size for the virtual screen when using automatic sizing (except
     //if the screen is very small)
-    static final int VSCREEN_AUTO_MIN_WIDTH  = 424;
+    static final int VSCREEN_AUTO_MIN_WIDTH  = 416;
     static final int VSCREEN_AUTO_MIN_HEIGHT = 240;
 
     //Screen wiping commands
@@ -880,7 +880,7 @@ public class Defs {
 
     //Supported virtual screen widths
     public static final int[] vscreenWidths = new int[]{
-        480, 432, 424, 320, 256
+        480, 432, 416, 320, 256
     };
 
     //Supported virtual screen heights

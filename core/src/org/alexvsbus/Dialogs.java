@@ -996,7 +996,7 @@ class Dialogs {
                 //vscreenWidths array, found in the Defs class
                 ctx.items[0].caption = "480";
                 ctx.items[1].caption = "432";
-                ctx.items[2].caption = "424";
+                ctx.items[2].caption = "416";
                 ctx.items[3].caption = "320";
                 ctx.items[4].caption = "256";
                 break;
