@@ -635,18 +635,9 @@ class Renderer {
         int selectedItem = dialogCtx.stack[dialogCtx.stackSize - 1].selectedItem;
         int i;
 
-        //The heights here are in tiles
-        //
-        //The top area is the area on which the dialog's name and return
-        //item are displayed, while the main area is where the dialog's
-        //text and other items are displayed
-        int vscreenHeight = (displayParams.vscreenHeight / TILE_SIZE);
-        int topAreaHeight = Dialogs.topAreaHeight();
-        int mainAreaHeight = vscreenHeight - topAreaHeight;
-
         //Center of the main area of the dialog in tiles
-        int cx = (displayParams.vscreenWidth  / TILE_SIZE) / 2;
-        int cy = mainAreaHeight / 2 + topAreaHeight;
+        int cx = (displayParams.vscreenWidth / TILE_SIZE) / 2;
+        int cy = Dialogs.centerTileY();
 
         if (dialogCtx.showFrame) {
             //Frame size and position in tiles

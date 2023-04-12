@@ -84,12 +84,15 @@ class Dialogs {
         return ctx;
     }
 
-    //Returns the height of the dialog's top area in tiles
-    //
-    //The top area is where the dialog's name, as well as the return item, are
-    //placed
-    static int topAreaHeight() {
-        return (displayParams.vscreenHeight <= 192) ? 3 : 7;
+    //Returns the Y position in tiles corresponding to the center of the
+    //dialog's main area (where most items are placed), which is distinct from
+    //the top area (where the display name and often the return item are placed)
+    static int centerTileY() {
+        int vscreenHeightTiles = displayParams.vscreenHeight / TILE_SIZE;
+        int topAreaHeight = (displayParams.vscreenHeight <= 192) ? 3 : 7;
+        int mainAreaHeight = vscreenHeightTiles - topAreaHeight;
+
+        return mainAreaHeight / 2 + topAreaHeight;
     }
 
     //Returns the absolute X position of an item on the screen in pixels
@@ -110,15 +113,7 @@ class Dialogs {
         int y = item.offsetY;
 
         if (item.align == ALIGN_CENTER) {
-            //The heights here are in tiles
-            //
-            //The top area is the area on which the dialog's name and return
-            //item are displayed, while the main area is where the dialog's
-            //text and other items are displayed
-            int vscreenHeight = (displayParams.vscreenHeight / TILE_SIZE);
-            int mainAreaHeight = vscreenHeight - topAreaHeight();
-
-            y += (mainAreaHeight - item.height) / 2 + topAreaHeight();
+            y += centerTileY() - item.height / 2;
         }
 
         return y * TILE_SIZE;
