@@ -185,18 +185,36 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         int minWindowWidth;
         int minWindowHeight;
 
-        displayParams.physWidth  = newWidth;
-        displayParams.physHeight = newHeight;
-
         if (config.vscreenAutoSize) {
             minWindowWidth  = VSCREEN_MIN_WIDTH;
             minWindowHeight = VSCREEN_MIN_HEIGHT;
-
-            autoSizeVscreen();
         } else {
             minWindowWidth  = displayParams.vscreenWidth;
             minWindowHeight = displayParams.vscreenHeight;
+        }
 
+        platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
+
+        displayParams.physWidth  = newWidth;
+        displayParams.physHeight = newHeight;
+
+        //Ensure the window is not smaller than the minimum size
+        if (!Gdx.graphics.isFullscreen()) {
+            int width  = Gdx.graphics.getWidth();
+            int height = Gdx.graphics.getHeight();
+
+            if (width  < minWindowWidth)  width  = minWindowWidth;
+            if (height < minWindowHeight) height = minWindowHeight;
+
+            displayParams.physWidth  = width;
+            displayParams.physHeight = height;
+
+            Gdx.graphics.setWindowedMode(width, height);
+        }
+
+        if (config.vscreenAutoSize) {
+            autoSizeVscreen();
+        } else {
             scaleManualVscreen();
         }
 
@@ -206,18 +224,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         dialogs.adaptToScreenSize();
         renderer.onScreenResize();
-        platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
-
-        //Ensure the window is not smaller than the minimum size
-        if (!Gdx.graphics.isFullscreen() && config.resizableWindow) {
-            int width  = Gdx.graphics.getWidth();
-            int height = Gdx.graphics.getHeight();
-
-            if (width  < minWindowWidth)  width  = minWindowWidth;
-            if (height < minWindowHeight) height = minWindowHeight;
-
-            Gdx.graphics.setWindowedMode(width, height);
-        }
     }
 
     @Override
@@ -435,13 +441,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 displayParams.vscreenHeight = config.vscreenHeight;
 
                 if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
-                    int windowWidth;
-                    int windowHeight;
+                    int width  = config.vscreenWidth  * config.windowScale;
+                    int height = config.vscreenHeight * config.windowScale;
 
-                    windowWidth  = config.vscreenWidth  * config.windowScale;
-                    windowHeight = config.vscreenHeight * config.windowScale;
-
-                    Gdx.graphics.setWindowedMode(windowWidth, windowHeight);
+                    Gdx.graphics.setWindowedMode(width, height);
                 } else {
                     resize(displayParams.physWidth, displayParams.physHeight);
                 }
@@ -450,10 +453,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Virtual screen (vscreen) sizing mode change
         if (config.vscreenAutoSize != oldVscreenAutoSize) {
-            if (config.vscreenAutoSize && Gdx.graphics.isFullscreen()) {
-                resize(displayParams.physWidth, displayParams.physHeight);
-            }
-
+            resize(displayParams.physWidth, displayParams.physHeight);
             oldVscreenAutoSize = config.vscreenAutoSize;
         }
 

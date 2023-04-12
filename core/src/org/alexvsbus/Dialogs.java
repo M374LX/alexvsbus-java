@@ -1259,6 +1259,8 @@ class Dialogs {
             }
         }
 
+        //Set the offset, size, and border of the text on "About" and "Credits"
+        //dialogs
         if (dialogType == DLG_ABOUT || dialogType == DLG_CREDITS) {
             ctx.textBorder  = true;
             ctx.textOffsetX = 0;
