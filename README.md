@@ -109,6 +109,10 @@ The options are:
 --scanlines-off        Disable scanlines visual effect
 --touch                Enable touchscreen controls, which can also be
                        simulated by using the mouse
+--touch-buttons-on     Enable left, right, and jump buttons on
+                       touchscreen (visible only if --touch is also used)
+--touch-buttons-off    Disable left, right, and jump buttons on
+                       touchscreen
 --vscreen-size <size>  Set the size of the virtual screen (vscreen)
 
 For --vscreen-size, the size can be either "auto" or a width and a height
@@ -118,14 +122,16 @@ below.
 Supported width values:
 480
 432
-424
+416
 320
+256
 
 Supported height values:
 270
 256
 240
 224
+192
 ```
 
 **Note:** The options above refer to the latest commit and have changed since

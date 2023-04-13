@@ -60,6 +60,7 @@ class DesktopPlatDep implements PlatDep {
     int cliWindowScale; //0 = unset
     int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliTouchButtonsEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliVscreenWidth;  //0 = unset; -1 = auto
     int cliVscreenHeight; //0 = unset; -1 = auto
 
@@ -73,8 +74,6 @@ class DesktopPlatDep implements PlatDep {
     }
 
     void run(String[] args) {
-        int windowMinWidth;
-        int windowMinHeight;
         Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
 
         parseCli(args);
@@ -129,6 +128,10 @@ class DesktopPlatDep implements PlatDep {
         "--scanlines-off        Disable scanlines visual effect\n" +
         "--touch                Enable touchscreen controls, which can also be\n" +
         "                       simulated by using the mouse\n" +
+        "--touch-buttons-on     Enable left, right, and jump buttons on\n" +
+        "                       touchscreen (visible only if --touch is also used)\n" +
+        "--touch-buttons-off    Disable left, right, and jump buttons on\n" +
+        "                       touchscreen\n" +
         "--vscreen-size <size>  Set the size of the virtual screen (vscreen)\n" +
         "\n" +
         "For --vscreen-size, the size can be either \"auto\" or a width and a height\n" +
@@ -183,6 +186,7 @@ class DesktopPlatDep implements PlatDep {
         cliWindowScale = 0;
         cliAudioEnabled = 0;
         cliScanlinesEnabled = 0;
+        cliTouchButtonsEnabled = 0;
         cliVscreenWidth = 0;
         cliVscreenHeight = 0;
 
@@ -239,6 +243,10 @@ class DesktopPlatDep implements PlatDep {
                 cliResizable = true;
             } else if (a.equals("--touch")) {
                 cliTouchEnabled = true;
+            } else if (a.equals("--touch-buttons-on")) {
+                cliTouchButtonsEnabled = 1;
+            } else if (a.equals("--touch-buttons-off")) {
+                cliTouchButtonsEnabled = -1;
             } else {
                 cliHelp = true;
                 return;
@@ -335,6 +343,9 @@ class DesktopPlatDep implements PlatDep {
         }
         if (cliTouchEnabled) {
             config.touchEnabled = true;
+        }
+        if (cliTouchButtonsEnabled != 0) {
+            config.touchButtonsEnabled = (cliTouchButtonsEnabled == -1) ? false : true;
         }
         if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
             config.vscreenAutoSize = false;
@@ -435,6 +446,10 @@ class DesktopPlatDep implements PlatDep {
                     config.scanlinesEnabled = false;
                 }
             } else if (tokens[0].equals("touch-buttons-enabled")) {
+                if (cliTouchButtonsEnabled != 0) {
+                    continue;
+                }
+
                 if (tokens[1].equals("true")) {
                     config.touchButtonsEnabled = true;
                 } else if (tokens[1].equals("false")) {
