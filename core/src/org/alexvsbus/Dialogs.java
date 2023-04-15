@@ -1087,6 +1087,26 @@ class Dialogs {
                 ctx.items[1].disabled = true;
                 ctx.items[2].disabled = true;
             }
+        } else if (dialogType == DLG_VSCREEN_WIDTH) {
+            if (!config.windowSupported) {
+                //Disable vscreen width values that are too large for the
+                //physical screen (but keep the smallest available value)
+                for (i = 0; i < ctx.numItems - 2; i++) {
+                    if (vscreenWidths[i] > displayParams.physWidth) {
+                        ctx.items[i].disabled = true;
+                    }
+                }
+            }
+        } else if (dialogType == DLG_VSCREEN_HEIGHT) {
+            if (!config.windowSupported) {
+                //Disable vscreen height values that are too large for the
+                //physical screen (but keep the smallest available value)
+                for (i = 0; i < ctx.numItems - 2; i++) {
+                    if (vscreenHeights[i] > displayParams.physHeight) {
+                        ctx.items[i].disabled = true;
+                    }
+                }
+            }
         } else if (dialogType == DLG_DIFFICULTY) {
             if (!config.progressCheat) {
                 if (config.progressDifficulty < DIFFICULTY_HARD) {
