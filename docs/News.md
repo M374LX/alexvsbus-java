@@ -1,3 +1,14 @@
+## Pre-release: pre6 (2023/04/14)
+
+Sixth pre-release, which includes
+
+* Improved support for different screen sizes
+* Scanlines visual effect
+* Immersive mode on Android
+* New settings dialog
+* No more left side camera locking
+
+
 ## Pre-release: pre5 (2022/09/24)
 
 Fifth pre-release, which includes:

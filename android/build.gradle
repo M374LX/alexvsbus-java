@@ -20,8 +20,8 @@ android {
         applicationId "org.alexvsbus"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 5
-        versionName "pre5"
+        versionCode 6
+        versionName "pre6"
     }
     buildTypes {
         release {
