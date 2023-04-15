@@ -51,9 +51,7 @@ When using a keyboard, the controls are:
 
 **F6:** Toggle audio
 
-**F7:** Toggle scanlines*
-
-*Scanlines are not yet available in a release, only in the main Git branch.
+**F7:** Toggle scanlines
 
 On French (AZERTY) keyboards, W becomes Z and A becomes Q.
 
@@ -83,7 +81,7 @@ After installing Java and downloading the .jar file, on Windows, a double-click
 on the .jar file should be enough to start the game. To start it from the CLI,
 the command is:
 ```
-java -jar alexvsbus-desktop-pre5.jar
+java -jar alexvsbus-desktop-pre6.jar
 ```
 
 
@@ -92,7 +90,7 @@ java -jar alexvsbus-desktop-pre5.jar
 On PC, the game supports some command line options. For example, to use the
 option --fullscreen, the full command is:
 ```
-java -jar alexvsbus-desktop-pre5.jar --fullscreen
+java -jar alexvsbus-desktop-pre6.jar --fullscreen
 ```
 
 The options are:
@@ -134,10 +132,6 @@ Supported height values:
 192
 ```
 
-**Note:** The options above refer to the latest commit and have changed since
-the latest pre-release. For the options available in the latest pre-release,
-see https://github.com/M374LX/alexvsbus-java/blob/pre5/README.md.
-
 
 ## Building from source
 
@@ -160,7 +154,7 @@ systems (including Linux):
 
 On Windows, replace "./gradlew" with "gradlew.bat".
 
-The built .jar file will be at ``desktop/build/libs/desktop-pre5.jar``.
+The built .jar file will be at ``desktop/build/libs/desktop-pre6.jar``.
 
 Alternatively, the following command allows running the game without keeping the
 build:
@@ -215,8 +209,8 @@ On Windows, replace "./gradlew" with "gradlew.bat".
 ## Project status and plans
 
 While it is quite close to becoming a finished game, there are still plans to
-improve the support for different screen sizes, offer the user more settings,
-and improve the documentation, as well as more testing.
+offer the user more settings and improve the documentation, as well as more
+testing.
 
 There are also plans to port the game from Java/libGDX to C/SDL. This is why
 the GitHub repository contains "java" in its name and also why many Java
