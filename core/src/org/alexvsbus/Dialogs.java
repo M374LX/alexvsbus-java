@@ -165,8 +165,8 @@ class Dialogs {
     //Handles player's input from keyboard or game controller, but not screen
     //touches
     void handleKeys(int inputHeld, int inputHit) {
-        //Nothing to do if no dialog is open
-        if (ctx.stackSize <= 0) return;
+        //Nothing to do if no dialog is open or a level has been selected
+        if (ctx.stackSize <= 0 || ctx.levelSelected) return;
 
         if (waitInputUp) {
             if (inputHeld == 0) waitInputUp = false;
