@@ -671,7 +671,7 @@ class Renderer {
             drawSprite(spr, x, y);
         }
 
-        if (dialogCtx.displayName.length() > 0) {
+        if (dialogCtx.displayName.length() > 0 && !dialogCtx.levelSelected) {
             //Text position in tiles
             int tx = cx - 10;
             int ty = (displayParams.vscreenHeight <= 192) ? 2 : 3;
@@ -682,8 +682,19 @@ class Renderer {
             int h = (displayParams.vscreenHeight <= 192) ? 3 : 5;
 
             if (displayParams.vscreenWidth <= 256) {
+                boolean centerBar = true;
+
+                //If the virtual screen (vscreen) is 256 pixels wide or less,
+                //center the name bar only if there is no selectable item at
+                //the top-left corner
+                for (i = 0; i < dialogCtx.numItems; i++) {
+                    if (dialogCtx.items[i].align == ALIGN_TOPLEFT) {
+                        centerBar = false;
+                    }
+                }
+
+                w = centerBar ? 14 : 16;
                 tx = cx - 7;
-                w = 17;
                 x = tx * TILE_SIZE;
             }
 
