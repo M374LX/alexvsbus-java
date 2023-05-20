@@ -58,8 +58,10 @@ class DesktopPlatDep implements PlatDep {
     boolean cliFullscreen;
     boolean cliWindowed;
     int cliWindowScale; //0 = unset
-    int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliMusicEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliSfxEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliTouchButtonsEnabled; //0 = unset; -1 = disable; 1 = enable
     int cliVscreenWidth;  //0 = unset; -1 = auto
     int cliVscreenHeight; //0 = unset; -1 = auto
@@ -121,11 +123,15 @@ class DesktopPlatDep implements PlatDep {
         "-f, --fullscreen       Run in fullscreen mode\n" +
         "-w, --windowed         Run in windowed mode\n" +
         "--window-scale <scale> Set the window scale (1 to 3)\n" +
-        "--audio-on             Enable audio output\n" +
-        "--audio-off            Disable audio output\n" +
         "--resizable            Make the window resizable\n" +
         "--scanlines-on         Enable scanlines visual effect\n" +
         "--scanlines-off        Disable scanlines visual effect\n" +
+        "--audio-on             Enable audio output\n" +
+        "--audio-off            Disable audio output\n" +
+        "--music-on             Enable music\n" +
+        "--music-off            Disable music\n" +
+        "--sfx-on               Enable sound effects\n" +
+        "--sfx-off              Disable sound effects\n" +
         "--touch                Enable touchscreen controls, which can also be\n" +
         "                       simulated by using the mouse\n" +
         "--touch-buttons-on     Enable left, right, and jump buttons on\n" +
@@ -185,6 +191,8 @@ class DesktopPlatDep implements PlatDep {
         cliWindowed = false;
         cliWindowScale = 0;
         cliAudioEnabled = 0;
+        cliMusicEnabled = 0;
+        cliSfxEnabled = 0;
         cliScanlinesEnabled = 0;
         cliTouchButtonsEnabled = 0;
         cliVscreenWidth = 0;
@@ -231,16 +239,24 @@ class DesktopPlatDep implements PlatDep {
                 } else if (a.equals("3")) {
                     cliWindowScale = 3;
                 }
-            } else if (a.equals("--audio-on")) {
-                cliAudioEnabled = 1;
-            } else if (a.equals("--audio-off")) {
-                cliAudioEnabled = -1;
             } else if (a.equals("--scanlines-on")) {
                 cliScanlinesEnabled = 1;
             } else if (a.equals("--scanlines-off")) {
                 cliScanlinesEnabled = -1;
             } else if (a.equals("--resizable")) {
                 cliResizable = true;
+            } else if (a.equals("--audio-on")) {
+                cliAudioEnabled = 1;
+            } else if (a.equals("--audio-off")) {
+                cliAudioEnabled = -1;
+            } else if (a.equals("--music-on")) {
+                cliMusicEnabled = 1;
+            } else if (a.equals("--music-off")) {
+                cliMusicEnabled = -1;
+            } else if (a.equals("--sfx-on")) {
+                cliSfxEnabled = 1;
+            } else if (a.equals("--sfx-off")) {
+                cliSfxEnabled = -1;
             } else if (a.equals("--touch")) {
                 cliTouchEnabled = true;
             } else if (a.equals("--touch-buttons-on")) {
@@ -313,6 +329,8 @@ class DesktopPlatDep implements PlatDep {
         config.windowScale = 2;
         config.resizableWindow = false;
         config.audioEnabled = true;
+        config.musicEnabled = true;
+        config.sfxEnabled = true;
         config.scanlinesEnabled = false;
         config.vscreenAutoSize = true;
         config.vscreenWidth  = -1;
@@ -335,11 +353,17 @@ class DesktopPlatDep implements PlatDep {
         if (cliWindowScale > 0) {
             config.windowScale = cliWindowScale;
         }
+        if (cliScanlinesEnabled != 0) {
+            config.scanlinesEnabled = (cliScanlinesEnabled == -1) ? false : true;
+        }
         if (cliAudioEnabled != 0) {
             config.audioEnabled = (cliAudioEnabled == -1) ? false : true;
         }
-        if (cliScanlinesEnabled != 0) {
-            config.scanlinesEnabled = (cliScanlinesEnabled == -1) ? false : true;
+        if (cliMusicEnabled != 0) {
+            config.musicEnabled = (cliMusicEnabled == -1) ? false : true;
+        }
+        if (cliSfxEnabled != 0) {
+            config.sfxEnabled = (cliSfxEnabled == -1) ? false : true;
         }
         if (cliTouchEnabled) {
             config.touchEnabled = true;
@@ -423,6 +447,17 @@ class DesktopPlatDep implements PlatDep {
                 } else if (tokens[1].equals("3")) {
                     config.windowScale = 3;
                 }
+             } else if (tokens[0].equals("scanlines-enabled")) {
+                //If set from CLI, skip loading from config file
+                if (cliScanlinesEnabled != 0) {
+                    continue;
+                }
+
+                if (tokens[1].equals("true")) {
+                    config.scanlinesEnabled = true;
+                } else if (tokens[1].equals("false")) {
+                    config.scanlinesEnabled = false;
+                }
             } else if (tokens[0].equals("audio-enabled")) {
                 //If set from CLI, skip loading from config file
                 if (cliAudioEnabled != 0) {
@@ -434,16 +469,27 @@ class DesktopPlatDep implements PlatDep {
                 } else if (tokens[1].equals("false")) {
                     config.audioEnabled = false;
                 }
-             } else if (tokens[0].equals("scanlines-enabled")) {
+            } else if (tokens[0].equals("music-enabled")) {
                 //If set from CLI, skip loading from config file
-                if (cliScanlinesEnabled != 0) {
+                if (cliMusicEnabled != 0) {
                     continue;
                 }
 
                 if (tokens[1].equals("true")) {
-                    config.scanlinesEnabled = true;
+                    config.musicEnabled = true;
                 } else if (tokens[1].equals("false")) {
-                    config.scanlinesEnabled = false;
+                    config.musicEnabled = false;
+                }
+            } else if (tokens[0].equals("sfx-enabled")) {
+                //If set from CLI, skip loading from config file
+                if (cliSfxEnabled != 0) {
+                    continue;
+                }
+
+                if (tokens[1].equals("true")) {
+                    config.sfxEnabled = true;
+                } else if (tokens[1].equals("false")) {
+                    config.sfxEnabled = false;
                 }
             } else if (tokens[0].equals("touch-buttons-enabled")) {
                 if (cliTouchButtonsEnabled != 0) {
@@ -549,13 +595,21 @@ class DesktopPlatDep implements PlatDep {
         //Window scale
         data += "window-scale " + config.windowScale + "\n";
 
+        //Scanlines enabled
+        data += "scanlines-enabled " +
+            (config.scanlinesEnabled ? "true" : "false") + "\n";
+
         //Audio enabled
         data += "audio-enabled " +
             (config.audioEnabled ? "true" : "false") + "\n";
 
-        //Scanlines enabled
-        data += "scanlines-enabled " +
-            (config.scanlinesEnabled ? "true" : "false") + "\n";
+        //Music enabled
+        data += "music-enabled " +
+            (config.musicEnabled ? "true" : "false") + "\n";
+
+        //Sound effects enabled
+        data += "sfx-enabled " +
+            (config.sfxEnabled ? "true" : "false") + "\n";
 
         //Touchscreen buttons enabled
         data += "touch-buttons-enabled " +

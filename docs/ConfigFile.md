@@ -40,11 +40,6 @@ property value. The value can be either a string or a number.
   values are ``1`` (small window), ``2`` (medium-sized window), and ``3``
   (large window).
 
-* audio-enabled
-
-  The value ``true`` enables audio output, while the value ``false`` disables
-  audio output.
-
 * scanlines-enabled
 
   The value ``true`` enables a scanlines visual effect, while the value
@@ -67,6 +62,20 @@ property value. The value can be either a string or a number.
   The height of the virtual screen (vscreen) if its size is set manually. It is
   required if the property ``vscreen-auto-size`` is set to ``false``, but
   ignored otherwise.
+
+* audio-enabled
+
+  The value ``true`` enables audio output, while the value ``false`` disables
+  audio output.
+
+* music-enabled
+
+  The value ``true`` enables music, while the value ``false`` disables music.
+
+* sfx-enabled
+
+  The value ``true`` enables sound effects, while the value ``false`` disables
+  sound effects.
 
 * touch-buttons-enabled
 

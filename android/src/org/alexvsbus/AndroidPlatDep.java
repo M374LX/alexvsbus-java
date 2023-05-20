@@ -67,17 +67,25 @@ class AndroidPlatDep implements PlatDep {
         //key on desktop)
         config.useBackKey = true;
 
+        //Display settings
         config.fullscreen = true;
         config.windowSupported = false;
         config.resizableWindow = false;
-        config.touchEnabled = true;
-        config.touchButtonsEnabled = getPrefsBoolean("touch-buttons-enabled", true);
-        config.audioEnabled = getPrefsBoolean("audio-enabled", true);
         config.scanlinesEnabled = getPrefsBoolean("scanlines-enabled", false);
         config.vscreenAutoSize = getPrefsBoolean("vscreen-auto-size", true);
         config.vscreenWidth  = -1;
         config.vscreenHeight = -1;
 
+        //Audio settings
+        config.audioEnabled = getPrefsBoolean("audio-enabled", true);
+        config.musicEnabled = getPrefsBoolean("music-enabled", true);
+        config.sfxEnabled = getPrefsBoolean("sfx-enabled", true);
+
+        //Touchscreen settings
+        config.touchEnabled = true;
+        config.touchButtonsEnabled = getPrefsBoolean("touch-buttons-enabled", true);
+
+        //Game progress
         config.progressDifficulty = getPrefsInt("progress-difficulty",
                         DIFFICULTY_NORMAL, DIFFICULTY_NORMAL, DIFFICULTY_MAX);
         config.progressLevel = getPrefsInt("progress-level", 1, 1, 9);
@@ -116,12 +124,14 @@ class AndroidPlatDep implements PlatDep {
     @Override
     public void saveConfig() {
         editor = prefs.edit();
-        editor.putBoolean("audio-enabled", config.audioEnabled);
         editor.putBoolean("scanlines-enabled", config.scanlinesEnabled);
         editor.putBoolean("touch-buttons-enabled", config.touchButtonsEnabled);
         editor.putBoolean("vscreen-auto-size", config.vscreenAutoSize);
         editor.putInt("vscreen-width",  config.vscreenWidth);
         editor.putInt("vscreen-height", config.vscreenHeight);
+        editor.putBoolean("audio-enabled", config.audioEnabled);
+        editor.putBoolean("music-enabled", config.musicEnabled);
+        editor.putBoolean("sfx-enabled", config.sfxEnabled);
         editor.putInt("progress-level", config.progressLevel);
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();

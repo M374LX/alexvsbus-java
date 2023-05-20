@@ -93,7 +93,7 @@ option --fullscreen, the full command is:
 java -jar alexvsbus-desktop-pre6.jar --fullscreen
 ```
 
-The options are:
+As of the latest pre-release, the options are:
 ```
 -h, --help             Show this usage information and exit
 -v, --version          Show version and license information and exit
@@ -130,6 +130,15 @@ Supported height values:
 240
 224
 192
+```
+
+The following additional options are available as of the latest commit in the
+``main`` branch:
+```
+--music-on             Enable music
+--music-off            Disable music
+--sfx-on               Enable sound effects
+--sfx-off              Disable sound effects
 ```
 
 

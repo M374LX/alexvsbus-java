@@ -65,9 +65,11 @@ public class Defs {
         public boolean windowSupported;
         public boolean resizableWindow;
         public int windowScale;
+        public boolean scanlinesEnabled;
 
         public boolean audioEnabled;
-        public boolean scanlinesEnabled;
+        public boolean musicEnabled;
+        public boolean sfxEnabled;
 
         //Virtual screen size
         public boolean vscreenAutoSize;
@@ -696,10 +698,10 @@ public class Defs {
     static final int DLG_SETTINGS = 4;
     static final int DLG_DISPLAY_SETTINGS = 5;
     static final int DLG_VSCREEN_SIZE = 6;
-    static final int DLG_VSCREEN_SIZING = 7;
-    static final int DLG_VSCREEN_WIDTH = 8;
-    static final int DLG_VSCREEN_HEIGHT = 9;
-    static final int DLG_WINDOW_SCALE = 10;
+    static final int DLG_VSCREEN_WIDTH = 7;
+    static final int DLG_VSCREEN_HEIGHT = 8;
+    static final int DLG_WINDOW_SCALE = 9;
+    static final int DLG_AUDIO_SETTINGS = 10;
     static final int DLG_ABOUT = 11;
     static final int DLG_CREDITS = 12;
     static final int DLG_PAUSE = 13;

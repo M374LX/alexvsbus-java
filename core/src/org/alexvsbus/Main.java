@@ -47,6 +47,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     int oldWindowScale;
     boolean oldVscreenAutoSize;
     boolean oldAudioEnabled;
+    boolean oldMusicEnabled;
+    boolean oldSfxEnabled;
 
     //Game progress
     boolean progressChecked;
@@ -126,13 +128,17 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         play.clear();
         renderer.load();
 
-        audio.enable(config.audioEnabled);
+        audio.enableAudio(config.audioEnabled);
+        audio.enableMusic(config.musicEnabled);
+        audio.enableSfx(config.sfxEnabled);
         changeWindowMode();
 
         oldFullscreen = config.fullscreen;
         oldWindowScale = config.windowScale;
         oldVscreenAutoSize = config.vscreenAutoSize;
         oldAudioEnabled = config.audioEnabled;
+        oldMusicEnabled = config.musicEnabled;
+        oldSfxEnabled = config.sfxEnabled;
 
         platDep.postInit();
 
@@ -474,9 +480,22 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Audio toggle
         if (config.audioEnabled != oldAudioEnabled) {
-            audio.enable(config.audioEnabled);
+            audio.enableAudio(config.audioEnabled);
             oldAudioEnabled = config.audioEnabled;
         }
+
+        //Music toggle
+        if (config.musicEnabled != oldMusicEnabled) {
+            audio.enableMusic(config.musicEnabled);
+            oldMusicEnabled = config.musicEnabled;
+        }
+
+        //Sound effects toggle
+        if (config.sfxEnabled != oldSfxEnabled) {
+            audio.enableSfx(config.sfxEnabled);
+            oldSfxEnabled = config.sfxEnabled;
+        }
+
     }
 
     void handleDelayedAction() {

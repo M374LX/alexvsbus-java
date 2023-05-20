@@ -106,7 +106,9 @@ class Audio {
     Music bgm;
 
     volatile boolean quit;
-    boolean enabled;
+    boolean audioEnabled;
+    boolean musicEnabled;
+    boolean sfxEnabled;
     int sfxToPlay;
     int sfxToStop;
     int bgmToPlay;
@@ -124,7 +126,9 @@ class Audio {
         bgm = null;
 
         quit = false;
-        enabled = true;
+        audioEnabled = true;
+        musicEnabled = true;
+        sfxEnabled = true;
         sfxToPlay = NONE;
         sfxToStop = NONE;
         bgmToPlay = NONE;
@@ -171,16 +175,41 @@ class Audio {
         sfxThread.start();
     }
 
-    void enable(boolean en) {
-        if (enabled == en) return;
+    void enableAudio(boolean en) {
+        if (audioEnabled != en) {
+            audioEnabled = en;
 
-        enabled = en;
+            if (bgm != null) {
+                if (audioEnabled && musicEnabled) {
+                    bgm.play();
+                } else {
+                    bgm.stop();
+                }
+            }
 
-        if (bgm != null) {
-            if (enabled) bgm.play(); else bgm.stop();
+            sfxThread.enable(audioEnabled && sfxEnabled);
         }
+    }
 
-        sfxThread.enable(enabled);
+    void enableMusic(boolean en) {
+        if (musicEnabled != en) {
+            musicEnabled = en;
+
+            if (bgm != null) {
+                if (audioEnabled && musicEnabled) {
+                    bgm.play();
+                } else {
+                    bgm.stop();
+                }
+            }
+        }
+    }
+
+    void enableSfx(boolean en) {
+        if (sfxEnabled != en) {
+            sfxEnabled = en;
+            sfxThread.enable(audioEnabled && sfxEnabled);
+        }
     }
 
     void playSfx(int id) {
@@ -210,7 +239,7 @@ class Audio {
         try {
             bgm = Gdx.audio.newMusic(Gdx.files.internal(file));
             bgm.setLooping(true);
-            if (enabled) bgm.play();
+            if (audioEnabled && musicEnabled) bgm.play();
         } catch (Exception e) {
             bgm = null;
         }

@@ -236,13 +236,10 @@ class Dialogs {
         //Update the values displayed by dialog items
         dialogType = ctx.stack[ctx.stackSize - 1].type;
         if (dialogType == DLG_SETTINGS) {
-            ctx.items[1].value = (config.audioEnabled) ? "ON" : "OFF";
             ctx.items[2].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
         } else if (dialogType == DLG_DISPLAY_SETTINGS) {
             ctx.items[0].value = (config.fullscreen) ? "ON" : "OFF";
             ctx.items[3].value = (config.scanlinesEnabled) ? "ON" : "OFF";
-            ctx.items[4].value = (config.audioEnabled) ? "ON" : "OFF";
-            ctx.items[5].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
 
             if (config.resizableWindow) {
                 ctx.items[1].value = "---";
@@ -259,6 +256,10 @@ class Dialogs {
                 ctx.items[1].value = "" + config.vscreenWidth;
                 ctx.items[2].value = "" + config.vscreenHeight;
             }
+        } else if (dialogType == DLG_AUDIO_SETTINGS) {
+            ctx.items[0].value = (config.audioEnabled) ? "ON" : "OFF";
+            ctx.items[1].value = (config.musicEnabled) ? "ON" : "OFF";
+            ctx.items[2].value = (config.sfxEnabled) ? "ON" : "OFF";
         }
 
         //Handle selected item change
@@ -435,7 +436,7 @@ class Dialogs {
                         break;
 
                     case 1:
-                        config.audioEnabled = !config.audioEnabled;
+                        open(DLG_AUDIO_SETTINGS);
                         break;
 
                     case 2:
@@ -527,6 +528,26 @@ class Dialogs {
                     config.vscreenHeight = vscreenHeights[item];
                 }
                 close();
+                break;
+
+            case DLG_AUDIO_SETTINGS:
+                switch (item) {
+                    case 0:
+                        config.audioEnabled = !config.audioEnabled;
+                        break;
+
+                    case 1:
+                        config.musicEnabled = !config.musicEnabled;
+                        break;
+
+                    case 2:
+                        config.sfxEnabled = !config.sfxEnabled;
+                        break;
+
+                    case 3:
+                        close();
+                        break;
+                }
                 break;
 
             case DLG_ABOUT:
@@ -807,6 +828,10 @@ class Dialogs {
                 displayName = "VSCREEN HEIGHT";
                 break;
 
+            case DLG_AUDIO_SETTINGS:
+                displayName = "AUDIO SETTINGS";
+                break;
+
             case DLG_ABOUT:
                 displayName = "ABOUT";
                 break;
@@ -931,7 +956,7 @@ class Dialogs {
                 positionItemsCenter(0, 2, true, 4, 0);
                 setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
                 ctx.items[0].caption = "DISPLAY SETTINGS";
-                ctx.items[1].caption = "AUDIO";
+                ctx.items[1].caption = "AUDIO SETTINGS";
                 ctx.items[2].caption = "TOUCHSCREEN BUTTONS";
                 break;
 
@@ -1014,6 +1039,20 @@ class Dialogs {
                 ctx.items[2].caption = "240";
                 ctx.items[3].caption = "224";
                 ctx.items[4].caption = "192";
+                break;
+
+            case DLG_AUDIO_SETTINGS:
+                setItem(0, 26,  3,  3,  1,  3,  3, NONE);
+                setItem(1, 26,  3,  0,  2,  3,  3, NONE);
+                setItem(2, 26,  3,  1,  3,  3,  3, NONE);
+                setItem(3,  5,  5,  2,  0, -2, -2, SPR_DIALOG_RETURN);
+                ctx.numItems = 4;
+                positionItemsCenter(0, 2, true, 4, 0);
+                setItemPosition(3, ALIGN_TOPLEFT, 1, 1); //Return
+                ctx.items[0].caption = "AUDIO";
+                ctx.items[1].caption = "MUSIC";
+                ctx.items[2].caption = "SFX";
+
                 break;
 
             case DLG_ABOUT:
