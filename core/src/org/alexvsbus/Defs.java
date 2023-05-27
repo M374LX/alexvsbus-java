@@ -120,7 +120,6 @@ public class Defs {
         int numItems;
         DialogItem items[];
 
-
         String text;
         int textOffsetX; //Offset from center of screen in 8x8 tiles
         int textOffsetY;

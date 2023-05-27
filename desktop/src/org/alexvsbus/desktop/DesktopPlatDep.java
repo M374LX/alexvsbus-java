@@ -57,14 +57,14 @@ class DesktopPlatDep implements PlatDep {
     boolean cliTouchEnabled;
     boolean cliFullscreen;
     boolean cliWindowed;
-    int cliWindowScale; //0 = unset
-    int cliScanlinesEnabled; //0 = unset; -1 = disable; 1 = enable
-    int cliAudioEnabled; //0 = unset; -1 = disable; 1 = enable
-    int cliMusicEnabled; //0 = unset; -1 = disable; 1 = enable
-    int cliSfxEnabled; //0 = unset; -1 = disable; 1 = enable
+    int cliWindowScale;         //0 = unset
+    int cliScanlinesEnabled;    //0 = unset; -1 = disable; 1 = enable
+    int cliAudioEnabled;        //0 = unset; -1 = disable; 1 = enable
+    int cliMusicEnabled;        //0 = unset; -1 = disable; 1 = enable
+    int cliSfxEnabled;          //0 = unset; -1 = disable; 1 = enable
     int cliTouchButtonsEnabled; //0 = unset; -1 = disable; 1 = enable
-    int cliVscreenWidth;  //0 = unset; -1 = auto
-    int cliVscreenHeight; //0 = unset; -1 = auto
+    int cliVscreenWidth;        //0 = unset; -1 = auto
+    int cliVscreenHeight;       //0 = unset; -1 = auto
 
     DesktopPlatDep() {
         config = new Config();
@@ -424,21 +424,13 @@ class DesktopPlatDep implements PlatDep {
 
             if (tokens[0].equals("fullscreen")) {
                 //If set from CLI, skip loading from config file
-                if (cliFullscreen || cliWindowed) {
-                    continue;
-                }
+                if (cliFullscreen || cliWindowed) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.fullscreen = true;
-                } else if (tokens[1].equals("false")) {
-                    config.fullscreen = false;
-                }
-
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.fullscreen = false;
             } else if (tokens[0].equals("window-scale")) {
                 //If set from CLI, skip loading from config file
-                if (cliWindowScale > 0) {
-                    continue;
-                }
+                if (cliWindowScale > 0) continue;
 
                 if (tokens[1].equals("1")) {
                     config.windowScale = 1;
@@ -449,77 +441,47 @@ class DesktopPlatDep implements PlatDep {
                 }
              } else if (tokens[0].equals("scanlines-enabled")) {
                 //If set from CLI, skip loading from config file
-                if (cliScanlinesEnabled != 0) {
-                    continue;
-                }
+                if (cliScanlinesEnabled != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.scanlinesEnabled = true;
-                } else if (tokens[1].equals("false")) {
-                    config.scanlinesEnabled = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("true")) config.scanlinesEnabled = true;
             } else if (tokens[0].equals("audio-enabled")) {
                 //If set from CLI, skip loading from config file
-                if (cliAudioEnabled != 0) {
-                    continue;
-                }
+                if (cliAudioEnabled != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.audioEnabled = true;
-                } else if (tokens[1].equals("false")) {
-                    config.audioEnabled = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.audioEnabled = false;
             } else if (tokens[0].equals("music-enabled")) {
                 //If set from CLI, skip loading from config file
-                if (cliMusicEnabled != 0) {
-                    continue;
-                }
+                if (cliMusicEnabled != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.musicEnabled = true;
-                } else if (tokens[1].equals("false")) {
-                    config.musicEnabled = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.musicEnabled = false;
             } else if (tokens[0].equals("sfx-enabled")) {
                 //If set from CLI, skip loading from config file
-                if (cliSfxEnabled != 0) {
-                    continue;
-                }
+                if (cliSfxEnabled != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.sfxEnabled = true;
-                } else if (tokens[1].equals("false")) {
-                    config.sfxEnabled = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.sfxEnabled = false;
             } else if (tokens[0].equals("touch-buttons-enabled")) {
-                if (cliTouchButtonsEnabled != 0) {
-                    continue;
-                }
+                //If set from CLI, skip loading from config file
+                if (cliTouchButtonsEnabled != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.touchButtonsEnabled = true;
-                } else if (tokens[1].equals("false")) {
-                    config.touchButtonsEnabled = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.touchButtonsEnabled = false;
             } else if (tokens[0].equals("vscreen-auto-size")) {
                 //If set from CLI, skip loading from config file
-                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
-                    continue;
-                }
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) continue;
 
-                if (tokens[1].equals("true")) {
-                    config.vscreenAutoSize = true;
-                } else if (tokens[1].equals("false")) {
-                    config.vscreenAutoSize = false;
-                }
+                //Check for the non-default boolean value
+                if (tokens[1].equals("false")) config.vscreenAutoSize = false;
             } else if (tokens[0].equals("vscreen-width")) {
                 //If set from CLI, skip loading from config file
-                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
-                    continue;
-                }
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) continue;
 
                 try {
                     int val = Integer.parseInt(tokens[1]);
+
                     if (val >= 1 && val <= 999) {
                         for (i = 0; i < vscreenWidths.length; i++) {
                             if (vscreenWidths[i] == val) {
@@ -533,12 +495,11 @@ class DesktopPlatDep implements PlatDep {
                 }
             } else if (tokens[0].equals("vscreen-height")) {
                 //If set from CLI, skip loading from config file
-                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) {
-                    continue;
-                }
+                if (cliVscreenWidth != 0 && cliVscreenHeight != 0) continue;
 
                 try {
                     int val = Integer.parseInt(tokens[1]);
+
                     if (val >= 1 && val <= 999) {
                         for (i = 0; i < vscreenHeights.length; i++) {
                             if (vscreenHeights[i] == val) {
@@ -561,6 +522,7 @@ class DesktopPlatDep implements PlatDep {
             } else if (tokens[0].equals("progress-level")) {
                 try {
                     int val = Integer.parseInt(tokens[1]);
+
                     if (val < 1 || val > 9) {
                         val = 1;
                     }
