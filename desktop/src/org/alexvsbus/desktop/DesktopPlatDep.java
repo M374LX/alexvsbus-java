@@ -57,6 +57,7 @@ class DesktopPlatDep implements PlatDep {
     boolean cliTouchEnabled;
     boolean cliFullscreen;
     boolean cliWindowed;
+    boolean cliFixedWindowMode;
     int cliWindowScale;         //0 = unset
     int cliScanlinesEnabled;    //0 = unset; -1 = disable; 1 = enable
     int cliAudioEnabled;        //0 = unset; -1 = disable; 1 = enable
@@ -124,6 +125,10 @@ class DesktopPlatDep implements PlatDep {
         "-w, --windowed         Run in windowed mode\n" +
         "--window-scale <scale> Set the window scale (1 to 3)\n" +
         "--resizable            Make the window resizable\n" +
+        "--vscreen-size <size>  Set the size of the virtual screen (vscreen)\n" +
+        "--fixed-window-mode    Simulate the mobile version's inability to toggle\n" +
+        "                       between fullscreen and windowed mode and to change\n" +
+        "                       the window scale\n" +
         "--scanlines-on         Enable scanlines visual effect\n" +
         "--scanlines-off        Disable scanlines visual effect\n" +
         "--audio-on             Enable audio output\n" +
@@ -138,7 +143,8 @@ class DesktopPlatDep implements PlatDep {
         "                       touchscreen (visible only if --touch is also used)\n" +
         "--touch-buttons-off    Disable left, right, and jump buttons on\n" +
         "                       touchscreen\n" +
-        "--vscreen-size <size>  Set the size of the virtual screen (vscreen)\n" +
+        "--mobile               As a shorthand for --fixed-window-mode and --touch,\n" +
+        "                       simulate the mobile version\n" +
         "\n" +
         "For --vscreen-size, the size can be either \"auto\" or a width and a height\n" +
         "separated by an \"x\" (example: 480x270), with the supported values listed\n" +
@@ -186,17 +192,18 @@ class DesktopPlatDep implements PlatDep {
         cliHelp = false;
         cliVersion = false;
         cliResizable = false;
-        cliTouchEnabled = false;
         cliFullscreen = false;
         cliWindowed = false;
+        cliFixedWindowMode = false;
         cliWindowScale = 0;
+        cliVscreenWidth = 0;
+        cliVscreenHeight = 0;
+        cliScanlinesEnabled = 0;
         cliAudioEnabled = 0;
         cliMusicEnabled = 0;
         cliSfxEnabled = 0;
-        cliScanlinesEnabled = 0;
+        cliTouchEnabled = false;
         cliTouchButtonsEnabled = 0;
-        cliVscreenWidth = 0;
-        cliVscreenHeight = 0;
 
         for (i = 0; i < argc; i++) {
             String a = args[i];
@@ -239,6 +246,8 @@ class DesktopPlatDep implements PlatDep {
                 } else if (a.equals("3")) {
                     cliWindowScale = 3;
                 }
+            } else if (a.equals("--fixed-window-mode")) {
+                cliFixedWindowMode = true;
             } else if (a.equals("--scanlines-on")) {
                 cliScanlinesEnabled = 1;
             } else if (a.equals("--scanlines-off")) {
@@ -263,6 +272,10 @@ class DesktopPlatDep implements PlatDep {
                 cliTouchButtonsEnabled = 1;
             } else if (a.equals("--touch-buttons-off")) {
                 cliTouchButtonsEnabled = -1;
+            } else if (a.equals("--mobile")) {
+                //Shorthand for --fixed-window-mode and --touch
+                cliFixedWindowMode = true;
+                cliTouchEnabled = true;
             } else {
                 cliHelp = true;
                 return;
@@ -326,6 +339,7 @@ class DesktopPlatDep implements PlatDep {
         config.touchButtonsEnabled = true;
         config.fullscreen = true;
         config.windowSupported = true;
+        config.fixedWindowMode = false;
         config.windowScale = 2;
         config.resizableWindow = false;
         config.audioEnabled = true;
@@ -356,6 +370,17 @@ class DesktopPlatDep implements PlatDep {
         if (cliScanlinesEnabled != 0) {
             config.scanlinesEnabled = (cliScanlinesEnabled == -1) ? false : true;
         }
+        if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
+            config.vscreenAutoSize = false;
+            config.vscreenWidth = cliVscreenWidth;
+            config.vscreenHeight = cliVscreenHeight;
+        }
+        if (cliResizable) {
+            config.resizableWindow = true;
+        }
+        if (cliFixedWindowMode) {
+            config.fixedWindowMode = true;
+        }
         if (cliAudioEnabled != 0) {
             config.audioEnabled = (cliAudioEnabled == -1) ? false : true;
         }
@@ -370,14 +395,6 @@ class DesktopPlatDep implements PlatDep {
         }
         if (cliTouchButtonsEnabled != 0) {
             config.touchButtonsEnabled = (cliTouchButtonsEnabled == -1) ? false : true;
-        }
-        if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
-            config.vscreenAutoSize = false;
-            config.vscreenWidth = cliVscreenWidth;
-            config.vscreenHeight = cliVscreenHeight;
-        }
-        if (cliResizable) {
-            config.resizableWindow = true;
         }
 
         //Find configuration directory

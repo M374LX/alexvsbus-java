@@ -70,6 +70,7 @@ class AndroidPlatDep implements PlatDep {
         //Display settings
         config.fullscreen = true;
         config.windowSupported = false;
+        config.fixedWindowMode = true;
         config.resizableWindow = false;
         config.scanlinesEnabled = getPrefsBoolean("scanlines-enabled", false);
         config.vscreenAutoSize = getPrefsBoolean("vscreen-auto-size", true);

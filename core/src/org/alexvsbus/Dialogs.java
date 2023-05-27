@@ -454,7 +454,7 @@ class Dialogs {
             case DLG_DISPLAY_SETTINGS:
                 switch (item) {
                     case 0:
-                        if (config.windowSupported) {
+                        if (!config.fixedWindowMode) {
                             config.fullscreen = !config.fullscreen;
                         }
                         break;
@@ -1116,9 +1116,10 @@ class Dialogs {
         //Determine items to be hidden or disabled
         if (dialogType == DLG_SETTINGS) {
             ctx.items[2].hidden   = !config.touchEnabled;
+            positionItemsCenter(0, 2, true, 4, 0);
         } else if (dialogType == DLG_DISPLAY_SETTINGS) {
-            ctx.items[0].hidden   = !config.windowSupported;
-            ctx.items[1].hidden   = !config.windowSupported;
+            ctx.items[0].hidden   = config.fixedWindowMode;
+            ctx.items[1].hidden   = config.fixedWindowMode;
             ctx.items[1].disabled =  config.resizableWindow;
             positionItemsCenter(0, 3, true, 4, 0);
         } else if (dialogType == DLG_VSCREEN_SIZE) {
@@ -1127,7 +1128,7 @@ class Dialogs {
                 ctx.items[2].disabled = true;
             }
         } else if (dialogType == DLG_VSCREEN_WIDTH) {
-            if (!config.windowSupported) {
+            if (config.fixedWindowMode) {
                 //Disable vscreen width values that are too large for the
                 //physical screen (but keep the smallest available value)
                 for (i = 0; i < ctx.numItems - 2; i++) {
@@ -1137,7 +1138,7 @@ class Dialogs {
                 }
             }
         } else if (dialogType == DLG_VSCREEN_HEIGHT) {
-            if (!config.windowSupported) {
+            if (config.fixedWindowMode) {
                 //Disable vscreen height values that are too large for the
                 //physical screen (but keep the smallest available value)
                 for (i = 0; i < ctx.numItems - 2; i++) {

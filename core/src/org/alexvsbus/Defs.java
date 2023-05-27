@@ -63,6 +63,7 @@ public class Defs {
     public static class Config {
         public boolean fullscreen;
         public boolean windowSupported;
+        public boolean fixedWindowMode;
         public boolean resizableWindow;
         public int windowScale;
         public boolean scanlinesEnabled;

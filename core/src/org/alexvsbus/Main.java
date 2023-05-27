@@ -315,7 +315,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Handle keys that change configuration
         if ((inputHit & INPUT_CFG_FULLSCREEN_TOGGLE) > 0) {
-            if (config.windowSupported) {
+            if (!config.fixedWindowMode) {
                 config.fullscreen = !config.fullscreen;
             }
         }
@@ -464,13 +464,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         //Fullscreen toggle
-        if (config.windowSupported && config.fullscreen != oldFullscreen) {
+        if (!config.fixedWindowMode && config.fullscreen != oldFullscreen) {
             changeWindowMode();
             oldFullscreen = config.fullscreen;
         }
 
         //Window scale change
-        if (config.windowSupported && config.windowScale != oldWindowScale) {
+        if (!config.fixedWindowMode && config.windowScale != oldWindowScale) {
             if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
                 changeWindowMode();
             }
