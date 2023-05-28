@@ -90,6 +90,11 @@ class Renderer {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if (dialogOpen && dialogCtx.greenBg) {
+            Gdx.gl.glClearColor(0.0f, 0.333f, 0.0f, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        }
+
         textureRegion.setTexture(gfx);
 
         //Set the matrix so that the Y axis points downwards

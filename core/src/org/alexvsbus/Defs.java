@@ -133,6 +133,7 @@ public class Defs {
 
         boolean useCursor;
         boolean showLogo;
+        boolean greenBg;
         boolean showFrame;
         boolean fillScreen;
 

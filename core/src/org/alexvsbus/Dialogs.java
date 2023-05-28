@@ -77,6 +77,7 @@ class Dialogs {
         ctx.selectedVisible = true;
         ctx.useCursor = !config.touchEnabled;
         ctx.showLogo = false;
+        ctx.greenBg = false;
         ctx.showFrame = false;
         ctx.fillScreen = false;
         ctx.text = "";
@@ -650,6 +651,10 @@ class Dialogs {
         loadDialog(dialogType);
 
         switch (dialogType) {
+            case DLG_VSCREEN_SIZE:
+                ctx.greenBg = true;
+                break;
+
             case DLG_JUKEBOX:
                 audio.stopBgm();
                 break;
@@ -727,6 +732,8 @@ class Dialogs {
 
         if (dialogType == DLG_JUKEBOX) {
             audio.playBgm(BGMTITLE);
+        } else if (dialogType == DLG_VSCREEN_SIZE) {
+            ctx.greenBg = false;
         } else if (dialogType == DLG_PAUSE) {
             ctx.showFrame = false;
         } else if (dialogType == DLG_ERROR) {
