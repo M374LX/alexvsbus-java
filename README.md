@@ -74,7 +74,7 @@ file is for PC, while the .apk file is for Android.
 On PC (including Windows and Linux), the game requires Java (https://java.com).
 On Debian, it can be installed by running the command:
 ```
-apt install openjdk-11-jre
+apt install openjdk-17-jre
 ```
 
 After installing Java and downloading the .jar file, on Windows, a double-click
@@ -150,8 +150,8 @@ The following additional options are available as of the latest commit in the
 ## Building from source
 
 In order to build the game from source, the Java Development Kit (JDK) is
-required. Android still requires version 8 of the JDK. It can be downloaded from
-https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html.
+required. The tested version is 17, which can be downloaded from
+https://jdk.java.net/java-se-ri/17.
 
 As a result of being a libGDX project, the game uses Gradle as its build system.
 The source tree contains the Gradle wrapper, which downloads the appropriate
@@ -183,7 +183,7 @@ JDK version 8. It can be downloaded from https://developer.android.com/studio.
 The command line tools are enough, without the need for Android Studio.
 
 The required SDK packages, which can be installed by using ``sdkmanager``, are
-``build-tools;29.0.3`` and ``platforms;android-29``. The versions here are the
+``build-tools;33.0.2`` and ``platforms;android-32``. The versions here are the
 ones that have been tested, but later versions might also work. A few other
 packages will be installed automatically as dependencies. The NDK can be
 optionally installed to prevent messages like "Unable to strip library due to
