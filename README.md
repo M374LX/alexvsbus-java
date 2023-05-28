@@ -139,6 +139,11 @@ The following additional options are available as of the latest commit in the
 --music-off            Disable music
 --sfx-on               Enable sound effects
 --sfx-off              Disable sound effects
+--fixed-window-mode    Simulate the mobile version's inability to toggle
+                       between fullscreen and windowed mode and to change
+                       the window scale
+--mobile               As a shorthand for --fixed-window-mode and --touch,
+                       simulate the mobile version
 ```
 
 
@@ -183,7 +188,7 @@ ones that have been tested, but later versions might also work. A few other
 packages will be installed automatically as dependencies. The NDK can be
 optionally installed to prevent messages like "Unable to strip library due to
 missing strip tool" and "Compatible side by side NDK version was not found",
-although is does not significantly shrink the .apk file.
+although it does not significantly shrink the .apk file.
 
 The file ``local.properties`` needs to be present and point to the Android SDK
 installation directory, like so:
