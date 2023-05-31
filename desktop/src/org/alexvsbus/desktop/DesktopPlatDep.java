@@ -340,6 +340,7 @@ class DesktopPlatDep implements PlatDep {
 
     Path findConfigFile() {
         String os = System.getProperty("os.name").toLowerCase();
+        String home = System.getProperty("user.home");
         String file;
 
         if (cliConfig.length() > 0) {
@@ -348,19 +349,21 @@ class DesktopPlatDep implements PlatDep {
             String appdata = System.getenv("LOCALAPPDATA");
 
             file = appdata + "\\alexvsbus-java\\alexvsbus.cfg";
+        } else if (os.startsWith("mac")) {
+            file = home + "/Library/Preferences/alexvsbus-java/alexvsbus.cfg";
         } else {
             //Use the XDG Base Directory specification
             String xdgConfig = System.getenv("XDG_CONFIG_HOME");
 
             if (xdgConfig == null) {
-                xdgConfig = System.getenv("HOME") + "/.config";
+                xdgConfig = home + "/.config";
             }
 
             file = xdgConfig + "/alexvsbus-java/alexvsbus.cfg";
         }
 
         if (file.startsWith("~")) {
-            file = System.getProperty("user.home") + file.substring(1);
+            file = home + file.substring(1);
         }
 
         return Paths.get(file);
