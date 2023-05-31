@@ -135,6 +135,7 @@ Supported height values:
 The following additional options are available as of the latest commit in the
 ``main`` branch:
 ```
+-c, --config <file>    Set the config file to use
 --music-on             Enable music
 --music-off            Disable music
 --sfx-on               Enable sound effects

@@ -43,7 +43,6 @@ import static org.alexvsbus.Defs.vscreenWidths;
 import static org.alexvsbus.Defs.vscreenHeights;
 
 class DesktopPlatDep implements PlatDep {
-    Path configDirPath;
     Path configFilePath;
     Config config;
 
@@ -53,6 +52,7 @@ class DesktopPlatDep implements PlatDep {
 
     boolean cliHelp;
     boolean cliVersion;
+    String cliConfig;
     boolean cliResizable;
     boolean cliTouchEnabled;
     boolean cliFullscreen;
@@ -121,6 +121,7 @@ class DesktopPlatDep implements PlatDep {
         "\n" +
         "-h, --help             Show this usage information and exit\n" +
         "-v, --version          Show version and license information and exit\n" +
+        "-c, --config <file>    Set the config file to use\n" +
         "-f, --fullscreen       Run in fullscreen mode\n" +
         "-w, --windowed         Run in windowed mode\n" +
         "--window-scale <scale> Set the window scale (1 to 3)\n" +
@@ -191,6 +192,7 @@ class DesktopPlatDep implements PlatDep {
 
         cliHelp = false;
         cliVersion = false;
+        cliConfig = "";
         cliResizable = false;
         cliFullscreen = false;
         cliWindowed = false;
@@ -220,6 +222,14 @@ class DesktopPlatDep implements PlatDep {
             } else if (a.equals("-w") || a.equals("--windowed")) {
                 cliWindowed = true;
                 cliFullscreen = false;
+            } else if (a.equals("-c") || a.equals("--config")) {
+                i++;
+                if (i >= argc) {
+                    cliHelp = true;
+                    return;
+                }
+
+                cliConfig = args[i];
             } else if (a.equals("--vscreen-size")) {
                 i++;
                 if (i >= argc) {
@@ -328,9 +338,36 @@ class DesktopPlatDep implements PlatDep {
         return true;
     }
 
+    Path findConfigFile() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String file;
+
+        if (cliConfig.length() > 0) {
+            file = cliConfig;
+        } else if (os.startsWith("windows")) {
+            String appdata = System.getenv("LOCALAPPDATA");
+
+            file = appdata + "\\alexvsbus-java\\alexvsbus.cfg";
+        } else {
+            //Use the XDG Base Directory specification
+            String xdgConfig = System.getenv("XDG_CONFIG_HOME");
+
+            if (xdgConfig == null) {
+                xdgConfig = System.getenv("HOME") + "/.config";
+            }
+
+            file = xdgConfig + "/alexvsbus-java/alexvsbus.cfg";
+        }
+
+        if (file.startsWith("~")) {
+            file = System.getProperty("user.home") + file.substring(1);
+        }
+
+        return Paths.get(file);
+    }
+
     void loadConfig() {
         LineRead lineRead = new LineRead();
-        String os = System.getProperty("os.name").toLowerCase();
         int numLevels;
         int i;
 
@@ -397,29 +434,9 @@ class DesktopPlatDep implements PlatDep {
             config.touchButtonsEnabled = (cliTouchButtonsEnabled == -1) ? false : true;
         }
 
-        //Find configuration directory
-        String configDir;
-        if (os.startsWith("windows")) {
-            String appdata = System.getenv("LOCALAPPDATA");
-
-            configDir = appdata + "\\alexvsbus-java\\";
-        } else {
-            //Use the XDG Base Directory specification
-            String home = System.getenv("HOME");
-            String xdgConfig = System.getenv("XDG_CONFIG_HOME");
-
-            if (xdgConfig == null) {
-                xdgConfig = home + "/.config";
-            }
-
-            configDir = xdgConfig + "/alexvsbus-java/";
-        }
-
-        configDirPath = Paths.get(configDir);
-
         //Try to open the config file
         try {
-            configFilePath = Paths.get(configDir + "alexvsbus.cfg");
+            configFilePath = findConfigFile();
 
             if (Files.size(configFilePath) > 4096) {
                 //Too large (over 4 kB)
@@ -615,7 +632,7 @@ class DesktopPlatDep implements PlatDep {
         data += "progress-level " + config.progressLevel + "\n";
 
         try {
-            Files.createDirectories(configDirPath);
+            Files.createDirectories(configFilePath.toAbsolutePath().getParent());
             Files.write(configFilePath, data.getBytes());
         } catch (Exception e) {
             Gdx.app.log("Warning", "Unable to save configuration.");
