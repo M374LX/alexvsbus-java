@@ -43,17 +43,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //Configuration
     Config config;
-    boolean oldFullscreen;
-    int oldWindowScale;
-    boolean oldVscreenAutoSize;
-    boolean oldAudioEnabled;
-    boolean oldMusicEnabled;
-    boolean oldSfxEnabled;
+    Config oldConfig;
 
     //Game progress
     boolean progressChecked;
 
-    //Screen type
+    //Screen type (playing game, final score, ...)
     int screenType;
 
     //Gameplay
@@ -97,6 +92,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     @Override
     public void create() {
         displayParams = new DisplayParams();
+        oldConfig = new Config();
         input = new Input(displayParams, config);
         audio = new Audio();
         play = new Play(displayParams, audio);
@@ -116,13 +112,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         delayedActionType = NONE;
 
+        progressChecked = false;
+        config.progressCheat = false;
+
         wipeCmd = NONE;
         wipeValue = 0;
         wipeDelta = 0;
         wipeDelay = 0;
-
-        progressChecked = false;
-        config.progressCheat = false;
 
         audio.loadSfx();
         play.clear();
@@ -133,12 +129,14 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         audio.enableSfx(config.sfxEnabled);
         changeWindowMode();
 
-        oldFullscreen = config.fullscreen;
-        oldWindowScale = config.windowScale;
-        oldVscreenAutoSize = config.vscreenAutoSize;
-        oldAudioEnabled = config.audioEnabled;
-        oldMusicEnabled = config.musicEnabled;
-        oldSfxEnabled = config.sfxEnabled;
+        config.fullscreen = Gdx.graphics.isFullscreen();
+
+        oldConfig.fullscreen = config.fullscreen;
+        oldConfig.windowScale = config.windowScale;
+        oldConfig.vscreenAutoSize = config.vscreenAutoSize;
+        oldConfig.audioEnabled = config.audioEnabled;
+        oldConfig.musicEnabled = config.musicEnabled;
+        oldConfig.sfxEnabled = config.sfxEnabled;
 
         platDep.postInit();
 
@@ -396,6 +394,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         if (playCtx.levelNum != config.progressLevel) return;
         if (playCtx.difficulty != config.progressDifficulty) return;
 
+        //Unlock next level
         config.progressLevel++;
         if (config.progressLevel > numLevels) {
             if (config.progressDifficulty < DIFFICULTY_MAX) {
@@ -458,42 +457,45 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         //Virtual screen (vscreen) sizing mode change
-        if (config.vscreenAutoSize != oldVscreenAutoSize) {
+        if (config.vscreenAutoSize != oldConfig.vscreenAutoSize) {
             resize(displayParams.physWidth, displayParams.physHeight);
-            oldVscreenAutoSize = config.vscreenAutoSize;
+            oldConfig.vscreenAutoSize = config.vscreenAutoSize;
         }
 
-        //Fullscreen toggle
-        if (!config.fixedWindowMode && config.fullscreen != oldFullscreen) {
-            changeWindowMode();
-            oldFullscreen = config.fullscreen;
-        }
-
-        //Window scale change
-        if (!config.fixedWindowMode && config.windowScale != oldWindowScale) {
-            if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
+        if (!config.fixedWindowMode) {
+            //Fullscreen toggle
+            if (config.fullscreen != oldConfig.fullscreen) {
                 changeWindowMode();
+                config.fullscreen = Gdx.graphics.isFullscreen();
+                oldConfig.fullscreen = config.fullscreen;
             }
 
-            oldWindowScale = config.windowScale;
+            //Window scale change
+            if (config.windowScale != oldConfig.windowScale) {
+                if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
+                    changeWindowMode();
+                }
+
+                oldConfig.windowScale = config.windowScale;
+            }
         }
 
         //Audio toggle
-        if (config.audioEnabled != oldAudioEnabled) {
+        if (config.audioEnabled != oldConfig.audioEnabled) {
             audio.enableAudio(config.audioEnabled);
-            oldAudioEnabled = config.audioEnabled;
+            oldConfig.audioEnabled = config.audioEnabled;
         }
 
         //Music toggle
-        if (config.musicEnabled != oldMusicEnabled) {
+        if (config.musicEnabled != oldConfig.musicEnabled) {
             audio.enableMusic(config.musicEnabled);
-            oldMusicEnabled = config.musicEnabled;
+            oldConfig.musicEnabled = config.musicEnabled;
         }
 
         //Sound effects toggle
-        if (config.sfxEnabled != oldSfxEnabled) {
+        if (config.sfxEnabled != oldConfig.sfxEnabled) {
             audio.enableSfx(config.sfxEnabled);
-            oldSfxEnabled = config.sfxEnabled;
+            oldConfig.sfxEnabled = config.sfxEnabled;
         }
 
     }
@@ -615,7 +617,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
             switch (err) {
                 case LVLERR_CANNOT_OPEN:
-                    msg = "Cannot load level file";
+                    msg = "Cannot open level file";
                     break;
 
                 case LVLERR_TOO_LARGE:
@@ -689,38 +691,33 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //--------------------------------------------------------------------------
 
     void changeWindowMode() {
-        boolean modeChanged = false;
-
-        if (!config.windowSupported) return;
-
         if (config.fullscreen) {
             Monitor m = Gdx.graphics.getMonitor();
             DisplayMode dm = Gdx.graphics.getDisplayMode(m);
 
-            modeChanged = Gdx.graphics.setFullscreenMode(dm);
+            Gdx.graphics.setFullscreenMode(dm);
         } else {
             int width;
             int height;
 
             if (config.vscreenAutoSize) {
-                width  = VSCREEN_MAX_WIDTH  * config.windowScale;
-                height = VSCREEN_MAX_HEIGHT * config.windowScale;
+                width  = VSCREEN_MAX_WIDTH;
+                height = VSCREEN_MAX_HEIGHT;
             } else {
-                width  = config.vscreenWidth  * config.windowScale;
-                height = config.vscreenHeight * config.windowScale;
+                width  = config.vscreenWidth;
+                height = config.vscreenHeight;
             }
 
-            modeChanged = Gdx.graphics.setWindowedMode(width, height);
+            width  *= config.windowScale;
+            height *= config.windowScale;
+
+            Gdx.graphics.setWindowedMode(width, height);
         }
 
         if (!config.touchEnabled && Gdx.graphics.isFullscreen()) {
             Gdx.input.setCursorCatched(true);
         } else {
             Gdx.input.setCursorCatched(false);
-        }
-
-        if (!modeChanged) {
-            config.fullscreen = oldFullscreen;
         }
     }
 

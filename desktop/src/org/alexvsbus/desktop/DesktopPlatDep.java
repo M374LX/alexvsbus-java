@@ -378,7 +378,6 @@ class DesktopPlatDep implements PlatDep {
         config.touchEnabled = false;
         config.touchButtonsEnabled = true;
         config.fullscreen = true;
-        config.windowSupported = true;
         config.fixedWindowMode = false;
         config.windowScale = 2;
         config.resizableWindow = false;
@@ -412,7 +411,7 @@ class DesktopPlatDep implements PlatDep {
         }
         if (cliVscreenWidth > 0 && cliVscreenHeight > 0) {
             config.vscreenAutoSize = false;
-            config.vscreenWidth = cliVscreenWidth;
+            config.vscreenWidth  = cliVscreenWidth;
             config.vscreenHeight = cliVscreenHeight;
         }
         if (cliResizable) {

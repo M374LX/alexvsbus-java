@@ -36,9 +36,10 @@ class Renderer {
     PlayCtx playCtx;
     DialogCtx dialogCtx;
 
+    Texture gfx;
+    TextureRegion textureRegion;
     Matrix4 mat;
     SpriteBatch spriteBatch;
-    TextureRegion textureRegion;
 
     int drawOffsetX;
     int drawOffsetY;
@@ -51,8 +52,6 @@ class Renderer {
     //the constructor
     int digitsTemp[];
 
-    Texture gfx;
-
     //--------------------------------------------------------------------------
 
     Renderer(DisplayParams displayParams, Config config,
@@ -64,12 +63,11 @@ class Renderer {
         this.dialogCtx = dialogCtx;
 
         gfx = null;
-
-        digitsTemp = new int[12];
-
+        textureRegion = new TextureRegion();
         mat = new Matrix4();
         spriteBatch = new SpriteBatch();
-        textureRegion = new TextureRegion();
+
+        digitsTemp = new int[12];
 
         //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -91,7 +89,7 @@ class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (dialogOpen && dialogCtx.greenBg) {
-            Gdx.gl.glClearColor(0.0f, 0.333f, 0.0f, 1);
+            Gdx.gl.glClearColor(0, 0.333f, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
 
@@ -160,10 +158,11 @@ class Renderer {
     //--------------------------------------------------------------------------
 
     void drawPlay() {
+        PlayCtx ctx = playCtx;
+
         int vscreenWidth  = displayParams.vscreenWidth;
         int vscreenHeight = displayParams.vscreenHeight;
 
-        PlayCtx ctx = playCtx;
         int x, y, spr, frame;
         int camy, topcamy; //Current and topmost camera Y position
         int i;
@@ -194,7 +193,7 @@ class Renderer {
             drawOffsetX += 168;
         }
 
-        //Holes (background part)
+        //Deep holes and passageways (background part)
         for (i = 0; i < MAX_HOLES; i++) {
             int w = ctx.holes[i].width;
 
@@ -220,6 +219,7 @@ class Renderer {
                 spr = (isDeep ? SPR_DEEP_HOLE_RIGHT : SPR_PASSAGEWAY_RIGHT);
                 drawSprite(spr, x, y);
 
+                //Passageway exit if not opened
                 if (!isDeep && !exitOpened) {
                     spr = SPR_PASSAGEWAY_RIGHT_CLOSED;
                     drawSprite(spr, x, y);
@@ -232,7 +232,8 @@ class Renderer {
         y = BUS_Y;
         drawSprite(SPR_BUS, x, y);
         if (ctx.bus.routeSign != NONE) {
-            if (ctx.bus.routeSign == 0) { //Finish (checkered flag) sign
+            if (ctx.bus.routeSign == 0) {
+                //Finish (checkered flag) sign
                 frame = 4;
             } else {
                 //Frame zero corresponds to the sign containing number two, as
@@ -280,7 +281,7 @@ class Renderer {
         frame = ctx.anims[ANIM_BUS_DOOR_FRONT].frame;
         drawSpriteFrame(SPR_BUS_DOOR, x + 344, y + 16, frame);
 
-        //Passing car
+        //Passing car and ending sequence traffic jam
         if (ctx.car.x != NONE) {
             int numCars;
 
@@ -427,7 +428,7 @@ class Renderer {
             drawSprite(SPR_MEDAL3, x, y);
         }
 
-        //Holes (foreground part)
+        //Deep holes and passageways (foreground part)
         for (i = 0; i < MAX_HOLES; i++) {
             x = ctx.holes[i].x;
             y = BACKGROUND_DRAW_Y + 88;
@@ -543,6 +544,7 @@ class Renderer {
     void drawHud() {
         int x, h;
 
+        //Determine HUD height
         h = 16;
         if (config.touchEnabled && displayParams.vscreenHeight > 224) {
             h = 24;
@@ -644,6 +646,7 @@ class Renderer {
         int cx = (displayParams.vscreenWidth / TILE_SIZE) / 2;
         int cy = Dialogs.centerTileY();
 
+        //Draw dialog frame
         if (dialogCtx.showFrame) {
             //Frame size and position in tiles
             int tw = 28;
@@ -659,6 +662,7 @@ class Renderer {
             drawSpriteStretch(SPR_BG_BLACK, x, y, w, h);
         }
 
+        //Draw logo
         if (dialogCtx.showLogo) {
             int spr, logoWidth, x, y;
 
@@ -676,6 +680,7 @@ class Renderer {
             drawSprite(spr, x, y);
         }
 
+        //Draw dialog display name
         if (dialogCtx.displayName.length() > 0 && !dialogCtx.levelSelected) {
             //Text position in tiles
             int tx = cx - 10;
@@ -707,6 +712,7 @@ class Renderer {
             drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
         }
 
+        //Draw dialog text
         if (dialogCtx.text.length() > 0) {
             //Text position in tiles
             int tx = cx - (dialogCtx.textWidth  / 2) + dialogCtx.textOffsetX;
@@ -728,6 +734,7 @@ class Renderer {
             }
         }
 
+        //Draw dialog items
         for (i = 0; i < dialogCtx.numItems; i++) {
             if (selectedItem != i) {
                 if (!dialogCtx.levelSelected) {
@@ -752,6 +759,7 @@ class Renderer {
 
         drawDialogBorder(x, y, w, h, selected, item.disabled);
 
+        //Draw item caption
         if (item.caption.length() > 0) {
             String caption = item.caption.copyValueOf(item.caption.toCharArray());
             int xoffs = TILE_SIZE;
@@ -769,6 +777,7 @@ class Renderer {
             drawText(caption, color, x + xoffs, y + yoffs);
         }
 
+        //Draw item value
         if (item.value.length() > 0) {
             String value = item.value.copyValueOf(item.value.toCharArray());
             int xoffs = ((w - 1) * TILE_SIZE) - (value.length() * TILE_SIZE);
@@ -786,6 +795,7 @@ class Renderer {
             drawText(value, color, x + xoffs, y + yoffs);
         }
 
+        //Draw item icon
         if (item.iconSprite != NONE) {
             int spr = item.iconSprite;
             if (selected) spr++;
@@ -872,7 +882,7 @@ class Renderer {
         int line;
 
         if (!config.scanlinesEnabled) return;
-        if (displayParams.scale < 2) return;
+        if (displayParams.scale < 2)  return;
 
         mat.setToOrtho(0, vscreenWidth * 2, vscreenHeight * 2, 0, 0, 1);
         spriteBatch.setProjectionMatrix(mat);
@@ -965,6 +975,7 @@ class Renderer {
 
     void drawSpriteTransparent(int spr, int dx, int dy, float opacity) {
         Color c = spriteBatch.getColor();
+
         spriteBatch.setColor(c.r, c.g, c.b, opacity);
         drawSprite(spr, dx, dy);
         spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
@@ -1005,7 +1016,7 @@ class Renderer {
     //The character 0x1B (which corresponds to ASCII Escape) is used by this
     //method to switch between white and green characters
     //
-    //The parameter "color" specifies the initial color: TXTCOL_WHITE, 
+    //The parameter "color" specifies the initial color: TXTCOL_WHITE,
     //TXTCOL_GREEN, or TXTCOL_GRAY
     //
     //The newline (\n) character also reverts to the initial color

@@ -27,12 +27,12 @@ class Dialogs {
     static DisplayParams displayParams;
     Config config;
     Audio audio;
-    int difficulty;
     boolean waitInputUp;
     int cursorDirection;
     int prevCursorDirection;
     float cursorDelay;
-    int levelNum;
+    int difficulty; //Selected difficulty
+    int levelNum;   //Selected level number
     float levelStartDelay;
     int cheatPos;
 
@@ -178,6 +178,7 @@ class Dialogs {
             return;
         }
 
+        //Move cursor
         if ((inputHeld & INPUT_UP) > 0) {
             cursorDirection = DLGDIR_UP;
         } else if ((inputHeld & INPUT_DOWN) > 0) {
@@ -190,12 +191,15 @@ class Dialogs {
             cursorDirection = NONE;
         }
 
+        //Confirm
         if ((inputHit & INPUT_DIALOG_CONFIRM) > 0) {
             if (ctx.useCursor) {
                 int item = ctx.stack[ctx.stackSize - 1].selectedItem;
                 confirm(item, true);
             }
         }
+
+        //Return
         if ((inputHit & INPUT_DIALOG_RETURN) > 0) {
             int type = ctx.stack[ctx.stackSize - 1].type;
 
@@ -211,7 +215,6 @@ class Dialogs {
 
     void update(float dt) {
         boolean selectionChanged;
-        int dialogType;
 
         //Nothing to do if no dialog is open
         if (ctx.stackSize <= 0) return;
@@ -233,35 +236,7 @@ class Dialogs {
         }
 
         updateAudioIcon();
-
-        //Update the values displayed by dialog items
-        dialogType = ctx.stack[ctx.stackSize - 1].type;
-        if (dialogType == DLG_SETTINGS) {
-            ctx.items[2].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
-        } else if (dialogType == DLG_DISPLAY_SETTINGS) {
-            ctx.items[0].value = (config.fullscreen) ? "ON" : "OFF";
-            ctx.items[3].value = (config.scanlinesEnabled) ? "ON" : "OFF";
-
-            if (config.resizableWindow) {
-                ctx.items[1].value = "---";
-            } else {
-                ctx.items[1].value = "" + config.windowScale;
-            }
-        } else if (dialogType == DLG_VSCREEN_SIZE) {
-            if (config.vscreenAutoSize) {
-                ctx.items[0].value = "AUTO";
-                ctx.items[1].value = "" + displayParams.vscreenWidth;
-                ctx.items[2].value = "" + displayParams.vscreenHeight;
-            } else {
-                ctx.items[0].value = "MANUAL";
-                ctx.items[1].value = "" + config.vscreenWidth;
-                ctx.items[2].value = "" + config.vscreenHeight;
-            }
-        } else if (dialogType == DLG_AUDIO_SETTINGS) {
-            ctx.items[0].value = (config.audioEnabled) ? "ON" : "OFF";
-            ctx.items[1].value = (config.musicEnabled) ? "ON" : "OFF";
-            ctx.items[2].value = (config.sfxEnabled) ? "ON" : "OFF";
-        }
+        updateValues();
 
         //Handle selected item change
         selectionChanged = false;
@@ -318,6 +293,38 @@ class Dialogs {
             ctx.items[5].iconSprite = spr;
         } else if (type == DLG_PAUSE) {
             ctx.items[4].iconSprite = spr;
+        }
+    }
+
+    //Updates the values displayed by dialog items
+    void updateValues() {
+        int dialogType = ctx.stack[ctx.stackSize - 1].type;
+
+        if (dialogType == DLG_SETTINGS) {
+            ctx.items[2].value = (config.touchButtonsEnabled) ? "ON" : "OFF";
+        } else if (dialogType == DLG_DISPLAY_SETTINGS) {
+            ctx.items[0].value = (config.fullscreen) ? "ON" : "OFF";
+            ctx.items[3].value = (config.scanlinesEnabled) ? "ON" : "OFF";
+
+            if (config.resizableWindow) {
+                ctx.items[1].value = "---";
+            } else {
+                ctx.items[1].value = "" + config.windowScale;
+            }
+        } else if (dialogType == DLG_VSCREEN_SIZE) {
+            if (config.vscreenAutoSize) {
+                ctx.items[0].value = "AUTO";
+                ctx.items[1].value = "" + displayParams.vscreenWidth;
+                ctx.items[2].value = "" + displayParams.vscreenHeight;
+            } else {
+                ctx.items[0].value = "MANUAL";
+                ctx.items[1].value = "" + config.vscreenWidth;
+                ctx.items[2].value = "" + config.vscreenHeight;
+            }
+        } else if (dialogType == DLG_AUDIO_SETTINGS) {
+            ctx.items[0].value = (config.audioEnabled) ? "ON" : "OFF";
+            ctx.items[1].value = (config.musicEnabled) ? "ON" : "OFF";
+            ctx.items[2].value = (config.sfxEnabled) ? "ON" : "OFF";
         }
     }
 
@@ -382,12 +389,13 @@ class Dialogs {
                 break;
 
             case DLG_LEVEL:
-                if (item == ctx.numItems - 1) {
-                    close();
-                } else {
+                if (item < ctx.numItems - 1) {
                     ctx.levelSelected = true;
                     levelNum = item + 1;
                     levelStartDelay = 0.75f;
+                } else {
+                    //Return
+                    close();
                 }
                 break;
 
@@ -493,11 +501,13 @@ class Dialogs {
                             config.vscreenWidth  = displayParams.vscreenWidth;
                             config.vscreenHeight = displayParams.vscreenHeight;
 
+                            //Enable vscreen width and height items
                             ctx.items[1].disabled = false;
                             ctx.items[2].disabled = false;
                         } else {
                             config.vscreenAutoSize = true;
 
+                            //Disable vscreen width and height items
                             ctx.items[1].disabled = true;
                             ctx.items[2].disabled = true;
                         }
@@ -669,12 +679,13 @@ class Dialogs {
                 break;
         }
 
+        //Determine item to be selected by default (if not the first one)
         if (ctx.useCursor) {
             if (dialogType == DLG_DIFFICULTY) {
-                //Default selection to highest unlocked difficulty
+                //Highest unlocked difficulty
                 sel = config.progressDifficulty;
             } else if (dialogType == DLG_LEVEL) {
-                //Default selection to highest unlocked level
+                //Highest unlocked level
                 sel = config.progressLevel - 1;
 
                 if (difficulty < config.progressDifficulty) {
@@ -687,12 +698,12 @@ class Dialogs {
                     sel = ctx.numItems - 2;
                 }
             } else if (dialogType == DLG_WINDOW_SCALE) {
-                //Default selection to current window scale
+                //Current window scale
                 sel = config.windowScale - 1;
             } else if (dialogType == DLG_VSCREEN_WIDTH) {
                 int i;
 
-                //Default selection to current vscreen width
+                //Current vscreen width
                 for (i = 0; i < vscreenWidths.length; i++) {
                     if (vscreenWidths[i] == config.vscreenWidth) {
                         sel = i;
@@ -701,7 +712,7 @@ class Dialogs {
             } else if (dialogType == DLG_VSCREEN_HEIGHT) {
                 int i;
 
-                //Default selection to current vscreen height
+                //Current vscreen height
                 for (i = 0; i < vscreenHeights.length; i++) {
                     if (vscreenHeights[i] == config.vscreenHeight) {
                         sel = i;
@@ -775,7 +786,7 @@ class Dialogs {
         open(DLG_ERROR);
 
         //Move the text downwards by two lines because the word "ERROR" is drawn
-        //separately by Render.java on the first line
+        //separately by Renderer.java on the first line
         ctx.text = "\n\n" + msg;
 
         ctx.textOffsetX = 0;
@@ -794,81 +805,27 @@ class Dialogs {
         ctx.fillScreen = (dialogType != DLG_PAUSE);
 
         //Set the name to be displayed at the top of the screen
+        displayName = "";
         switch (dialogType) {
-            case DLG_MAIN:
-                displayName = "";
-                break;
-
-            case DLG_DIFFICULTY:
-                displayName = "DIFFICULTY SELECT";
-                break;
-
-            case DLG_LEVEL:
-                displayName = "LEVEL SELECT";
-                break;
-
-            case DLG_JUKEBOX:
-                displayName = "JUKEBOX";
-                break;
-
-            case DLG_SETTINGS:
-                displayName = "SETTINGS";
-                break;
-
-            case DLG_DISPLAY_SETTINGS:
-                displayName = "DISPLAY SETTINGS";
-                break;
-
-            case DLG_WINDOW_SCALE:
-                displayName = "WINDOW SCALE";
-                break;
-
-            case DLG_VSCREEN_SIZE:
-                displayName = "VSCREEN SIZE";
-                break;
-
-            case DLG_VSCREEN_WIDTH:
-                displayName = "VSCREEN WIDTH";
-                break;
-
-            case DLG_VSCREEN_HEIGHT:
-                displayName = "VSCREEN HEIGHT";
-                break;
-
-            case DLG_AUDIO_SETTINGS:
-                displayName = "AUDIO SETTINGS";
-                break;
-
-            case DLG_ABOUT:
-                displayName = "ABOUT";
-                break;
-
-            case DLG_CREDITS:
-                displayName = "CREDITS";
-                break;
-
-            case DLG_PAUSE:
-                displayName = "";
-                break;
-
-            case DLG_TRYAGAIN_PAUSE:
-                displayName = "CONFIRMATION";
-                break;
-
-            case DLG_TRYAGAIN_TIMEUP:
-                displayName = "CONFIRMATION";
-                break;
-
-            case DLG_QUIT:
-                displayName = "CONFIRMATION";
-                break;
-
-            case DLG_ERROR:
-                displayName = "";
-                break;
+            case DLG_DIFFICULTY:       displayName = "DIFFICULTY SELECT"; break;
+            case DLG_LEVEL:            displayName = "LEVEL SELECT";      break;
+            case DLG_JUKEBOX:          displayName = "JUKEBOX";           break;
+            case DLG_SETTINGS:         displayName = "SETTINGS";          break;
+            case DLG_DISPLAY_SETTINGS: displayName = "DISPLAY SETTINGS";  break;
+            case DLG_WINDOW_SCALE:     displayName = "WINDOW SCALE";      break;
+            case DLG_VSCREEN_SIZE:     displayName = "VSCREEN SIZE";      break;
+            case DLG_VSCREEN_WIDTH:    displayName = "VSCREEN WIDTH";     break;
+            case DLG_VSCREEN_HEIGHT:   displayName = "VSCREEN HEIGHT";    break;
+            case DLG_AUDIO_SETTINGS:   displayName = "AUDIO SETTINGS";    break;
+            case DLG_ABOUT:            displayName = "ABOUT";             break;
+            case DLG_CREDITS:          displayName = "CREDITS";           break;
+            case DLG_TRYAGAIN_PAUSE:   displayName = "CONFIRMATION";      break;
+            case DLG_TRYAGAIN_TIMEUP:  displayName = "CONFIRMATION";      break;
+            case DLG_QUIT:             displayName = "CONFIRMATION";      break;
         }
         ctx.displayName = displayName;
 
+        //Set text for confirmation dialogs
         switch (dialogType) {
             case DLG_TRYAGAIN_PAUSE:
             case DLG_TRYAGAIN_TIMEUP:
@@ -894,6 +851,7 @@ class Dialogs {
         ctx.numItems = 0;
         for (i = 0; i < DIALOG_MAX_ITEMS; i++) {
             DialogItem it = ctx.items[i];
+
             it.offsetX = 0;
             it.offsetY = 0;
             it.caption = "";
@@ -919,9 +877,9 @@ class Dialogs {
                 break;
 
             case DLG_DIFFICULTY:
-                setItem(0, 8,  5,  3,  3,  3,  1, NONE);
-                setItem(1, 8,  5,  3,  3,  0,  2, NONE);
-                setItem(2, 8,  5,  3,  3,  1,  3, NONE);
+                setItem(0,  8,  5,  3,  3,  3,  1, NONE);
+                setItem(1,  8,  5,  3,  3,  0,  2, NONE);
+                setItem(2,  8,  5,  3,  3,  1,  3, NONE);
                 setItem(3,  5,  5, -2, -2,  2,  0, SPR_DIALOG_RETURN);
                 ctx.numItems = 4;
                 positionItemsCenter(0, 2, false, 10, 0);
@@ -1059,7 +1017,6 @@ class Dialogs {
                 ctx.items[0].caption = "AUDIO";
                 ctx.items[1].caption = "MUSIC";
                 ctx.items[2].caption = "SFX";
-
                 break;
 
             case DLG_ABOUT:
@@ -1122,18 +1079,28 @@ class Dialogs {
 
         //Determine items to be hidden or disabled
         if (dialogType == DLG_SETTINGS) {
+            //Hide "Touchscreen buttons" item if not using a touchscreen
             ctx.items[2].hidden   = !config.touchEnabled;
+
+            //Reposition items
             positionItemsCenter(0, 2, true, 4, 0);
         } else if (dialogType == DLG_DISPLAY_SETTINGS) {
+            //Hide "Fullscreen" item if the window mode is fixed
             ctx.items[0].hidden   = config.fixedWindowMode;
+
+            //Hide "Window scale" item if the window mode is fixed
             ctx.items[1].hidden   = config.fixedWindowMode;
-            ctx.items[1].disabled =  config.resizableWindow;
+
+            //Disable "Window scale" item if the window is not resizable
+            ctx.items[1].disabled = config.resizableWindow;
+
+            //Reposition items
             positionItemsCenter(0, 3, true, 4, 0);
         } else if (dialogType == DLG_VSCREEN_SIZE) {
-            if (config.vscreenAutoSize) {
-                ctx.items[1].disabled = true;
-                ctx.items[2].disabled = true;
-            }
+            //Disable vscreen width and height items if vscreen auto size is
+            //enabled
+            ctx.items[1].disabled = config.vscreenAutoSize;
+            ctx.items[2].disabled = config.vscreenAutoSize;
         } else if (dialogType == DLG_VSCREEN_WIDTH) {
             if (config.fixedWindowMode) {
                 //Disable vscreen width values that are too large for the
@@ -1383,16 +1350,16 @@ class Dialogs {
         for (i = firstItem; i <= lastItem; i++) {
             DialogItem it = ctx.items[i];
 
-            if (it.hidden) continue;
-
-            it.align = ALIGN_CENTER;
-            if (vertical) {
-                it.offsetY = pos;
-            } else {
-                it.offsetX = pos;
-                it.offsetY = offsetY;
+            if (!it.hidden) {
+                it.align = ALIGN_CENTER;
+                if (vertical) {
+                    it.offsetY = pos;
+                } else {
+                    it.offsetX = pos;
+                    it.offsetY = offsetY;
+                }
+                pos += posDiff;
             }
-            pos += posDiff;
         }
     }
 

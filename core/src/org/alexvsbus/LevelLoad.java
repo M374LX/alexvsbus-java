@@ -370,9 +370,9 @@ class LevelLoad {
                 case OBJ_PARKED_CAR_YELLOW:
                     y = PARKED_CAR_Y;
                     addSolid(SOL_FULL, x + 4, y + 18, 20, 4);
-                    addSolid(SOL_SLOPE_UP, x + 27, y + 2, 15, 0);
+                    addSolid(SOL_SLOPE_UP, x + 27, y + 2, 15, 15);
                     addSolid(SOL_VERTICAL, x + 48, y + 2, 16, 4);
-                    addSolid(SOL_SLOPE_DOWN, x + 66, y + 2, 18, 0);
+                    addSolid(SOL_SLOPE_DOWN, x + 66, y + 2, 18, 18);
                     addSolid(SOL_KEEP_ON_TOP, x + 88, y + 20, 16, 4);
                     addSolid(SOL_KEEP_ON_TOP, x + 104, y + 22, 16, 4);
                     addSolid(SOL_FULL, x + 120, y + 24, 8, 4);
@@ -668,7 +668,7 @@ class LevelLoad {
     void addRespawnPoint(int x, int y) {
         int i;
 
-        //Check if there are too many triggers
+        //Check if there are too many respawn points
         if (numRespawnPoints >= MAX_RESPAWN_POINTS) {
             invalid = true;
             return;
@@ -736,12 +736,6 @@ class LevelLoad {
         if (numSolids >= MAX_SOLIDS) {
             invalid = true;
             return -1;
-        }
-
-        //Slopes are always contained in a square, which means that the height
-        //equals the width
-        if (type == SOL_SLOPE_UP || type == SOL_SLOPE_DOWN) {
-            height = width;
         }
 
         ctx.solids[numSolids].type = type;

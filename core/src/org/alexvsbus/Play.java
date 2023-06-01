@@ -433,12 +433,12 @@ class Play {
         ctx.bus.xvel = 0;
         ctx.bus.x = ctx.levelSize - 456;
 
-        //Set rear door closed
+        //Make rear door closed
         ctx.anims[ANIM_BUS_DOOR_REAR].running = false;
         ctx.anims[ANIM_BUS_DOOR_REAR].frame = 0;
         ctx.anims[ANIM_BUS_DOOR_REAR].reverse = false;
 
-        //Set front door open
+        //Make front door open
         ctx.anims[ANIM_BUS_DOOR_FRONT].running = false;
         ctx.anims[ANIM_BUS_DOOR_FRONT].frame = 3;
         ctx.anims[ANIM_BUS_DOOR_FRONT].reverse = true;
@@ -580,14 +580,14 @@ class Play {
 
         //Gushes
         for (i = 0; i < MAX_GUSHES; i++) {
-            Gush gsr = ctx.gushes[i];
+            Gush gush = ctx.gushes[i];
 
-            float y = gsr.y;
-            float yvel = gsr.yvel;
-            float ydest = gsr.ydest;
+            float y = gush.y;
+            float yvel = gush.yvel;
+            float ydest = gush.ydest;
 
             //Ignore inexistent gushes
-            if (gsr.obj == NONE) continue;
+            if (gush.obj == NONE) continue;
 
             y += yvel * dt;
 
@@ -597,17 +597,17 @@ class Play {
 
                 //Advance within the movement pattern and loop if its end is
                 //reached
-                gsr.movePatternPos += 2;
-                if (gsr.movePattern[gsr.movePatternPos] == 0) {
-                    gsr.movePatternPos = 0;
+                gush.movePatternPos += 2;
+                if (gush.movePattern[gush.movePatternPos] == 0) {
+                    gush.movePatternPos = 0;
                 }
 
-                gsr.yvel = gsr.movePattern[gsr.movePatternPos];
-                gsr.ydest = gsr.movePattern[gsr.movePatternPos + 1];
+                gush.yvel  = gush.movePattern[gush.movePatternPos];
+                gush.ydest = gush.movePattern[gush.movePatternPos + 1];
             }
 
-            gsr.y = y;
-            ctx.objs[gsr.obj].y = (int)y;
+            gush.y = y;
+            ctx.objs[gush.obj].y = (int)y;
         }
 
         //Grabbed rope
@@ -1128,7 +1128,6 @@ class Play {
 
                             break;
                         }
-
                     }
 
                     break;
@@ -1359,8 +1358,7 @@ class Play {
 
         //No respawn on time up or if the player character's Y position is
         //above (lower than) 324
-        if (ctx.timeUp) return;
-        if (ctx.player.y < 324) return;
+        if (ctx.timeUp || ctx.player.y < 324) return;
 
         for (i = 0; i < MAX_RESPAWN_POINTS; i++) {
             RespawnPoint rp = ctx.respawnPoints[i];
@@ -1491,7 +1489,9 @@ class Play {
             ctx.player.x = 32;
             ctx.player.xvel = 0;
 
-            if (ctx.player.onFloor) ctx.player.animType = PLAYER_ANIM_STAND;
+            if (ctx.player.onFloor) {
+                ctx.player.animType = PLAYER_ANIM_STAND;
+            }
         }
     }
 
@@ -2014,6 +2014,7 @@ class Play {
 
             //------------------------------------------------------------------
             case 300: //SEQ_GOAL_REACHED_LEVEL3
+                //Player character slips on a banana peel and hits the floor
                 if (pl.onFloor) {
                     ctx.sequenceDelay = 0.25f;
                     ctx.sequenceStep++;
@@ -2098,6 +2099,7 @@ class Play {
                 break;
 
             case 402:
+                //Player character cleans the dung
                 cutscenePlayerAnim.running = true;
                 cutscenePlayerAnim.frame = 0;
                 cutscenePlayerAnim.numFrames = 9;
@@ -2109,6 +2111,7 @@ class Play {
                 break;
 
             case 403:
+                //Player character finishes cleaning the dung
                 pl.visible = true;
                 cutscenePlayer.sprite = NONE;
                 ctx.sequenceDelay = 0.25f;
@@ -2390,7 +2393,7 @@ class Play {
                     //Traffic jam stops
                     ctx.car.x = ctx.cam.x - 60 + 400;
                     ctx.car.xvel = 0;
-                    ctx.bus.x = ctx.cam.x - 60; //- 64
+                    ctx.bus.x = ctx.cam.x - 60;
                     ctx.bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;

@@ -61,27 +61,29 @@ public class Defs {
     }
 
     public static class Config {
+        //Display
         public boolean fullscreen;
-        public boolean windowSupported;
         public boolean fixedWindowMode;
         public boolean resizableWindow;
         public int windowScale;
         public boolean scanlinesEnabled;
-
-        public boolean audioEnabled;
-        public boolean musicEnabled;
-        public boolean sfxEnabled;
 
         //Virtual screen size
         public boolean vscreenAutoSize;
         public int vscreenWidth;
         public int vscreenHeight;
 
+        //Audio
+        public boolean audioEnabled;
+        public boolean musicEnabled;
+        public boolean sfxEnabled;
+
         //Touchscreen
         public boolean touchEnabled;
         public boolean touchButtonsEnabled; //Left, Right, and Jump buttons
         public boolean showTouchControls;
 
+        //Back key
         public boolean useBackKey;
 
         //Game progress
@@ -89,6 +91,7 @@ public class Defs {
         public int progressDifficulty;
         public boolean progressCheat;
     }
+
 
 
     //==========================================================================
@@ -137,7 +140,7 @@ public class Defs {
         boolean showFrame;
         boolean fillScreen;
 
-        int action;
+        int action; //DLGACT_* constants
         int actionParam;
     }
 
@@ -370,18 +373,18 @@ public class Defs {
         CoinSpark coinSparks[];
         CrackParticle crackParticles[];
         PushArrow pushArrow;
+        int nextCoinSpark;
+        int nextCrackParticle;
 
         //Animations
         Anim anims[];
-
-        int nextCoinSpark;
-        int nextCrackParticle;
 
         //Used in the ending sequence
         boolean playerReachedFlagman;
         boolean henReachedFlagman;
         boolean busReachedFlagman;
 
+        //Sequence
         int sequenceStep;
         float sequenceDelay;
         boolean skipInitialSequence;
@@ -408,7 +411,7 @@ public class Defs {
     static final int SCR_PLAY_FREEZE = 2; //Render a play session without updating it
     static final int SCR_FINALSCORE = 3;
 
-    //Delayed actions
+    //Delayed action types
     static final int DELACT_TITLE = 0;
     static final int DELACT_NEXT_DIFFICULTY = 1;
     static final int DELACT_TRY_AGAIN = 2;
@@ -453,8 +456,8 @@ public class Defs {
     static final int TXTCOL_GREEN = 1;
     static final int TXTCOL_GRAY  = 2;
 
-    //Like in many retro games, 8x8 tiles are commonly used as the basic unit
-    //for positioning and size
+    //As in many retro games, 8x8 tiles are commonly used as the basic unit for
+    //positioning and size
     static final int TILE_SIZE = 8;
 
     //Special constant meaning that something does not exist or is unset or
@@ -711,7 +714,7 @@ public class Defs {
     static final int DLG_QUIT = 16;
     static final int DLG_ERROR = 17;
 
-    //Dialog actions
+    //Dialog action types
     static final int DLGACT_QUIT = 0;
     static final int DLGACT_TITLE = 1; //Go to title screen
     static final int DLGACT_PLAY = 2;
@@ -903,7 +906,9 @@ public class Defs {
         3, 0, 2, 1, 3, 0, 1, 2, 1, 3, 0, 2, -1
     };
 
-    //x, y, width, height
+    //Sprites within the gfx.png file
+    //
+    //For each sprite: x, y, width, height
     //
     //For sprites with more than one animation frame, the width refers to a
     //single frame
