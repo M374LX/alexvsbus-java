@@ -94,6 +94,8 @@ class DesktopPlatDep implements PlatDep {
         appConfig.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon128.png");
         appConfig.setResizable(config.resizableWindow);
         appConfig.setInitialVisible(false);
+        appConfig.setForegroundFPS(60);
+        appConfig.useVsync(true);
 
         new Lwjgl3Application(new Main(this), appConfig);
     }
