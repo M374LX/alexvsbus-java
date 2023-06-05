@@ -1614,7 +1614,7 @@ class Play {
             ctx.busStopSignX = ctx.levelSize - 40;
         } else {
             //The sign is at the start of the level
-            ctx.busStopSignX = 440;
+            ctx.busStopSignX = 176;
         }
     }
 
