@@ -1,9 +1,9 @@
 sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = ["../core/assets"]
+sourceSets.main.resources.srcDirs = ["../assets"]
 
 project.ext.mainClassName = "org.alexvsbus.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../core/assets")
+project.ext.assetsDir = new File("../assets")
 
 import org.gradle.internal.os.OperatingSystem
 

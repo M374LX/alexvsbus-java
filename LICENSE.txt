@@ -19,8 +19,8 @@ https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 Assets license
 ==============
-The assets under the core/assets directory are released under the Creative
-Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0) license.
+The assets under the assets directory are released under the Creative Commons
+Attribution-ShareAlike 4.0 (CC BY-SA 4.0) license.
 
 For the full license text, see the file docs/licenses/CC-BY-SA-4.0.txt or
 https://creativecommons.org/licenses/by-sa/4.0/legalcode.
