@@ -31,7 +31,7 @@ public class Defs {
         void postInit();
         void setMinWindowSize(int width, int height);
         Config getConfig();
-        void saveConfig();
+        boolean saveConfig();
     }
 
 

@@ -122,7 +122,7 @@ class AndroidPlatDep implements PlatDep {
     }
 
     @Override
-    public void saveConfig() {
+    public boolean saveConfig() {
         editor = prefs.edit();
         editor.putBoolean("scanlines-enabled", config.scanlinesEnabled);
         editor.putBoolean("touch-buttons-enabled", config.touchButtonsEnabled);
@@ -136,6 +136,8 @@ class AndroidPlatDep implements PlatDep {
         editor.putInt("progress-difficulty", config.progressDifficulty);
         editor.apply();
         editor = null;
+
+        return true;
     }
 
     boolean getPrefsBoolean(String key, boolean def) {

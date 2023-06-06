@@ -36,6 +36,8 @@ class Renderer {
     PlayCtx playCtx;
     DialogCtx dialogCtx;
 
+    boolean saveFailed;
+
     Texture gfx;
     TextureRegion textureRegion;
     Matrix4 mat;
@@ -61,6 +63,8 @@ class Renderer {
         this.config = config;
         this.playCtx = playCtx;
         this.dialogCtx = dialogCtx;
+
+        saveFailed = false;
 
         gfx = null;
         textureRegion = new TextureRegion();
@@ -120,6 +124,13 @@ class Renderer {
             case SCR_FINALSCORE:
                 drawFinalScore();
                 break;
+        }
+
+        if (saveFailed) {
+            String msg = "UNABLE TO SAVE GAME PROGRESS";
+            int x = ((vscreenWidth / TILE_SIZE) - msg.length()) / 2;
+
+            drawText(msg, TXTCOL_WHITE, TILE_SIZE * x, TILE_SIZE * 3);
         }
 
         if (dialogOpen) {
@@ -545,9 +556,12 @@ class Renderer {
         int x, h;
 
         //Determine HUD height
-        h = 16;
+        h = TILE_SIZE * 2;
         if (config.touchEnabled && displayParams.vscreenHeight > 224) {
-            h = 24;
+            h = TILE_SIZE * 3;
+        }
+        if (saveFailed) {
+            h = TILE_SIZE * 4;
         }
 
         drawSpriteStretch(SPR_BG_BLACK, 0, 0, displayParams.vscreenWidth, h);

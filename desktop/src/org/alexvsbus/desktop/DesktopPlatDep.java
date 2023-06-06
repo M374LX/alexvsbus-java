@@ -585,7 +585,7 @@ class DesktopPlatDep implements PlatDep {
     }
 
     @Override
-    public void saveConfig() {
+    public boolean saveConfig() {
         String data = "";
 
         //Fullscreen
@@ -638,8 +638,12 @@ class DesktopPlatDep implements PlatDep {
         try {
             Files.createDirectories(configFilePath.toAbsolutePath().getParent());
             Files.write(configFilePath, data.getBytes());
+
+            return true;
         } catch (Exception e) {
-            Gdx.app.log("Warning", "Unable to save configuration.");
+            Gdx.app.log("Warning", "Unable to save configuration (" + e.toString() + ")");
+
+            return false;
         }
     }
 }

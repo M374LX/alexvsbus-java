@@ -405,7 +405,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             }
         }
 
-        platDep.saveConfig();
+        //Try to save the configuration, which includes the game progress
+        if (!platDep.saveConfig()) {
+            //Display a message on the screen if it fails
+            renderer.saveFailed = true;
+        }
     }
 
     void handleLevelEnd() {
@@ -609,6 +613,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             case DIFFICULTY_SUPER:  filename += 's'; break;
         }
 
+        renderer.saveFailed = false;
         play.clear();
 
         err = levelLoad.load(filename);
@@ -669,6 +674,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void startEndingSequence() {
+        renderer.saveFailed = false;
         play.clear();
 
         progressChecked = false;
