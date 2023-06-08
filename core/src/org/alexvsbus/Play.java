@@ -47,11 +47,6 @@ class Play {
 
         ctx = new PlayCtx();
 
-        ctx.canPause = false;
-        ctx.difficulty = DIFFICULTY_NORMAL;
-        ctx.levelNum = -1;
-        ctx.skipInitialSequence = false;
-
         ctx.cam = new Camera();
         ctx.player = new Player();
         ctx.bus = new Bus();
