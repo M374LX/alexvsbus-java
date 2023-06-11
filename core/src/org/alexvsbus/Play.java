@@ -312,19 +312,19 @@ class Play {
         Camera cam = ctx.cam;
         int vscreenWidth = displayParams.vscreenWidth;
 
-        ctx.cam.xmin = 0;
-        ctx.cam.xmax = ctx.levelSize - vscreenWidth;
-        ctx.cam.followPlayerMinX = 64;
-        ctx.cam.followPlayerMaxX = vscreenWidth / 2;
+        cam.xmin = 0;
+        cam.xmax = ctx.levelSize - vscreenWidth;
+        cam.followPlayerMinX = 64;
+        cam.followPlayerMaxX = vscreenWidth / 2;
 
         if (vscreenWidth <= 256) {
-            ctx.cam.followPlayerMinX  = 32;
-            ctx.cam.followPlayerMaxX -= 64;
-            ctx.cam.xmin = 40;
+            cam.followPlayerMinX  = 32;
+            cam.followPlayerMaxX -= 64;
+            cam.xmin = 40;
         } else if (vscreenWidth <= 320) {
-            ctx.cam.followPlayerMinX  = 32;
-            ctx.cam.followPlayerMaxX -= 56;
-            ctx.cam.xmin = 40;
+            cam.followPlayerMinX  = 32;
+            cam.followPlayerMaxX -= 56;
+            cam.xmin = 40;
         }
 
         positionCamera();
@@ -1657,8 +1657,8 @@ class Play {
             case 0: //SEQ_NORMAL_PLAY_START
                 moveBusToEnd();
                 ignoreUserInput = false;
-                ctx.cam.followPlayer = true;
-                ctx.cam.fixedAtLeftmost = false;
+                cam.followPlayer = true;
+                cam.fixedAtLeftmost = false;
                 ctx.timeRunning = true;
                 ctx.timeDelay = 1;
                 ctx.canPause = true;
@@ -1751,7 +1751,7 @@ class Play {
             //------------------------------------------------------------------
             case 30: //SEQ_TIMEUP_BUS_NEAR
                 //Camera moves towards the bus
-                if (ctx.hen.x != NONE && ctx.hen.x - ctx.cam.x < -32) {
+                if (ctx.hen.x != NONE && ctx.hen.x - cam.x < -32) {
                     ctx.hen.x = NONE;
                 }
                 if (ctx.car.x != NONE) break; //Wait until the car and hen are
@@ -2198,18 +2198,18 @@ class Play {
             //------------------------------------------------------------------
             case 800: //SEQ_ENDING
                 //Ending sequence, with a traffic jam and a flagman
-                ctx.player.visible = false;
-                ctx.player.state = PLAYER_STATE_INACTIVE;
+                pl.visible = false;
+                pl.state = PLAYER_STATE_INACTIVE;
 
-                ctx.cam.x = VSCREEN_MAX_WIDTH + 24;
+                cam.x = VSCREEN_MAX_WIDTH + 24;
 
                 ctx.car.x = VSCREEN_MAX_WIDTH + 16;
                 ctx.car.type = TRAFFIC_JAM;
                 ctx.car.xvel = 0;
 
-                ctx.bus.x = VSCREEN_MAX_WIDTH + 16 - 408;
-                ctx.bus.xvel = 0;
-                ctx.bus.routeSign = 0; //Finish (checkered flag) sign
+                bus.x = VSCREEN_MAX_WIDTH + 16 - 408;
+                bus.xvel = 0;
+                bus.routeSign = 0; //Finish (checkered flag) sign
 
                 flagman.sprite = SPR_FLAGMAN;
                 flagman.x = VSCREEN_MAX_WIDTH * 2 + 32;
@@ -2228,8 +2228,8 @@ class Play {
 
             case 801:
                 //Camera moves to the right
-                ctx.cam.xvel = CAMERA_XVEL / 4;
-                ctx.cam.xdest = VSCREEN_MAX_WIDTH * 2 - 136;
+                cam.xvel = CAMERA_XVEL / 4;
+                cam.xdest = VSCREEN_MAX_WIDTH * 2 - 136;
                 ctx.sequenceDelay = 3;
                 ctx.sequenceStep++;
                 break;
@@ -2237,7 +2237,7 @@ class Play {
             case 802:
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
-                ctx.bus.xvel = 64;
+                bus.xvel = 64;
                 ctx.anims[ANIM_CAR_WHEELS].delay = 0.1f;
                 ctx.anims[ANIM_CAR_WHEELS].maxDelay = 0.1f;
                 startAnimation(ANIM_CAR_WHEELS);
@@ -2249,8 +2249,8 @@ class Play {
                     //Traffic jam stops
                     ctx.car.x = VSCREEN_MAX_WIDTH + 152;
                     ctx.car.xvel = 0;
-                    ctx.bus.x = ctx.car.x - 400;
-                    ctx.bus.xvel = 0;
+                    bus.x = ctx.car.x - 400;
+                    bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     ctx.sequenceDelay = 1;
@@ -2311,7 +2311,7 @@ class Play {
             case 807:
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
-                ctx.bus.xvel = 64;
+                bus.xvel = 64;
                 startAnimation(ANIM_CAR_WHEELS);
                 ctx.sequenceStep++;
                 break;
@@ -2321,8 +2321,8 @@ class Play {
                     //Traffic jam stops
                     ctx.car.x = VSCREEN_MAX_WIDTH + 424;
                     ctx.car.xvel = 0;
-                    ctx.bus.x = ctx.car.x - 400;
-                    ctx.bus.xvel = 0;
+                    bus.x = ctx.car.x - 400;
+                    bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     ctx.sequenceDelay = 1;
@@ -2369,23 +2369,23 @@ class Play {
             case 812:
                 //Traffic jam starts moving
                 ctx.car.xvel = 64;
-                ctx.bus.xvel = 64;
+                bus.xvel = 64;
                 startAnimation(ANIM_CAR_WHEELS);
                 ctx.sequenceStep++;
                 break;
 
             case 813:
-                if (ctx.bus.x >= ctx.cam.x - 60) {
+                if (bus.x >= cam.x - 60) {
                     //Bus reaches the flagman, who swings the flag
                     ctx.busReachedFlagman = true;
                     flagmanAnim.frame = 0;
                     flagmanAnim.running = true;
 
                     //Traffic jam stops
-                    ctx.car.x = ctx.cam.x - 60 + 400;
+                    ctx.car.x = cam.x - 60 + 400;
                     ctx.car.xvel = 0;
-                    ctx.bus.x = ctx.cam.x - 60;
-                    ctx.bus.xvel = 0;
+                    bus.x = cam.x - 60;
+                    bus.xvel = 0;
                     ctx.anims[ANIM_CAR_WHEELS].running = false;
                     ctx.anims[ANIM_CAR_WHEELS].frame = 0;
                     startAnimation(ANIM_BUS_DOOR_FRONT);

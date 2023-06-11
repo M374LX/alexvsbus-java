@@ -345,7 +345,7 @@ class Renderer {
 
         //Crate blocks
         for (i = 0; i < MAX_CRATE_BLOCKS; i++) {
-            CrateBlock block = playCtx.crateBlocks[i];
+            CrateBlock block = ctx.crateBlocks[i];
             x = block.x;
             y = block.y;
 
