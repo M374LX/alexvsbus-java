@@ -218,7 +218,7 @@ class Renderer {
 
                 //Left
                 spr = (isDeep ? SPR_DEEP_HOLE_LEFT : SPR_PASSAGEWAY_LEFT);
-                drawSprite(spr, x, y);
+                drawSprite(spr, x, y, 0);
 
                 //Middle
                 x += LEVEL_BLOCK_SIZE;
@@ -228,12 +228,12 @@ class Renderer {
                 //Right
                 x = ctx.holes[i].x + ((w - 1) * LEVEL_BLOCK_SIZE);
                 spr = (isDeep ? SPR_DEEP_HOLE_RIGHT : SPR_PASSAGEWAY_RIGHT);
-                drawSprite(spr, x, y);
+                drawSprite(spr, x, y, 0);
 
                 //Passageway exit if not opened
                 if (!isDeep && !exitOpened) {
                     spr = SPR_PASSAGEWAY_RIGHT_CLOSED;
-                    drawSprite(spr, x, y);
+                    drawSprite(spr, x, y, 0);
                 }
             }
         }
@@ -241,7 +241,7 @@ class Renderer {
         //Bus body, wheels, and route sign
         x = (int)ctx.bus.x;
         y = BUS_Y;
-        drawSprite(SPR_BUS, x, y);
+        drawSprite(SPR_BUS, x, y, 0);
         if (ctx.bus.routeSign != NONE) {
             if (ctx.bus.routeSign == 0) {
                 //Finish (checkered flag) sign
@@ -253,22 +253,22 @@ class Renderer {
             }
 
             if (frame >= 0) {
-                drawSpriteFrame(SPR_BUS_ROUTE, x + 308, y + 48, frame);
+                drawSprite(SPR_BUS_ROUTE, x + 308, y + 48, frame);
             }
         }
         frame = ctx.anims[ANIM_BUS_WHEELS].frame;
-        drawSpriteFrame(SPR_BUS_WHEEL, x + 104, y + 80, frame);
-        drawSpriteFrame(SPR_BUS_WHEEL, x + 296, y + 80, frame);
+        drawSprite(SPR_BUS_WHEEL, x + 104, y + 80, frame);
+        drawSprite(SPR_BUS_WHEEL, x + 296, y + 80, frame);
 
         //Characters at bus rear door
         if (ctx.bus.numCharacters >= 1) {
-            drawSprite(SPR_BUS_CHARACTER_1, x + 72, y + 24);
+            drawSprite(SPR_BUS_CHARACTER_1, x + 72, y + 24, 0);
         }
         if (ctx.bus.numCharacters >= 2) {
-            drawSprite(SPR_BUS_CHARACTER_2, x + 64, y + 24);
+            drawSprite(SPR_BUS_CHARACTER_2, x + 64, y + 24, 0);
         }
         if (ctx.bus.numCharacters >= 3) {
-            drawSprite(SPR_BUS_CHARACTER_3, x + 80, y + 24);
+            drawSprite(SPR_BUS_CHARACTER_3, x + 80, y + 24, 0);
         }
 
         //Cutscene objects (if in the bus)
@@ -281,16 +281,16 @@ class Renderer {
             x = (int)cobj.x + (int)ctx.bus.x;
             y = (int)cobj.y;
             frame = ctx.anims[ANIM_CUTSCENE_OBJECTS + i].frame;
-            drawSpriteFrame(spr, x, y, frame);
+            drawSprite(spr, x, y, frame);
         }
 
         //Bus doors
         x = (int)ctx.bus.x;
         y = BUS_Y;
         frame = ctx.anims[ANIM_BUS_DOOR_REAR].frame;
-        drawSpriteFrame(SPR_BUS_DOOR, x + 64,  y + 16, frame);
+        drawSprite(SPR_BUS_DOOR, x + 64,  y + 16, frame);
         frame = ctx.anims[ANIM_BUS_DOOR_FRONT].frame;
-        drawSpriteFrame(SPR_BUS_DOOR, x + 344, y + 16, frame);
+        drawSprite(SPR_BUS_DOOR, x + 344, y + 16, frame);
 
         //Passing car and ending sequence traffic jam
         if (ctx.car.x != NONE) {
@@ -315,9 +315,9 @@ class Renderer {
             }
 
             for (i = 0; i < numCars; i++) {
-                drawSprite(spr, x, y); //Car body
-                drawSpriteFrame(SPR_CAR_WHEEL, x + 16, y + 32, frame); //Rear wheel
-                drawSpriteFrame(SPR_CAR_WHEEL, x + 96, y + 32, frame); //Front wheel
+                drawSprite(spr, x, y, 0); //Car body
+                drawSprite(SPR_CAR_WHEEL, x + 16, y + 32, frame); //Rear wheel
+                drawSprite(SPR_CAR_WHEEL, x + 96, y + 32, frame); //Front wheel
 
                 x += 136;
 
@@ -333,15 +333,15 @@ class Renderer {
         //Hen
         if (ctx.hen.x != NONE) {
             frame = ctx.anims[ANIM_HEN].frame;
-            drawSpriteFrame(SPR_HEN, (int)ctx.hen.x, HEN_Y, frame);
+            drawSprite(SPR_HEN, (int)ctx.hen.x, HEN_Y, frame);
         }
 
         //Light poles (at most two are visible)
-        drawSprite(SPR_POLE, ctx.poleX, POLE_Y);
-        drawSprite(SPR_POLE, ctx.poleX + POLE_DISTANCE, POLE_Y);
+        drawSprite(SPR_POLE, ctx.poleX, POLE_Y, 0);
+        drawSprite(SPR_POLE, ctx.poleX + POLE_DISTANCE, POLE_Y, 0);
 
         //Bus stop sign
-        drawSprite(SPR_BUS_STOP_SIGN, ctx.busStopSignX, BUS_STOP_SIGN_Y);
+        drawSprite(SPR_BUS_STOP_SIGN, ctx.busStopSignX, BUS_STOP_SIGN_Y, 0);
 
         //Crate blocks
         for (i = 0; i < MAX_CRATE_BLOCKS; i++) {
@@ -379,7 +379,7 @@ class Renderer {
                 drawSpritePart(SPR_GUSH, obj.x, obj.y, frame * w, 0, w, h);
 
                 //Gush hole
-                drawSprite(SPR_GUSH_HOLE, obj.x, 263);
+                drawSprite(SPR_GUSH_HOLE, obj.x, 263, 0);
             } else {
                 frame = 0;
 
@@ -391,7 +391,7 @@ class Renderer {
                     }
                 }
 
-                drawSpriteFrame(objSprites[obj.type], obj.x, obj.y, frame);
+                drawSprite(objSprites[obj.type], obj.x, obj.y, frame);
             }
         }
 
@@ -401,7 +401,7 @@ class Renderer {
             x = (int)ctx.player.x;
             y = (int)ctx.player.y;
             frame = ctx.anims[ANIM_PLAYER].frame;
-            drawSpriteFrame(spr, x, y, frame);
+            drawSprite(spr, x, y, frame);
         }
 
         //Cutscene objects (if not in the bus)
@@ -414,7 +414,7 @@ class Renderer {
             x = (int)cobj.x;
             y = (int)cobj.y;
             frame = ctx.anims[ANIM_CUTSCENE_OBJECTS + i].frame;
-            drawSpriteFrame(spr, x, y, frame);
+            drawSprite(spr, x, y, frame);
         }
 
         //Medal icons (used in the ending sequence)
@@ -426,17 +426,17 @@ class Renderer {
                 x += 8;
             }
 
-            drawSprite(SPR_MEDAL1, x, y);
+            drawSprite(SPR_MEDAL1, x, y, 0);
         }
         if (ctx.henReachedFlagman) {
             x = (int)ctx.hen.x;
             y = 184;
-            drawSprite(SPR_MEDAL2, x, y);
+            drawSprite(SPR_MEDAL2, x, y, 0);
         }
         if (ctx.busReachedFlagman) {
             x = (int)ctx.bus.x + 343;
             y = 120;
-            drawSprite(SPR_MEDAL3, x, y);
+            drawSprite(SPR_MEDAL3, x, y, 0);
         }
 
         //Deep holes and passageways (foreground part)
@@ -446,14 +446,14 @@ class Renderer {
 
             if (x != NONE) {
                 if (ctx.holes[i].type == HOLE_DEEP) {
-                    drawSprite(SPR_DEEP_HOLE_LEFT_FG, x, y);
+                    drawSprite(SPR_DEEP_HOLE_LEFT_FG, x, y, 0);
                 } else {
                     //Left
-                    drawSprite(SPR_PASSAGEWAY_LEFT_FG, x, y);
+                    drawSprite(SPR_PASSAGEWAY_LEFT_FG, x, y, 0);
 
                     //Right
                     x += (ctx.holes[i].width - 1) * LEVEL_BLOCK_SIZE;
-                    drawSprite(SPR_PASSAGEWAY_RIGHT_FG, x, y);
+                    drawSprite(SPR_PASSAGEWAY_RIGHT_FG, x, y, 0);
                 }
             }
         }
@@ -468,7 +468,7 @@ class Renderer {
                 x = (int)ctx.player.x;
                 y = (int)ctx.player.y;
                 frame = ctx.anims[ANIM_PLAYER].frame;
-                drawSpriteFrame(spr, x, y, frame);
+                drawSprite(spr, x, y, frame);
             }
         }
 
@@ -489,7 +489,7 @@ class Renderer {
                 continue;
             }
 
-            drawSpriteFrame(objSprites[obj.type], obj.x, obj.y, frame);
+            drawSprite(objSprites[obj.type], obj.x, obj.y, frame);
         }
 
         //Pushable crate arrows
@@ -500,7 +500,7 @@ class Renderer {
                 x = ctx.objs[crate.obj].x - 24 + (int)ctx.pushArrow.xoffs;
                 y = FLOOR_Y - 20;
 
-                drawSprite(SPR_PUSH_ARROW, x, y);
+                drawSprite(SPR_PUSH_ARROW, x, y, 0);
             }
         }
 
@@ -513,7 +513,7 @@ class Renderer {
                 spr = SPR_OVERHEAD_SIGN_BASE_TOP;
                 x = obj.x + 16;
                 y = obj.y + 8;
-                drawSprite(spr, x, y);
+                drawSprite(spr, x, y, 0);
 
                 spr = SPR_OVERHEAD_SIGN_BASE;
                 x = obj.x + 24;
@@ -530,7 +530,7 @@ class Renderer {
             frame = ctx.anims[ANIM_CRACK_PARTICLES].frame;
 
             if (x != NONE) {
-                drawSpriteFrame(SPR_CRACK_PARTICLE, x, y, frame);
+                drawSprite(SPR_CRACK_PARTICLE, x, y, frame);
             }
         }
 
@@ -543,7 +543,7 @@ class Renderer {
                 boolean gold = ctx.coinSparks[i].gold;
                 spr = gold ? SPR_COIN_SPARK_GOLD : SPR_COIN_SPARK_SILVER;
                 frame = ctx.anims[ANIM_COIN_SPARKS + i].frame;
-                drawSpriteFrame(spr, x, y, frame);
+                drawSprite(spr, x, y, frame);
             }
         }
 
@@ -589,7 +589,7 @@ class Renderer {
 
         //Pause
         if (playCtx.canPause && !dialogOpen) {
-            drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0);
+            drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0, 0);
         }
 
         if (!config.touchButtonsEnabled) return;
@@ -648,7 +648,6 @@ class Renderer {
                 break;
         }
 
-
         drawText(msg, TXTCOL_WHITE, x, cy + TILE_SIZE);
     }
 
@@ -691,7 +690,7 @@ class Renderer {
             x = (displayParams.vscreenWidth - logoWidth) / 2 + 4;
             y = (displayParams.vscreenHeight <= 192) ? 0 : 16;
 
-            drawSprite(spr, x, y);
+            drawSprite(spr, x, y, 0);
         }
 
         //Draw dialog display name
@@ -744,7 +743,7 @@ class Renderer {
             drawText(dialogCtx.text, TXTCOL_WHITE, x, y);
 
             if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
-                drawSprite(SPR_ERROR, x, y);
+                drawSprite(SPR_ERROR, x, y, 0);
             }
         }
 
@@ -761,7 +760,6 @@ class Renderer {
     }
 
     void drawDialogItem(DialogItem item, boolean selected) {
-        int i, j;
         int x, y;
         int w = item.width;
         int h = item.height;
@@ -775,7 +773,6 @@ class Renderer {
 
         //Draw item caption
         if (item.caption.length() > 0) {
-            String caption = item.caption.copyValueOf(item.caption.toCharArray());
             int xoffs = TILE_SIZE;
             int yoffs = TILE_SIZE * (item.height / 2);
             int color;
@@ -788,13 +785,12 @@ class Renderer {
                 color = TXTCOL_WHITE;
             }
 
-            drawText(caption, color, x + xoffs, y + yoffs);
+            drawText(item.caption, color, x + xoffs, y + yoffs);
         }
 
         //Draw item value
         if (item.value.length() > 0) {
-            String value = item.value.copyValueOf(item.value.toCharArray());
-            int xoffs = ((w - 1) * TILE_SIZE) - (value.length() * TILE_SIZE);
+            int xoffs = ((w - 1) * TILE_SIZE) - (item.value.length() * TILE_SIZE);
             int yoffs = TILE_SIZE * (item.height / 2);
             int color;
 
@@ -806,7 +802,7 @@ class Renderer {
                 color = TXTCOL_WHITE;
             }
 
-            drawText(value, color, x + xoffs, y + yoffs);
+            drawText(item.value, color, x + xoffs, y + yoffs);
         }
 
         //Draw item icon
@@ -817,7 +813,7 @@ class Renderer {
             x = Dialogs.itemX(item) + TILE_SIZE;
             y = Dialogs.itemY(item) + TILE_SIZE;
 
-            drawSprite(spr, x, y);
+            drawSprite(spr, x, y, 0);
         }
     }
 
@@ -883,7 +879,7 @@ class Renderer {
                     }
                 }
 
-                drawSpriteFlip(spr, x + i * 8, y + j * 8, hflip, vflip);
+                drawSpriteFlip(spr, x + i * 8, y + j * 8, 0, hflip, vflip);
             }
         }
     }
@@ -935,8 +931,7 @@ class Renderer {
         spriteBatch.draw(textureRegion, dx, dy, dw, dh);
     }
 
-    void drawSpritePart(int spr, int dx, int dy,
-                                            int sx, int sy, int sw, int sh) {
+    void drawSpritePart(int spr, int dx, int dy, int sx, int sy, int sw, int sh) {
 
         sx += sprites[spr * 4 + 0];
         sy += sprites[spr * 4 + 1];
@@ -944,7 +939,7 @@ class Renderer {
         drawRegion(dx, dy, sw, sh, sx, sy, sw, sh, false, false);
     }
 
-    void drawSpriteFrameFlip(int spr, int dx, int dy, int frame,
+    void drawSpriteFlip(int spr, int dx, int dy, int frame,
                                                 boolean hflip, boolean vflip) {
 
         int w  = sprites[spr * 4 + 2];
@@ -955,16 +950,8 @@ class Renderer {
         drawRegion(dx, dy, w, h, sx, sy, w, h, hflip, vflip);
     }
 
-    void drawSpriteFrame(int spr, int dx, int dy, int frame) {
-        drawSpriteFrameFlip(spr, dx, dy, frame, false, false);
-    }
-
-    void drawSpriteFlip(int spr, int dx, int dy, boolean hflip, boolean vflip) {
-        drawSpriteFrameFlip(spr, dx, dy, 0, hflip, vflip);
-    }
-
-    void drawSprite(int spr, int dx, int dy) {
-        drawSpriteFrame(spr, dx, dy, 0);
+    void drawSprite(int spr, int dx, int dy, int frame) {
+        drawSpriteFlip(spr, dx, dy, frame, false, false);
     }
 
     void drawSpriteRepeat(int spr, int dx, int dy, int xrep, int yrep) {
@@ -973,7 +960,7 @@ class Renderer {
 
         for (int i = 0; i < xrep; i++) {
             for (int j = 0; j < yrep; j++) {
-                drawSprite(spr, dx + (i * w), dy + (j * h));
+                drawSprite(spr, dx + (i * w), dy + (j * h), 0);
             }
         }
     }
@@ -991,7 +978,7 @@ class Renderer {
         Color c = spriteBatch.getColor();
 
         spriteBatch.setColor(c.r, c.g, c.b, opacity);
-        drawSprite(spr, dx, dy);
+        drawSprite(spr, dx, dy, 0);
         spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
     }
 

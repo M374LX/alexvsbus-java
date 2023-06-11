@@ -111,7 +111,6 @@ class Audio {
     boolean sfxEnabled;
     int sfxToPlay;
     int sfxToStop;
-    int bgmToPlay;
     boolean shouldStopAllSfx;
     boolean shouldStopBgm;
 
@@ -131,7 +130,6 @@ class Audio {
         sfxEnabled = true;
         sfxToPlay = NONE;
         sfxToStop = NONE;
-        bgmToPlay = NONE;
         shouldStopAllSfx = false;
         shouldStopBgm = false;
 

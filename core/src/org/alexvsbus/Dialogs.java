@@ -1167,7 +1167,6 @@ class Dialogs {
         int vscreenWidth  = displayParams.vscreenWidth;
         int vscreenHeight = displayParams.vscreenHeight;
         int dialogType;
-        int numItems;
         int i;
 
         if (ctx.stackSize <= 0) return;

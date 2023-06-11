@@ -911,7 +911,6 @@ class Play {
     void handlePassageways() {
         Player pl = ctx.player;
         int plLeft = (int)pl.x + PLAYER_BOX_OFFSET_X;
-        int plRight = plLeft + PLAYER_BOX_WIDTH;
         int plTop = (int)pl.y;
         int plBottom = plTop + pl.height;
         int i;
@@ -925,7 +924,6 @@ class Play {
 
             Hole pw = ctx.holes[i];
             int pwLeft = pw.x;
-            int pwRight = pwLeft + (pw.width * LEVEL_BLOCK_SIZE);
             int pwEntryRight = pwLeft + LEVEL_BLOCK_SIZE;
 
             //Check if the player is entering a passageway
@@ -1492,7 +1490,6 @@ class Play {
 
     //Acts if the player character's animation type has changed
     void handlePlayerAnimationChange() {
-        Anim anim = ctx.anims[ANIM_PLAYER];
         int animType = ctx.player.animType;
 
         //Nothing to do if the animation has not changed
@@ -1636,7 +1633,6 @@ class Play {
         Bus bus = ctx.bus;
         Camera cam = ctx.cam;
         int levelSize = ctx.levelSize;
-        int vscreenWidth = displayParams.vscreenWidth;
 
         //Cutscene objects
         CutsceneObject cutscenePlayer = ctx.cutsceneObjects[0];
