@@ -22,6 +22,10 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
+import static org.alexvsbus.Data.vscreenWidths;
+import static org.alexvsbus.Data.vscreenHeights;
+import static org.alexvsbus.Data.difficultyNumLevels;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -35,8 +39,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //Default uncaught exception handler
     Thread.UncaughtExceptionHandler defHandler;
 
-    //Delta time (seconds since the previous frame)
-    float dt;
+    //Seconds since the previous frame
+    float deltaTime;
 
     //Display parameters
     DisplayParams displayParams;
@@ -84,8 +88,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     // -------------------------------------------------------------------------
 
-    public Main(PlatDep platDep) {
-        this.platDep = platDep;
+    public Main(PlatDep pd) {
+        platDep = pd;
         config = platDep.getConfig();
     }
 
@@ -150,7 +154,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         if (dialogCtx.stackSize > 0) { //If a dialog is open
             dialogs.handleKeys(inputHeld, inputHit);
-            dialogs.update(dt);
+            dialogs.update(deltaTime);
             handleDialogAction();
 
             //Dialog just closed
@@ -159,7 +163,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             }
         } else if (screenType == SCR_PLAY) {
             play.setInput(inputHeld);
-            play.update(dt);
+            play.update(deltaTime);
             handlePause();
             checkGameProgress();
             handleLevelEnd();
@@ -252,10 +256,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //--------------------------------------------------------------------------
 
     void getDeltaTime() {
-        dt = Gdx.graphics.getDeltaTime();
+        deltaTime = Gdx.graphics.getDeltaTime();
 
         //Limit delta time to prevent problems with collision detection
-        if (dt > MAX_DT) dt = MAX_DT;
+        if (deltaTime > MAX_DT) deltaTime = MAX_DT;
     }
 
     void handleInput() {
@@ -507,7 +511,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     void handleDelayedAction() {
         if (delayedActionType == NONE) return;
 
-        actionDelay -= dt;
+        actionDelay -= deltaTime;
         if (actionDelay > 0) return;
 
         switch (delayedActionType) {
@@ -558,7 +562,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
         wipeCmd = NONE;
 
-        wipeDelay -= dt;
+        wipeDelay -= deltaTime;
         if (wipeDelay > 0) return;
 
         wipeDelay = WIPE_MAX_DELAY;

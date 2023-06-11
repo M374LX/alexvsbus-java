@@ -20,19 +20,16 @@
 
 package org.alexvsbus;
 
+import static org.alexvsbus.Defs.*;
+
+import static org.alexvsbus.Data.difficultyNumLevels;
+import static org.alexvsbus.Data.vscreenWidths;
+import static org.alexvsbus.Data.vscreenHeights;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import org.alexvsbus.Defs.Config;
 import org.alexvsbus.Defs.PlatDep;
-
-import static org.alexvsbus.Defs.NONE;
-import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
-import static org.alexvsbus.Defs.DIFFICULTY_HARD;
-import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
-import static org.alexvsbus.Defs.DIFFICULTY_MAX;
-import static org.alexvsbus.Defs.difficultyNumLevels;
-import static org.alexvsbus.Defs.vscreenWidths;
-import static org.alexvsbus.Defs.vscreenHeights;
 
 class AndroidPlatDep implements PlatDep {
     Config config;

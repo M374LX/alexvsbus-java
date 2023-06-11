@@ -22,6 +22,11 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
+import static org.alexvsbus.Data.vscreenWidths;
+import static org.alexvsbus.Data.vscreenHeights;
+import static org.alexvsbus.Data.difficultyNumLevels;
+import static org.alexvsbus.Data.cheatSequence;
+
 class Dialogs {
     DialogCtx ctx;
     static DisplayParams displayParams;
@@ -44,10 +49,10 @@ class Dialogs {
     int storeSelMin;
     int storeSelMax;
 
-    Dialogs(DisplayParams displayParams, Config config, Audio audio) {
-        this.displayParams = displayParams;
-        this.config = config;
-        this.audio = audio;
+    Dialogs(DisplayParams dp, Config cfg, Audio a) {
+        displayParams = dp;
+        config = cfg;
+        audio = a;
 
         difficulty = DIFFICULTY_NORMAL;
         waitInputUp = false;

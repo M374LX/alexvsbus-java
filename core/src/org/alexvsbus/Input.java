@@ -45,11 +45,11 @@ public class Input extends ControllerAdapter {
 
     //--------------------------------------------------------------------------
 
-    Input(DisplayParams displayParams, Config config) {
+    Input(DisplayParams dp, Config cfg) {
         int i;
 
-        this.config = config;
-        this.displayParams = displayParams;
+        config = cfg;
+        displayParams = dp;
 
         pauseTouched = false;
         leftTouched  = false;

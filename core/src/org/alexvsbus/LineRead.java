@@ -20,7 +20,7 @@
 
 package org.alexvsbus;
 
-import static org.alexvsbus.Defs.NONE;
+import static org.alexvsbus.Defs.*;
 
 //Class that receives the contents of a file (level or configuration) and
 //allows each line to be read individually
@@ -32,8 +32,8 @@ public class LineRead {
     boolean dataEnded;
     boolean invalid;
 
-    public void setData(String data) {
-        this.data = data;
+    public void setData(String dat) {
+        data = dat;
         numLinesRead = 0;
         dataPos = 0;
         dataLength = data.length();

@@ -22,6 +22,10 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
+import static org.alexvsbus.Data.sprites;
+import static org.alexvsbus.Data.playerAnimSprites;
+import static org.alexvsbus.Data.objSprites;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -56,13 +60,12 @@ class Renderer {
 
     //--------------------------------------------------------------------------
 
-    Renderer(DisplayParams displayParams, Config config,
-                                        PlayCtx playCtx, DialogCtx dialogCtx) {
+    Renderer(DisplayParams dp, Config cfg, PlayCtx pctx, DialogCtx dctx) {
 
-        this.displayParams = displayParams;
-        this.config = config;
-        this.playCtx = playCtx;
-        this.dialogCtx = dialogCtx;
+        displayParams = dp;
+        config = cfg;
+        playCtx = pctx;
+        dialogCtx = dctx;
 
         saveFailed = false;
 

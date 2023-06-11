@@ -20,6 +20,12 @@
 
 package org.alexvsbus.desktop;
 
+import static org.alexvsbus.Defs.*;
+
+import static org.alexvsbus.Data.difficultyNumLevels;
+import static org.alexvsbus.Data.vscreenWidths;
+import static org.alexvsbus.Data.vscreenHeights;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,15 +38,6 @@ import org.alexvsbus.Defs.Config;
 import org.alexvsbus.Defs.PlatDep;
 import org.alexvsbus.LineRead;
 import org.alexvsbus.Main;
-
-import static org.alexvsbus.Defs.NONE;
-import static org.alexvsbus.Defs.DIFFICULTY_NORMAL;
-import static org.alexvsbus.Defs.DIFFICULTY_HARD;
-import static org.alexvsbus.Defs.DIFFICULTY_SUPER;
-import static org.alexvsbus.Defs.VERSION;
-import static org.alexvsbus.Defs.difficultyNumLevels;
-import static org.alexvsbus.Defs.vscreenWidths;
-import static org.alexvsbus.Defs.vscreenHeights;
 
 class DesktopPlatDep implements PlatDep {
     Path configFilePath;

@@ -20,9 +20,495 @@
 
 package org.alexvsbus;
 
-//Class containing passive static classes (without methods), constants, and
-//read-only data, all of which can be statically imported by other files
+//Class containing constants and plain old data (POD) classes that can be
+//statically imported by other files
 public class Defs {
+    //==========================================================================
+    // Constants: general
+    //
+
+    //Version and repository
+    public static final String VERSION = "pre6";
+    public static final String REPOSITORY = "https://github.com/M374LX/alexvsbus-java";
+
+    //Maximum delta time
+    static final float MAX_DT = (1.0f / 30.0f);
+
+    //Screen types
+    static final int SCR_BLANK = 0;
+    static final int SCR_PLAY = 1;
+    static final int SCR_PLAY_FREEZE = 2; //Render a play session without updating it
+    static final int SCR_FINALSCORE = 3;
+
+    //Delayed action types
+    static final int DELACT_TITLE = 0;
+    static final int DELACT_NEXT_DIFFICULTY = 1;
+    static final int DELACT_TRY_AGAIN = 2;
+
+    //Difficulty
+    public static final int DIFFICULTY_NORMAL = 0;
+    public static final int DIFFICULTY_HARD = 1;
+    public static final int DIFFICULTY_SUPER = 2;
+    public static final int DIFFICULTY_MAX = DIFFICULTY_SUPER;
+
+    //Level load errors
+    static final int LVLERR_NONE = 0;
+    static final int LVLERR_CANNOT_OPEN = 1;
+    static final int LVLERR_TOO_LARGE = 2;
+    static final int LVLERR_INVALID = 3;
+
+    //Maximum supported size for the virtual screen
+    static final int VSCREEN_MAX_WIDTH  = 480;
+    static final int VSCREEN_MAX_HEIGHT = 270;
+
+    //Minimum supported size for the virtual screen
+    static final int VSCREEN_MIN_WIDTH  = 256;
+    static final int VSCREEN_MIN_HEIGHT = 192;
+
+    //Minimum size for the virtual screen when using automatic sizing (except
+    //if the screen is very small)
+    static final int VSCREEN_AUTO_MIN_WIDTH  = 416;
+    static final int VSCREEN_AUTO_MIN_HEIGHT = 240;
+
+    //Screen wiping commands
+    static final int WIPECMD_IN = 0;
+    static final int WIPECMD_OUT = 1;
+    static final int WIPECMD_CLEAR = 2;
+
+    //Other screen wiping constants
+    static final int WIPE_MAX_VALUE = VSCREEN_MAX_WIDTH;
+    static final int WIPE_DELTA = 16;
+    static final float WIPE_MAX_DELAY = 0.0005f;
+
+    //Text colors
+    static final int TXTCOL_WHITE = 0;
+    static final int TXTCOL_GREEN = 1;
+    static final int TXTCOL_GRAY  = 2;
+
+    //As in many retro games, 8x8 tiles are commonly used as the basic unit for
+    //positioning and size
+    static final int TILE_SIZE = 8;
+
+    //Special constant meaning that something does not exist or is unset or
+    //inactive
+    //
+    //Commonly used as an object's X position or as an index within
+    //PlayCtx.objs[]
+    public static final int NONE = (-1);
+
+
+
+    //==========================================================================
+    // Constants: input
+    //
+
+    //Player input actions (bitfield)
+    static final int INPUT_UP = (1 << 0);
+    static final int INPUT_DOWN = (1 << 1);
+    static final int INPUT_LEFT = (1 << 2);
+    static final int INPUT_RIGHT = (1 << 3);
+    static final int INPUT_JUMP = (1 << 4);
+    static final int INPUT_PAUSE = (1 << 5);
+    static final int INPUT_PAUSE_TOUCH = (1 << 6);
+    static final int INPUT_DIALOG_CONFIRM = (1 << 7);
+    static final int INPUT_DIALOG_RETURN = (1 << 8);
+    static final int INPUT_CFG_FULLSCREEN_TOGGLE = (1 << 9);
+    static final int INPUT_CFG_AUDIO_TOGGLE = (1 << 10);
+    static final int INPUT_CFG_SCANLINES_TOGGLE = (1 << 11);
+
+    //Input actions from game controller (joystick, joypad, ...) buttons
+    static final int JOY_A = 0;
+    static final int JOY_B = 1;
+    static final int JOY_X = 2;
+    static final int JOY_START = 3;
+    static final int JOY_SELECT = 4;
+    static final int JOY_DPAD_UP = 5;
+    static final int JOY_DPAD_DOWN = 6;
+    static final int JOY_DPAD_LEFT = 7;
+    static final int JOY_DPAD_RIGHT = 8;
+    static final int JOY_NUM_BUTTONS = 9;
+
+    static final float JOY_AXIS_DEADZONE = 0.2f;
+
+    //Touchscreen button positions
+    static final int TOUCH_LEFT_X = 0;
+    static final int TOUCH_LEFT_OFFSET_Y = 72;
+    static final int TOUCH_RIGHT_X = 64;
+    static final int TOUCH_RIGHT_OFFSET_Y = 64;
+    static final int TOUCH_JUMP_OFFSET_X = 64; //Offset from right side of screen
+    static final int TOUCH_JUMP_OFFSET_Y = 64;
+
+    //Touchscreen button opacity
+    static final float TOUCH_OPACITY = 0.45f;
+
+
+
+    //==========================================================================
+    // Constants: audio
+    //
+
+    //Sound effects
+    static final int SFX_COIN = 0;
+    static final int SFX_CRATE = 1;
+    static final int SFX_DIALOG_SELECT = 2;
+    static final int SFX_ERROR = 3;
+    static final int SFX_FALL = 4;
+    static final int SFX_HIT = 5;
+    static final int SFX_HOLE = 6;
+    static final int SFX_RESPAWN = 7;
+    static final int SFX_SCORE = 8;
+    static final int SFX_SLIP = 9;
+    static final int SFX_SPRING = 10;
+    static final int SFX_TIME = 11;
+    static final int NUM_SFX = 12;
+
+    //Background music (BGM) tracks
+    static final int BGMTITLE = 0;
+    static final int BGM1 = 1;
+    static final int BGM2 = 2;
+    static final int BGM3 = 3;
+
+
+
+    //==========================================================================
+    // Constants: graphics
+    //
+
+    //Sprites
+    static final int SPR_BACKGROUND = 0;
+    static final int SPR_BANANA_PEEL = 1;
+    static final int SPR_BEARDED_MAN_STAND = 2;
+    static final int SPR_BEARDED_MAN_WALK = 3;
+    static final int SPR_BEARDED_MAN_JUMP = 4;
+    static final int SPR_BG_BLACK = 5;
+    static final int SPR_BG_SKY1 = 6;
+    static final int SPR_BG_SKY2 = 7;
+    static final int SPR_BG_SKY3 = 8;
+    static final int SPR_BIRD = 9;
+    static final int SPR_BUS = 10;
+    static final int SPR_BUS_CHARACTER_1 = 11;
+    static final int SPR_BUS_CHARACTER_2 = 12;
+    static final int SPR_BUS_CHARACTER_3 = 13;
+    static final int SPR_BUS_DOOR = 14;
+    static final int SPR_BUS_ROUTE = 15;
+    static final int SPR_BUS_STOP_SIGN = 16;
+    static final int SPR_BUS_WHEEL = 17;
+    static final int SPR_CAR_BLUE = 18;
+    static final int SPR_CAR_SILVER = 19;
+    static final int SPR_CAR_YELLOW = 20;
+    static final int SPR_CAR_WHEEL = 21;
+    static final int SPR_CHARSET_WHITE = 22;
+    static final int SPR_CHARSET_GREEN = 23;
+    static final int SPR_CHARSET_GRAY = 24;
+    static final int SPR_COIN_SILVER = 25;
+    static final int SPR_COIN_GOLD = 26;
+    static final int SPR_COIN_SPARK_SILVER = 27;
+    static final int SPR_COIN_SPARK_GOLD = 28;
+    static final int SPR_CRACK_PARTICLE = 29;
+    static final int SPR_CRATE = 30;
+    static final int SPR_DEEP_HOLE_LEFT = 31;
+    static final int SPR_DEEP_HOLE_LEFT_FG = 32;
+    static final int SPR_DEEP_HOLE_MIDDLE = 33;
+    static final int SPR_DEEP_HOLE_RIGHT = 34;
+    static final int SPR_DUNG = 35;
+    static final int SPR_ERROR = 36;
+    static final int SPR_FLAGMAN = 37;
+    static final int SPR_GUSH = 38;
+    static final int SPR_GUSH_CRACK = 39;
+    static final int SPR_GUSH_HOLE = 40;
+    static final int SPR_HEN = 41;
+    static final int SPR_HYDRANT = 42;
+    static final int SPR_LOGO_SMALL = 43;
+    static final int SPR_LOGO_LARGE = 44;
+    static final int SPR_MEDAL1 = 45;
+    static final int SPR_MEDAL2 = 46;
+    static final int SPR_MEDAL3 = 47;
+    static final int SPR_OVERHEAD_SIGN = 48;
+    static final int SPR_OVERHEAD_SIGN_BASE = 49;
+    static final int SPR_OVERHEAD_SIGN_BASE_TOP = 50;
+    static final int SPR_PASSAGEWAY_LEFT = 51;
+    static final int SPR_PASSAGEWAY_LEFT_FG = 52;
+    static final int SPR_PASSAGEWAY_MIDDLE = 53;
+    static final int SPR_PASSAGEWAY_RIGHT = 54;
+    static final int SPR_PASSAGEWAY_RIGHT_FG = 55;
+    static final int SPR_PASSAGEWAY_RIGHT_CLOSED = 56;
+    static final int SPR_PAUSE = 57;
+    static final int SPR_PLAYER_STAND = 58;
+    static final int SPR_PLAYER_WALK = 59;
+    static final int SPR_PLAYER_JUMP = 60;
+    static final int SPR_PLAYER_GRABROPE = 61;
+    static final int SPR_PLAYER_THROWBACK = 62;
+    static final int SPR_PLAYER_SLIP = 63;
+    static final int SPR_PLAYER_RUN = 64;
+    static final int SPR_PLAYER_CLEAN_DUNG = 65;
+    static final int SPR_POLE = 66;
+    static final int SPR_PUSH_ARROW = 67;
+    static final int SPR_ROPE_HORIZONTAL = 68;
+    static final int SPR_ROPE_VERTICAL = 69;
+    static final int SPR_SPRING = 70;
+    static final int SPR_TOUCH_LEFT = 71;
+    static final int SPR_TOUCH_LEFT_HELD = 72;
+    static final int SPR_TOUCH_RIGHT = 73;
+    static final int SPR_TOUCH_RIGHT_HELD = 74;
+    static final int SPR_TOUCH_JUMP = 75;
+    static final int SPR_TOUCH_JUMP_HELD = 76;
+    static final int SPR_TRUCK = 77;
+    static final int SPR_DIALOG_PLAY = 78;
+    static final int SPR_DIALOG_PLAY_SELECTED = 79;
+    static final int SPR_DIALOG_TRYAGAIN = 80;
+    static final int SPR_DIALOG_TRYAGAIN_SELECTED = 81;
+    static final int SPR_DIALOG_JUKEBOX = 82;
+    static final int SPR_DIALOG_JUKEBOX_SELECTED = 83;
+    static final int SPR_DIALOG_SETTINGS = 84;
+    static final int SPR_DIALOG_SETTINGS_SELECTED = 85;
+    static final int SPR_DIALOG_ABOUT = 86;
+    static final int SPR_DIALOG_ABOUT_SELECTED = 87;
+    static final int SPR_DIALOG_QUIT = 88;
+    static final int SPR_DIALOG_QUIT_SELECTED = 89;
+    static final int SPR_DIALOG_RETURN = 90;
+    static final int SPR_DIALOG_RETURN_SELECTED = 91;
+    static final int SPR_DIALOG_AUDIO_ON = 92;
+    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 93;
+    static final int SPR_DIALOG_AUDIO_OFF = 94;
+    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 95;
+    static final int SPR_DIALOG_CONFIRM = 96;
+    static final int SPR_DIALOG_CONFIRM_SELECTED = 97;
+    static final int SPR_DIALOG_CANCEL = 98;
+    static final int SPR_DIALOG_CANCEL_SELECTED = 99;
+    static final int SPR_DIALOG_RETURN_SMALL = 100;
+    static final int SPR_DIALOG_RETURN_SMALL_SELECTED = 101;
+    static final int SPR_DIALOG_1 = 102;
+    static final int SPR_DIALOG_1_SELECTED = 103;
+    static final int SPR_DIALOG_2 = 104;
+    static final int SPR_DIALOG_2_SELECTED = 105;
+    static final int SPR_DIALOG_3 = 106;
+    static final int SPR_DIALOG_3_SELECTED = 107;
+    static final int SPR_DIALOG_4 = 108;
+    static final int SPR_DIALOG_4_SELECTED = 109;
+    static final int SPR_DIALOG_5 = 110;
+    static final int SPR_DIALOG_5_SELECTED = 111;
+    static final int SPR_DIALOG_LOCKED = 112;
+    static final int SPR_DIALOG_BORDER_TOPLEFT = 113;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 114;
+    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 115;
+    static final int SPR_DIALOG_BORDER_TOP = 116;
+    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 117;
+    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 118;
+    static final int SPR_DIALOG_BORDER_LEFT = 119;
+    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 120;
+    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 121;
+    static final int SPR_SCANLINE = 122;
+
+    //Logo width in pixels
+    static final int LOGO_WIDTH_SMALL = 224;
+    static final int LOGO_WIDTH_LARGE = 296;
+
+
+
+    //==========================================================================
+    // Constants: dialogs
+    //
+
+    static final int DIALOG_MAX_STACK_SIZE = 8;
+    static final int DIALOG_MAX_ITEMS = 16;
+
+    //Cursor movement directions
+    static final int DLGDIR_UP = 0;
+    static final int DLGDIR_DOWN = 1;
+    static final int DLGDIR_LEFT = 2;
+    static final int DLGDIR_RIGHT = 3;
+
+    //Item alignment
+    static final int ALIGN_CENTER = 0;
+    static final int ALIGN_TOPLEFT = 1;
+    static final int ALIGN_TOPRIGHT = 2;
+
+    //Dialog types
+    static final int DLG_MAIN = 0;
+    static final int DLG_DIFFICULTY = 1;
+    static final int DLG_LEVEL = 2;
+    static final int DLG_JUKEBOX = 3;
+    static final int DLG_SETTINGS = 4;
+    static final int DLG_DISPLAY_SETTINGS = 5;
+    static final int DLG_VSCREEN_SIZE = 6;
+    static final int DLG_VSCREEN_WIDTH = 7;
+    static final int DLG_VSCREEN_HEIGHT = 8;
+    static final int DLG_WINDOW_SCALE = 9;
+    static final int DLG_AUDIO_SETTINGS = 10;
+    static final int DLG_ABOUT = 11;
+    static final int DLG_CREDITS = 12;
+    static final int DLG_PAUSE = 13;
+    static final int DLG_TRYAGAIN_PAUSE = 14;
+    static final int DLG_TRYAGAIN_TIMEUP = 15;
+    static final int DLG_QUIT = 16;
+    static final int DLG_ERROR = 17;
+
+    //Dialog action types
+    static final int DLGACT_QUIT = 0;
+    static final int DLGACT_TITLE = 1; //Go to title screen
+    static final int DLGACT_PLAY = 2;
+    static final int DLGACT_TRYAGAIN_WIPE = 3;
+    static final int DLGACT_TRYAGAIN_IMMEDIATE = 4;
+
+
+
+    //==========================================================================
+    // Constants: gameplay
+    //
+
+    //Internal level number of ending sequence
+    static final int LVLNUM_ENDING = 8;
+
+    //Maximum numbers
+    static final int MAX_OBJS = 160;
+    static final int MAX_CRATE_BLOCKS = 32;
+    static final int MAX_HOLES = 32;
+    static final int MAX_GUSHES = 32;
+    static final int MAX_PASSAGEWAYS = 4;
+    static final int MAX_PUSHABLE_CRATES = MAX_PASSAGEWAYS;
+    static final int MAX_CUTSCENE_OBJECTS = 2;
+    static final int MAX_SOLIDS = 96;
+    static final int MAX_TRIGGERS = 8;
+    static final int MAX_RESPAWN_POINTS = 32;
+    static final int MAX_COIN_SPARKS = 12;
+    static final int MAX_CRACK_PARTICLES = 12;
+
+    //A level block is the basic unit for positioning objects in the level, as
+    //well as for the width of deep holes and passageways
+    static final int LEVEL_BLOCK_SIZE = (TILE_SIZE * 3);
+    static final int VSCREEN_MAX_WIDTH_LEVEL_BLOCKS =
+                                        (VSCREEN_MAX_WIDTH / LEVEL_BLOCK_SIZE);
+
+    //Floor, holes, light poles, and background
+    static final int BACKGROUND_DRAW_Y = 176;
+    static final int POLE_DISTANCE = 384; //Distance between light poles
+    static final int FLOOR_Y = 264;
+    static final int PASSAGEWAY_BOTTOM_Y = 360;
+
+    //Crate size
+    static final int CRATE_WIDTH = 24;
+    static final int CRATE_HEIGHT = 24;
+
+    //Hole types
+    static final int HOLE_DEEP = 0;
+    static final int HOLE_PASSAGEWAY_EXIT_CLOSED = 1;
+    static final int HOLE_PASSAGEWAY_EXIT_OPENED = 2;
+
+    //Solid types
+    static final int SOL_FULL = 0;
+    static final int SOL_VERTICAL = 1;
+    static final int SOL_SLOPE_UP = 2;
+    static final int SOL_SLOPE_DOWN = 3;
+    static final int SOL_KEEP_ON_TOP = 4;
+    static final int SOL_PASSAGEWAY_ENTRY = 5;
+    static final int SOL_PASSAGEWAY_EXIT = 6;
+
+    //Object types (for objects that use PlayCtx.objs[])
+    static final int OBJ_COIN_SILVER = 0;
+    static final int OBJ_COIN_GOLD = 1;
+    static final int OBJ_CRATE_PUSHABLE = 2;
+    static final int OBJ_BANANA_PEEL = 3;
+    static final int OBJ_BANANA_PEEL_MOVING = 4;
+    static final int OBJ_GUSH = 5;
+    static final int OBJ_GUSH_CRACK = 6;
+    static final int OBJ_ROPE_HORIZONTAL = 7;
+    static final int OBJ_ROPE_VERTICAL = 8;
+    static final int OBJ_SPRING = 9;
+    static final int OBJ_HYDRANT = 10;
+    static final int OBJ_OVERHEAD_SIGN = 11;
+    static final int OBJ_PARKED_CAR_BLUE = 12;
+    static final int OBJ_PARKED_CAR_SILVER = 13;
+    static final int OBJ_PARKED_CAR_YELLOW = 14;
+    static final int OBJ_PARKED_TRUCK = 15;
+
+    //Player character's bounding box and height
+    static final int PLAYER_BOX_OFFSET_X = 8;
+    static final int PLAYER_BOX_WIDTH = 12;
+    static final int PLAYER_HEIGHT_NORMAL = 60;
+    static final int PLAYER_HEIGHT_SLIP = 38;
+
+    //Player character's states
+    static final int PLAYER_STATE_NORMAL = 0;
+    static final int PLAYER_STATE_SLIP = 1;
+    static final int PLAYER_STATE_GETUP = 2;
+    static final int PLAYER_STATE_THROWBACK = 3;
+    static final int PLAYER_STATE_GRABROPE = 4;
+    static final int PLAYER_STATE_FLICKER = 5;
+    static final int PLAYER_STATE_INACTIVE = 6;
+
+    //Player character's animation types
+    static final int PLAYER_ANIM_STAND = 0;
+    static final int PLAYER_ANIM_WALK = 1;
+    static final int PLAYER_ANIM_WALKBACK = 2;
+    static final int PLAYER_ANIM_JUMP = 3;
+    static final int PLAYER_ANIM_SLIP = 4;
+    static final int PLAYER_ANIM_SLIPREV = 5; //Reverse slip
+    static final int PLAYER_ANIM_THROWBACK = 6;
+    static final int PLAYER_ANIM_GRABROPE = 7;
+
+    //Car colors
+    static final int CAR_BLUE = 0;
+    static final int CAR_SILVER = 1;
+    static final int CAR_YELLOW = 2;
+
+    //Triggered objects (other than the car colors above)
+    static final int TRIGGER_HEN = 3;
+
+    //Used as a type for the Car class to represent the traffic jam of the
+    //ending sequence
+    static final int TRAFFIC_JAM = 4;
+
+    //Objects with a fixed Y position
+    static final int BUS_Y = 128;
+    static final int BUS_STOP_SIGN_Y = 176;
+    static final int POLE_Y = 120;
+    static final int GUSH_CRACK_Y = 260;
+    static final int GUSH_INITIAL_Y = 232;
+    static final int HYDRANT_Y = 240;
+    static final int PARKED_CAR_Y = 208;
+    static final int PARKED_TRUCK_Y = 136;
+    static final int ROPE_Y = 144;
+    static final int PUSHABLE_CRATE_Y = 240;
+    static final int PASSING_CAR_Y = 184;
+    static final int HEN_Y = 224;
+
+    //Camera velocity
+    static final int CAMERA_XVEL = 700;
+    static final int CAMERA_YVEL = 400;
+
+    //Animations
+    static final int ANIM_PLAYER = 0;
+    static final int ANIM_COINS = 1;
+    static final int ANIM_GUSHES = 2;
+    static final int ANIM_HIT_SPRING = 3;
+    static final int ANIM_CRACK_PARTICLES = 4;
+    static final int ANIM_BUS_WHEELS = 5;
+    static final int ANIM_BUS_DOOR_REAR = 6;
+    static final int ANIM_BUS_DOOR_FRONT = 7;
+    static final int ANIM_CAR_WHEELS = 8;
+    static final int ANIM_HEN = 9;
+    static final int ANIM_COIN_SPARKS = 10; //12 positions starting at 10
+    static final int ANIM_CUTSCENE_OBJECTS = 22; //2 positions starting at 22
+    static final int NUM_ANIMS = 24;
+
+    //Sequence types
+    static final int SEQ_NORMAL_PLAY_START = 0;
+    static final int SEQ_NORMAL_PLAY = 1;
+    static final int SEQ_INITIAL = 10;
+    static final int SEQ_BUS_LEAVING = 20;
+    static final int SEQ_TIMEUP_BUS_NEAR = 30;
+    static final int SEQ_TIMEUP_BUS_FAR = 40;
+    static final int SEQ_GOAL_REACHED = 50;
+    static final int SEQ_GOAL_REACHED_DEFAULT = 100;
+    static final int SEQ_GOAL_REACHED_LEVEL2 = 200;
+    static final int SEQ_GOAL_REACHED_LEVEL3 = 300;
+    static final int SEQ_GOAL_REACHED_LEVEL4 = 400;
+    static final int SEQ_GOAL_REACHED_LEVEL5 = 500;
+    static final int SEQ_ENDING = 800;
+    static final int SEQ_FINISHED = 999;
+
+
+
     //==========================================================================
     // Interface to platform-dependent methods
     //
@@ -391,704 +877,5 @@ public class Defs {
         boolean wipeIn;
         boolean wipeOut;
     }
-
-
-
-    //==========================================================================
-    // Constants: general
-    //
-
-    //Version and repository
-    public static final String VERSION = "pre6";
-    public static final String REPOSITORY = "https://github.com/M374LX/alexvsbus-java";
-
-    //Maximum delta time
-    static final float MAX_DT = 1.0f / 30.0f;
-
-    //Screen types
-    static final int SCR_BLANK = 0;
-    static final int SCR_PLAY = 1;
-    static final int SCR_PLAY_FREEZE = 2; //Render a play session without updating it
-    static final int SCR_FINALSCORE = 3;
-
-    //Delayed action types
-    static final int DELACT_TITLE = 0;
-    static final int DELACT_NEXT_DIFFICULTY = 1;
-    static final int DELACT_TRY_AGAIN = 2;
-
-    //Difficulty
-    public static final int DIFFICULTY_NORMAL = 0;
-    public static final int DIFFICULTY_HARD = 1;
-    public static final int DIFFICULTY_SUPER = 2;
-    public static final int DIFFICULTY_MAX = DIFFICULTY_SUPER;
-
-    //Level load errors
-    static final int LVLERR_NONE = 0;
-    static final int LVLERR_CANNOT_OPEN = 1;
-    static final int LVLERR_TOO_LARGE = 2;
-    static final int LVLERR_INVALID = 3;
-
-    //Maximum supported size for the virtual screen
-    static final int VSCREEN_MAX_WIDTH  = 480;
-    static final int VSCREEN_MAX_HEIGHT = 270;
-
-    //Minimum supported size for the virtual screen
-    static final int VSCREEN_MIN_WIDTH  = 256;
-    static final int VSCREEN_MIN_HEIGHT = 192;
-
-    //Minimum size for the virtual screen when using automatic sizing (except
-    //if the screen is very small)
-    static final int VSCREEN_AUTO_MIN_WIDTH  = 416;
-    static final int VSCREEN_AUTO_MIN_HEIGHT = 240;
-
-    //Screen wiping commands
-    static final int WIPECMD_IN = 0;
-    static final int WIPECMD_OUT = 1;
-    static final int WIPECMD_CLEAR = 2;
-
-    //Other screen wiping constants
-    static final int WIPE_MAX_VALUE = VSCREEN_MAX_WIDTH;
-    static final int WIPE_DELTA = 16;
-    static final float WIPE_MAX_DELAY = 0.0005f;
-
-    //Text colors
-    static final int TXTCOL_WHITE = 0;
-    static final int TXTCOL_GREEN = 1;
-    static final int TXTCOL_GRAY  = 2;
-
-    //As in many retro games, 8x8 tiles are commonly used as the basic unit for
-    //positioning and size
-    static final int TILE_SIZE = 8;
-
-    //Special constant meaning that something does not exist or is unset or
-    //inactive
-    //
-    //Commonly used as an object's X position or as an index within
-    //PlayCtx.objs[]
-    public static final int NONE = -1;
-
-
-
-    //==========================================================================
-    // Constants: input
-    //
-
-    //Player input actions (bitfield)
-    static final int INPUT_UP = (1 << 0);
-    static final int INPUT_DOWN = (1 << 1);
-    static final int INPUT_LEFT = (1 << 2);
-    static final int INPUT_RIGHT = (1 << 3);
-    static final int INPUT_JUMP = (1 << 4);
-    static final int INPUT_PAUSE = (1 << 5);
-    static final int INPUT_PAUSE_TOUCH = (1 << 6);
-    static final int INPUT_DIALOG_CONFIRM = (1 << 7);
-    static final int INPUT_DIALOG_RETURN = (1 << 8);
-    static final int INPUT_CFG_FULLSCREEN_TOGGLE = (1 << 9);
-    static final int INPUT_CFG_AUDIO_TOGGLE = (1 << 10);
-    static final int INPUT_CFG_SCANLINES_TOGGLE = (1 << 11);
-
-    //Input actions from game controller (joystick, joypad, ...) buttons
-    static final int JOY_A = 0;
-    static final int JOY_B = 1;
-    static final int JOY_X = 2;
-    static final int JOY_START = 3;
-    static final int JOY_SELECT = 4;
-    static final int JOY_DPAD_UP = 5;
-    static final int JOY_DPAD_DOWN = 6;
-    static final int JOY_DPAD_LEFT = 7;
-    static final int JOY_DPAD_RIGHT = 8;
-    static final int JOY_NUM_BUTTONS = 9;
-
-    static final float JOY_AXIS_DEADZONE = 0.2f;
-
-    //Touchscreen button positions
-    static final int TOUCH_LEFT_X = 0;
-    static final int TOUCH_LEFT_OFFSET_Y = 72;
-    static final int TOUCH_RIGHT_X = 64;
-    static final int TOUCH_RIGHT_OFFSET_Y = 64;
-    static final int TOUCH_JUMP_OFFSET_X = 64; //Offset from right side of screen
-    static final int TOUCH_JUMP_OFFSET_Y = 64;
-
-    //Touchscreen button opacity
-    static final float TOUCH_OPACITY = 0.45f;
-
-
-
-    //==========================================================================
-    // Constants: audio
-    //
-
-    //Sound effects
-    static final int SFX_COIN = 0;
-    static final int SFX_CRATE = 1;
-    static final int SFX_DIALOG_SELECT = 2;
-    static final int SFX_ERROR = 3;
-    static final int SFX_FALL = 4;
-    static final int SFX_HIT = 5;
-    static final int SFX_HOLE = 6;
-    static final int SFX_RESPAWN = 7;
-    static final int SFX_SCORE = 8;
-    static final int SFX_SLIP = 9;
-    static final int SFX_SPRING = 10;
-    static final int SFX_TIME = 11;
-    static final int NUM_SFX = 12;
-
-    //Background music (BGM) tracks
-    static final int BGMTITLE = 0;
-    static final int BGM1 = 1;
-    static final int BGM2 = 2;
-    static final int BGM3 = 3;
-
-
-
-    //==========================================================================
-    // Constants: graphics
-    //
-
-    //Sprites
-    static final int SPR_BACKGROUND = 0;
-    static final int SPR_BANANA_PEEL = 1;
-    static final int SPR_BEARDED_MAN_STAND = 2;
-    static final int SPR_BEARDED_MAN_WALK = 3;
-    static final int SPR_BEARDED_MAN_JUMP = 4;
-    static final int SPR_BG_BLACK = 5;
-    static final int SPR_BG_SKY1 = 6;
-    static final int SPR_BG_SKY2 = 7;
-    static final int SPR_BG_SKY3 = 8;
-    static final int SPR_BIRD = 9;
-    static final int SPR_BUS = 10;
-    static final int SPR_BUS_CHARACTER_1 = 11;
-    static final int SPR_BUS_CHARACTER_2 = 12;
-    static final int SPR_BUS_CHARACTER_3 = 13;
-    static final int SPR_BUS_DOOR = 14;
-    static final int SPR_BUS_ROUTE = 15;
-    static final int SPR_BUS_STOP_SIGN = 16;
-    static final int SPR_BUS_WHEEL = 17;
-    static final int SPR_CAR_BLUE = 18;
-    static final int SPR_CAR_SILVER = 19;
-    static final int SPR_CAR_YELLOW = 20;
-    static final int SPR_CAR_WHEEL = 21;
-    static final int SPR_CHARSET_WHITE = 22;
-    static final int SPR_CHARSET_GREEN = 23;
-    static final int SPR_CHARSET_GRAY = 24;
-    static final int SPR_COIN_SILVER = 25;
-    static final int SPR_COIN_GOLD = 26;
-    static final int SPR_COIN_SPARK_SILVER = 27;
-    static final int SPR_COIN_SPARK_GOLD = 28;
-    static final int SPR_CRACK_PARTICLE = 29;
-    static final int SPR_CRATE = 30;
-    static final int SPR_DEEP_HOLE_LEFT = 31;
-    static final int SPR_DEEP_HOLE_LEFT_FG = 32;
-    static final int SPR_DEEP_HOLE_MIDDLE = 33;
-    static final int SPR_DEEP_HOLE_RIGHT = 34;
-    static final int SPR_DUNG = 35;
-    static final int SPR_ERROR = 36;
-    static final int SPR_FLAGMAN = 37;
-    static final int SPR_GUSH = 38;
-    static final int SPR_GUSH_CRACK = 39;
-    static final int SPR_GUSH_HOLE = 40;
-    static final int SPR_HEN = 41;
-    static final int SPR_HYDRANT = 42;
-    static final int SPR_LOGO_SMALL = 43;
-    static final int SPR_LOGO_LARGE = 44;
-    static final int SPR_MEDAL1 = 45;
-    static final int SPR_MEDAL2 = 46;
-    static final int SPR_MEDAL3 = 47;
-    static final int SPR_OVERHEAD_SIGN = 48;
-    static final int SPR_OVERHEAD_SIGN_BASE = 49;
-    static final int SPR_OVERHEAD_SIGN_BASE_TOP = 50;
-    static final int SPR_PASSAGEWAY_LEFT = 51;
-    static final int SPR_PASSAGEWAY_LEFT_FG = 52;
-    static final int SPR_PASSAGEWAY_MIDDLE = 53;
-    static final int SPR_PASSAGEWAY_RIGHT = 54;
-    static final int SPR_PASSAGEWAY_RIGHT_FG = 55;
-    static final int SPR_PASSAGEWAY_RIGHT_CLOSED = 56;
-    static final int SPR_PAUSE = 57;
-    static final int SPR_PLAYER_STAND = 58;
-    static final int SPR_PLAYER_WALK = 59;
-    static final int SPR_PLAYER_JUMP = 60;
-    static final int SPR_PLAYER_GRABROPE = 61;
-    static final int SPR_PLAYER_THROWBACK = 62;
-    static final int SPR_PLAYER_SLIP = 63;
-    static final int SPR_PLAYER_RUN = 64;
-    static final int SPR_PLAYER_CLEAN_DUNG = 65;
-    static final int SPR_POLE = 66;
-    static final int SPR_PUSH_ARROW = 67;
-    static final int SPR_ROPE_HORIZONTAL = 68;
-    static final int SPR_ROPE_VERTICAL = 69;
-    static final int SPR_SPRING = 70;
-    static final int SPR_TOUCH_LEFT = 71;
-    static final int SPR_TOUCH_LEFT_HELD = 72;
-    static final int SPR_TOUCH_RIGHT = 73;
-    static final int SPR_TOUCH_RIGHT_HELD = 74;
-    static final int SPR_TOUCH_JUMP = 75;
-    static final int SPR_TOUCH_JUMP_HELD = 76;
-    static final int SPR_TRUCK = 77;
-    static final int SPR_DIALOG_PLAY = 78;
-    static final int SPR_DIALOG_PLAY_SELECTED = 79;
-    static final int SPR_DIALOG_TRYAGAIN = 80;
-    static final int SPR_DIALOG_TRYAGAIN_SELECTED = 81;
-    static final int SPR_DIALOG_JUKEBOX = 82;
-    static final int SPR_DIALOG_JUKEBOX_SELECTED = 83;
-    static final int SPR_DIALOG_SETTINGS = 84;
-    static final int SPR_DIALOG_SETTINGS_SELECTED = 85;
-    static final int SPR_DIALOG_ABOUT = 86;
-    static final int SPR_DIALOG_ABOUT_SELECTED = 87;
-    static final int SPR_DIALOG_QUIT = 88;
-    static final int SPR_DIALOG_QUIT_SELECTED = 89;
-    static final int SPR_DIALOG_RETURN = 90;
-    static final int SPR_DIALOG_RETURN_SELECTED = 91;
-    static final int SPR_DIALOG_AUDIO_ON = 92;
-    static final int SPR_DIALOG_AUDIO_ON_SELECTED = 93;
-    static final int SPR_DIALOG_AUDIO_OFF = 94;
-    static final int SPR_DIALOG_AUDIO_OFF_SELECTED = 95;
-    static final int SPR_DIALOG_CONFIRM = 96;
-    static final int SPR_DIALOG_CONFIRM_SELECTED = 97;
-    static final int SPR_DIALOG_CANCEL = 98;
-    static final int SPR_DIALOG_CANCEL_SELECTED = 99;
-    static final int SPR_DIALOG_RETURN_SMALL = 100;
-    static final int SPR_DIALOG_RETURN_SMALL_SELECTED = 101;
-    static final int SPR_DIALOG_1 = 102;
-    static final int SPR_DIALOG_1_SELECTED = 103;
-    static final int SPR_DIALOG_2 = 104;
-    static final int SPR_DIALOG_2_SELECTED = 105;
-    static final int SPR_DIALOG_3 = 106;
-    static final int SPR_DIALOG_3_SELECTED = 107;
-    static final int SPR_DIALOG_4 = 108;
-    static final int SPR_DIALOG_4_SELECTED = 109;
-    static final int SPR_DIALOG_5 = 110;
-    static final int SPR_DIALOG_5_SELECTED = 111;
-    static final int SPR_DIALOG_LOCKED = 112;
-    static final int SPR_DIALOG_BORDER_TOPLEFT = 113;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_SELECTED = 114;
-    static final int SPR_DIALOG_BORDER_TOPLEFT_DISABLED = 115;
-    static final int SPR_DIALOG_BORDER_TOP = 116;
-    static final int SPR_DIALOG_BORDER_TOP_SELECTED = 117;
-    static final int SPR_DIALOG_BORDER_TOP_DISABLED = 118;
-    static final int SPR_DIALOG_BORDER_LEFT = 119;
-    static final int SPR_DIALOG_BORDER_LEFT_SELECTED = 120;
-    static final int SPR_DIALOG_BORDER_LEFT_DISABLED = 121;
-    static final int SPR_SCANLINE = 122;
-
-    //Logo width in pixels
-    static final int LOGO_WIDTH_SMALL = 224;
-    static final int LOGO_WIDTH_LARGE = 296;
-
-
-
-    //==========================================================================
-    // Constants: dialogs
-    //
-
-    static final int DIALOG_MAX_STACK_SIZE = 8;
-    static final int DIALOG_MAX_ITEMS = 16;
-
-    //Cursor movement directions
-    static final int DLGDIR_UP = 0;
-    static final int DLGDIR_DOWN = 1;
-    static final int DLGDIR_LEFT = 2;
-    static final int DLGDIR_RIGHT = 3;
-
-    //Item alignment
-    static final int ALIGN_CENTER = 0;
-    static final int ALIGN_TOPLEFT = 1;
-    static final int ALIGN_TOPRIGHT = 2;
-
-    //Dialog types
-    static final int DLG_MAIN = 0;
-    static final int DLG_DIFFICULTY = 1;
-    static final int DLG_LEVEL = 2;
-    static final int DLG_JUKEBOX = 3;
-    static final int DLG_SETTINGS = 4;
-    static final int DLG_DISPLAY_SETTINGS = 5;
-    static final int DLG_VSCREEN_SIZE = 6;
-    static final int DLG_VSCREEN_WIDTH = 7;
-    static final int DLG_VSCREEN_HEIGHT = 8;
-    static final int DLG_WINDOW_SCALE = 9;
-    static final int DLG_AUDIO_SETTINGS = 10;
-    static final int DLG_ABOUT = 11;
-    static final int DLG_CREDITS = 12;
-    static final int DLG_PAUSE = 13;
-    static final int DLG_TRYAGAIN_PAUSE = 14;
-    static final int DLG_TRYAGAIN_TIMEUP = 15;
-    static final int DLG_QUIT = 16;
-    static final int DLG_ERROR = 17;
-
-    //Dialog action types
-    static final int DLGACT_QUIT = 0;
-    static final int DLGACT_TITLE = 1; //Go to title screen
-    static final int DLGACT_PLAY = 2;
-    static final int DLGACT_TRYAGAIN_WIPE = 3;
-    static final int DLGACT_TRYAGAIN_IMMEDIATE = 4;
-
-
-
-    //==========================================================================
-    // Constants: gameplay
-    //
-
-    //Internal level number of ending sequence
-    static final int LVLNUM_ENDING = 8;
-
-    //Maximum numbers
-    static final int MAX_OBJS = 160;
-    static final int MAX_CRATE_BLOCKS = 32;
-    static final int MAX_HOLES = 32;
-    static final int MAX_GUSHES = 32;
-    static final int MAX_PASSAGEWAYS = 4;
-    static final int MAX_PUSHABLE_CRATES = MAX_PASSAGEWAYS;
-    static final int MAX_CUTSCENE_OBJECTS = 2;
-    static final int MAX_SOLIDS = 96;
-    static final int MAX_TRIGGERS = 8;
-    static final int MAX_RESPAWN_POINTS = 32;
-    static final int MAX_COIN_SPARKS = 12;
-    static final int MAX_CRACK_PARTICLES = 12;
-
-    //A level block is the basic unit for positioning objects in the level, as
-    //well as for the width of deep holes and passageways
-    static final int LEVEL_BLOCK_SIZE = TILE_SIZE * 3;
-    static final int VSCREEN_MAX_WIDTH_LEVEL_BLOCKS =
-                                        VSCREEN_MAX_WIDTH / LEVEL_BLOCK_SIZE;
-
-    //Floor, holes, light poles, and background
-    static final int BACKGROUND_DRAW_Y = 176;
-    static final int POLE_DISTANCE = 384; //Distance between light poles
-    static final int FLOOR_Y = 264;
-    static final int PASSAGEWAY_BOTTOM_Y = 360;
-
-    //Crate size
-    static final int CRATE_WIDTH = 24;
-    static final int CRATE_HEIGHT = 24;
-
-    //Hole types
-    static final int HOLE_DEEP = 0;
-    static final int HOLE_PASSAGEWAY_EXIT_CLOSED = 1;
-    static final int HOLE_PASSAGEWAY_EXIT_OPENED = 2;
-
-    //Solid types
-    static final int SOL_FULL = 0;
-    static final int SOL_VERTICAL = 1;
-    static final int SOL_SLOPE_UP = 2;
-    static final int SOL_SLOPE_DOWN = 3;
-    static final int SOL_KEEP_ON_TOP = 4;
-    static final int SOL_PASSAGEWAY_ENTRY = 5;
-    static final int SOL_PASSAGEWAY_EXIT = 6;
-
-    //Object types (for objects that use PlayCtx.objs[])
-    static final int OBJ_COIN_SILVER = 0;
-    static final int OBJ_COIN_GOLD = 1;
-    static final int OBJ_CRATE_PUSHABLE = 2;
-    static final int OBJ_BANANA_PEEL = 3;
-    static final int OBJ_BANANA_PEEL_MOVING = 4;
-    static final int OBJ_GUSH = 5;
-    static final int OBJ_GUSH_CRACK = 6;
-    static final int OBJ_ROPE_HORIZONTAL = 7;
-    static final int OBJ_ROPE_VERTICAL = 8;
-    static final int OBJ_SPRING = 9;
-    static final int OBJ_HYDRANT = 10;
-    static final int OBJ_OVERHEAD_SIGN = 11;
-    static final int OBJ_PARKED_CAR_BLUE = 12;
-    static final int OBJ_PARKED_CAR_SILVER = 13;
-    static final int OBJ_PARKED_CAR_YELLOW = 14;
-    static final int OBJ_PARKED_TRUCK = 15;
-
-    //Player character's bounding box and height
-    static final int PLAYER_BOX_OFFSET_X = 8;
-    static final int PLAYER_BOX_WIDTH = 12;
-    static final int PLAYER_HEIGHT_NORMAL = 60;
-    static final int PLAYER_HEIGHT_SLIP = 38;
-
-    //Player character's states
-    static final int PLAYER_STATE_NORMAL = 0;
-    static final int PLAYER_STATE_SLIP = 1;
-    static final int PLAYER_STATE_GETUP = 2;
-    static final int PLAYER_STATE_THROWBACK = 3;
-    static final int PLAYER_STATE_GRABROPE = 4;
-    static final int PLAYER_STATE_FLICKER = 5;
-    static final int PLAYER_STATE_INACTIVE = 6;
-
-    //Player character's animation types
-    static final int PLAYER_ANIM_STAND = 0;
-    static final int PLAYER_ANIM_WALK = 1;
-    static final int PLAYER_ANIM_WALKBACK = 2;
-    static final int PLAYER_ANIM_JUMP = 3;
-    static final int PLAYER_ANIM_SLIP = 4;
-    static final int PLAYER_ANIM_SLIPREV = 5; //Reverse slip
-    static final int PLAYER_ANIM_THROWBACK = 6;
-    static final int PLAYER_ANIM_GRABROPE = 7;
-
-    //Car colors
-    static final int CAR_BLUE = 0;
-    static final int CAR_SILVER = 1;
-    static final int CAR_YELLOW = 2;
-
-    //Triggered objects (other than the car colors above)
-    static final int TRIGGER_HEN = 3;
-
-    //Used as a type for the Car class to represent the traffic jam of the
-    //ending sequence
-    static final int TRAFFIC_JAM = 4;
-
-    //Objects with a fixed Y position
-    static final int BUS_Y = 128;
-    static final int BUS_STOP_SIGN_Y = 176;
-    static final int POLE_Y = 120;
-    static final int GUSH_CRACK_Y = 260;
-    static final int GUSH_INITIAL_Y = 232;
-    static final int HYDRANT_Y = 240;
-    static final int PARKED_CAR_Y = 208;
-    static final int PARKED_TRUCK_Y = 136;
-    static final int ROPE_Y = 144;
-    static final int PUSHABLE_CRATE_Y = 240;
-    static final int PASSING_CAR_Y = 184;
-    static final int HEN_Y = 224;
-
-    //Camera velocity
-    static final int CAMERA_XVEL = 700;
-    static final int CAMERA_YVEL = 400;
-
-    //Animations
-    static final int ANIM_PLAYER = 0;
-    static final int ANIM_COINS = 1;
-    static final int ANIM_GUSHES = 2;
-    static final int ANIM_HIT_SPRING = 3;
-    static final int ANIM_CRACK_PARTICLES = 4;
-    static final int ANIM_BUS_WHEELS = 5;
-    static final int ANIM_BUS_DOOR_REAR = 6;
-    static final int ANIM_BUS_DOOR_FRONT = 7;
-    static final int ANIM_CAR_WHEELS = 8;
-    static final int ANIM_HEN = 9;
-    static final int ANIM_COIN_SPARKS = 10; //12 positions starting at 10
-    static final int ANIM_CUTSCENE_OBJECTS = 22; //2 positions starting at 22
-    static final int NUM_ANIMS = 24;
-
-    //Sequence types
-    static final int SEQ_NORMAL_PLAY_START = 0;
-    static final int SEQ_NORMAL_PLAY = 1;
-    static final int SEQ_INITIAL = 10;
-    static final int SEQ_BUS_LEAVING = 20;
-    static final int SEQ_TIMEUP_BUS_NEAR = 30;
-    static final int SEQ_TIMEUP_BUS_FAR = 40;
-    static final int SEQ_GOAL_REACHED = 50;
-    static final int SEQ_GOAL_REACHED_DEFAULT = 100;
-    static final int SEQ_GOAL_REACHED_LEVEL2 = 200;
-    static final int SEQ_GOAL_REACHED_LEVEL3 = 300;
-    static final int SEQ_GOAL_REACHED_LEVEL4 = 400;
-    static final int SEQ_GOAL_REACHED_LEVEL5 = 500;
-    static final int SEQ_ENDING = 800;
-    static final int SEQ_FINISHED = 999;
-
-
-
-    //==========================================================================
-    // Read-only data
-    //
-
-    //Supported virtual screen widths
-    public static final int[] vscreenWidths = new int[]{
-        480, 432, 416, 320, 256
-    };
-
-    //Supported virtual screen heights
-    public static final int[] vscreenHeights = new int[]{
-        270, 256, 240, 224, 192
-    };
-
-    //Number of levels per difficulty
-    public static final int[] difficultyNumLevels = new int[]{
-        5, //DIFFICULTY_NORMAL
-        5, //DIFFICULTY_HARD
-        3, //DIFFICULTY_SUPER
-    };
-
-    //A cheat code
-    static final int[] cheatSequence = new int[]{
-        3, 0, 2, 1, 3, 0, 1, 2, 1, 3, 0, 2, -1
-    };
-
-    //Sprites within the gfx.png file
-    //
-    //For each sprite: x, y, width, height
-    //
-    //For sprites with more than one animation frame, the width refers to a
-    //single frame
-    static final int[] sprites = new int[]{
-        0,    296,  96,  192, //SPR_BACKGROUND
-        928,  144,  8,   8,   //SPR_BANANA_PEEL
-        104,  272,  32,  64,  //SPR_BEARDED_MAN_STAND
-        136,  272,  32,  64,  //SPR_BEARDED_MAN_WALK
-        328,  272,  32,  64,  //SPR_BEARDED_MAN_JUMP
-        984,  144,  8,   8,   //SPR_BG_BLACK
-        992,  144,  8,   8,   //SPR_BG_SKY1
-        1000, 144,  8,   8,   //SPR_BG_SKY2
-        1008, 144,  8,   8,   //SPR_BG_SKY3
-        784,  72,   16,  8,   //SPR_BIRD
-        592,  312,  408, 104, //SPR_BUS
-        600,  424,  24,  64,  //SPR_BUS_CHARACTER_1
-        624,  424,  24,  64,  //SPR_BUS_CHARACTER_2
-        648,  424,  24,  64,  //SPR_BUS_CHARACTER_3
-        840,  424,  40,  88,  //SPR_BUS_DOOR
-        672,  472,  24,  32,  //SPR_BUS_ROUTE
-        736,  0,    16,  88,  //SPR_BUS_STOP_SIGN
-        688,  424,  48,  40,  //SPR_BUS_WHEEL
-        448,  288,  136, 56,  //SPR_CAR_BLUE
-        448,  352,  136, 56,  //SPR_CAR_SILVER
-        448,  416,  136, 56,  //SPR_CAR_YELLOW
-        528,  480,  24,  24,  //SPR_CAR_WHEEL
-        304,  632,  8,   8,   //SPR_CHARSET_WHITE
-        440,  632,  8,   8,   //SPR_CHARSET_GREEN
-        576,  632,  8,   8,   //SPR_CHARSET_GRAY
-        928,  112,  8,   8,   //SPR_COIN_SILVER
-        928,  128,  8,   8,   //SPR_COIN_GOLD
-        976,  112,  8,   8,   //SPR_COIN_SPARK_SILVER
-        976,  128,  8,   8,   //SPR_COIN_SPARK_GOLD
-        872,  64,   8,   8,   //SPR_CRACK_PARTICLE
-        872,  0,    24,  24,  //SPR_CRATE
-        104,  368,  24,  120, //SPR_DEEP_HOLE_LEFT
-        104,  344,  24,  16,  //SPR_DEEP_HOLE_LEFT_FG
-        128,  368,  24,  120, //SPR_DEEP_HOLE_MIDDLE
-        152,  368,  24,  120, //SPR_DEEP_HOLE_RIGHT
-        856,  72,   8,   8,   //SPR_DUNG
-        152,  696,  40,  8,   //SPR_ERROR
-        0,    176,  64,  88,  //SPR_FLAGMAN
-        952,  0,    24,  88,  //SPR_GUSH
-        1000, 96,   16,  8,   //SPR_GUSH_CRACK
-        976,  96,   16,  8,   //SPR_GUSH_HOLE
-        760,  88,   32,  32,  //SPR_HEN
-        872,  32,   16,  24,  //SPR_HYDRANT
-        480,  696,  224, 64,  //SPR_LOGO_SMALL
-        712,  680,  296, 80,  //SPR_LOGO_LARGE
-        288,  168,  32,  32,  //SPR_MEDAL1
-        328,  168,  32,  32,  //SPR_MEDAL2
-        368,  168,  32,  32,  //SPR_MEDAL3
-        816,  0,    16,  32,  //SPR_OVERHEAD_SIGN
-        1008, 184,  8,   320, //SPR_OVERHEAD_SIGN_BASE
-        840,  8,    16,  24,  //SPR_OVERHEAD_SIGN_BASE_TOP
-        176,  368,  24,  120, //SPR_PASSAGEWAY_LEFT
-        136,  344,  32,  16,  //SPR_PASSAGEWAY_LEFT_FG
-        200,  368,  24,  120, //SPR_PASSAGEWAY_MIDDLE
-        224,  368,  24,  120, //SPR_PASSAGEWAY_RIGHT
-        176,  344,  24,  16,  //SPR_PASSAGEWAY_RIGHT_FG
-        208,  344,  24,  24,  //SPR_PASSAGEWAY_RIGHT_CLOSED
-        688,  512,  32,  32,  //SPR_PAUSE
-        0,    0,    32,  64,  //SPR_PLAYER_STAND
-        32,   0,    32,  64,  //SPR_PLAYER_WALK
-        224,  0,    32,  64,  //SPR_PLAYER_JUMP
-        256,  0,    32,  64,  //SPR_PLAYER_GRABROPE
-        288,  0,    32,  64,  //SPR_PLAYER_THROWBACK
-        384,  0,    48,  64,  //SPR_PLAYER_SLIP
-        232,  72,   48,  64,  //SPR_PLAYER_RUN
-        0,    72,   24,  64,  //SPR_PLAYER_CLEAN_DUNG
-        904,  24,   24,  136, //SPR_POLE
-        736,  128,  16,  16,  //SPR_PUSH_ARROW
-        616,  168,  400, 16,  //SPR_ROPE_HORIZONTAL
-        936,  56,   8,   48,  //SPR_ROPE_VERTICAL
-        760,  120,  24,  16,  //SPR_SPRING
-        824,  520,  64,  64,  //SPR_TOUCH_LEFT
-        824,  584,  64,  64,  //SPR_TOUCH_LEFT_HELD
-        888,  520,  64,  64,  //SPR_TOUCH_RIGHT
-        888,  584,  64,  64,  //SPR_TOUCH_RIGHT_HELD
-        952,  520,  64,  64,  //SPR_TOUCH_JUMP
-        952,  584,  64,  64,  //SPR_TOUCH_JUMP_HELD
-        720,  184,  280, 128, //SPR_TRUCK
-        8,    512,  80,  24,  //SPR_DIALOG_PLAY
-        296,  512,  80,  24,  //SPR_DIALOG_PLAY_SELECTED
-        104,  512,  24,  24,  //SPR_DIALOG_TRYAGAIN
-        392,  512,  24,  24,  //SPR_DIALOG_TRYAGAIN_SELECTED
-        136,  512,  24,  24,  //SPR_DIALOG_JUKEBOX
-        424,  512,  24,  24,  //SPR_DIALOG_JUKEBOX_SELECTED
-        168,  512,  24,  24,  //SPR_DIALOG_SETTINGS
-        456,  512,  24,  24,  //SPR_DIALOG_SETTINGS_SELECTED
-        200,  512,  24,  24,  //SPR_DIALOG_ABOUT
-        488,  512,  24,  24,  //SPR_DIALOG_ABOUT_SELECTED
-        232,  512,  24,  24,  //SPR_DIALOG_QUIT
-        520,  512,  24,  24,  //SPR_DIALOG_QUIT_SELECTED
-        8,    544,  24,  24,  //SPR_DIALOG_RETURN
-        296,  544,  24,  24,  //SPR_DIALOG_RETURN_SELECTED
-        40,   544,  24,  24,  //SPR_DIALOG_AUDIO_ON
-        328,  544,  24,  24,  //SPR_DIALOG_AUDIO_ON_SELECTED
-        72,   544,  24,  24,  //SPR_DIALOG_AUDIO_OFF
-        360,  544,  24,  24,  //SPR_DIALOG_AUDIO_OFF_SELECTED
-        104,  544,  24,  24,  //SPR_DIALOG_CONFIRM
-        392,  544,  24,  24,  //SPR_DIALOG_CONFIRM_SELECTED
-        136,  544,  24,  24,  //SPR_DIALOG_CANCEL
-        424,  544,  24,  24,  //SPR_DIALOG_CANCEL_SELECTED
-        168,  544,  24,  24,  //SPR_DIALOG_RETURN_SMALL
-        456,  544,  24,  24,  //SPR_DIALOG_RETURN_SMALL_SELECTED
-        8,    576,  24,  32,  //SPR_DIALOG_1
-        296,  576,  24,  32,  //SPR_DIALOG_1_SELECTED
-        40,   576,  24,  32,  //SPR_DIALOG_2
-        328,  576,  24,  32,  //SPR_DIALOG_2_SELECTED
-        72,   576,  24,  32,  //SPR_DIALOG_3
-        360,  576,  24,  32,  //SPR_DIALOG_3_SELECTED
-        104,  576,  24,  32,  //SPR_DIALOG_4
-        392,  576,  24,  32,  //SPR_DIALOG_4_SELECTED
-        136,  576,  24,  32,  //SPR_DIALOG_5
-        424,  576,  24,  32,  //SPR_DIALOG_5_SELECTED
-        168,  576,  24,  32,  //SPR_DIALOG_LOCKED
-        8,    696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT
-        56,   696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_SELECTED
-        104,  696,  8,   8,   //SPR_DIALOG_BORDER_TOPLEFT_DISABLED
-        24,   696,  8,   8,   //SPR_DIALOG_BORDER_TOP
-        72,   696,  8,   8,   //SPR_DIALOG_BORDER_TOP_SELECTED
-        120,  696,  8,   8,   //SPR_DIALOG_BORDER_TOP_DISABLED
-        40,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT
-        88,   696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_SELECTED
-        136,  696,  8,   8,   //SPR_DIALOG_BORDER_LEFT_DISABLED
-        672,  512,  0,   0,   //SPR_SCANLINE
-    };
-
-    //Sprite corresponding to each player character animation type
-    static final int[] playerAnimSprites = new int[]{
-        SPR_PLAYER_STAND, //PLAYER_ANIM_STAND
-        SPR_PLAYER_WALK, //PLAYER_ANIM_WALK
-        SPR_PLAYER_WALK, //PLAYER_ANIM_WALKBACK
-        SPR_PLAYER_JUMP, //PLAYER_ANIM_JUMP
-        SPR_PLAYER_SLIP, //PLAYER_ANIM_SLIP
-        SPR_PLAYER_SLIP, //PLAYER_ANIM_SLIPREV
-        SPR_PLAYER_THROWBACK, //PLAYER_ANIM_THROWBACK
-        SPR_PLAYER_GRABROPE, //PLAYER_ANIM_GRABROPE
-    };
-
-    //Sprite corresponding to each object type (OBJ_* constants)
-    static final int[] objSprites = new int[]{
-        SPR_COIN_SILVER, //OBJ_COIN_SILVER
-        SPR_COIN_GOLD, //OBJ_COIN_GOLD
-        SPR_CRATE, //OBJ_CRATE_PUSHABLE
-        SPR_BANANA_PEEL, //OBJ_BANANA_PEEL
-        SPR_BANANA_PEEL, //OBJ_BANANA_PEEL_MOVING
-        SPR_GUSH, //OBJ_GUSH
-        SPR_GUSH_CRACK, //OBJ_GUSH_CRACK
-        SPR_ROPE_HORIZONTAL, //OBJ_ROPE_HORIZONTAL
-        SPR_ROPE_VERTICAL, //OBJ_ROPE_VERTICAL
-        SPR_SPRING, //OBJ_SPRING
-        SPR_HYDRANT, //OBJ_HYDRANT
-        SPR_OVERHEAD_SIGN, //OBJ_OVERHEAD_SIGN
-        SPR_CAR_BLUE, //OBJ_PARKED_CAR_BLUE
-        SPR_CAR_SILVER, //OBJ_PARKED_CAR_SILVER
-        SPR_CAR_YELLOW, //OBJ_PARKED_CAR_YELLOW
-        SPR_TRUCK, //OBJ_PARKED_TRUCK
-    };
-
-    //Gush movement patterns
-    //
-    //For each pair of values, the first value is the vertical velocity (yvel)
-    //and the second value is the destination Y position (ydest)
-    //
-    //The value zero indicates the end of the pattern
-    static final int[] gushMovePattern1 = {
-        -64, 224, 64, 232,
-        -64, 224, 64, 232,
-        -64, 224, 64, 232,
-        -64, 224, 64, 232,
-        -64, 224, 64, 232,
-        -144, 200, 144, 232,
-        0,
-    };
-
-    static final int[] gushMovePattern2 = {
-        -64, 216, 64, 224,
-        0,
-    };
 }
 

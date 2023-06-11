@@ -22,6 +22,8 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
+import static org.alexvsbus.Data.gushMovePattern1;
+
 import com.badlogic.gdx.Gdx;
 
 class LevelLoad {
@@ -41,8 +43,8 @@ class LevelLoad {
 
     //--------------------------------------------------------------------------
 
-    LevelLoad(PlayCtx ctx) {
-        this.ctx = ctx;
+    LevelLoad(PlayCtx pctx) {
+        ctx = pctx;
         lineRead = new LineRead();
     }
 

@@ -22,12 +22,14 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
+import static org.alexvsbus.Data.gushMovePattern2;
+
 class Play {
     DisplayParams displayParams;
     Audio audio;
     PlayCtx ctx; //Gameplay context
 
-    float dt; //Delta time (time elapsed since the previous frame)
+    float deltaTime; //Time elapsed since the previous frame
 
     boolean ignoreUserInput;
     boolean inputLeft,  oldInputLeft;
@@ -37,9 +39,9 @@ class Play {
 
     //--------------------------------------------------------------------------
 
-    Play(DisplayParams displayParams, Audio audio) {
-        this.displayParams = displayParams;
-        this.audio = audio;
+    Play(DisplayParams dp, Audio a) {
+        displayParams = dp;
+        audio = a;
     }
 
     PlayCtx newCtx() {
@@ -123,7 +125,7 @@ class Play {
     void clear() {
         int i;
 
-        dt = 0;
+        deltaTime = 0;
 
         ignoreUserInput = true;
         inputLeft = false;
@@ -279,7 +281,7 @@ class Play {
     }
 
     void update(float dt) {
-        this.dt = dt;
+        deltaTime = dt;
 
         beginUpdate();
         updateRemainingTime();
@@ -486,7 +488,7 @@ class Play {
     void updateRemainingTime() {
         if (!ctx.timeRunning) return;
 
-        ctx.timeDelay -= dt;
+        ctx.timeDelay -= deltaTime;
         if (ctx.timeDelay <= 0) {
             ctx.timeDelay = 1;
             ctx.time--;
@@ -508,7 +510,7 @@ class Play {
     void updateScoreCount() {
         if (!ctx.countingScore) return;
 
-        ctx.timeDelay -= dt;
+        ctx.timeDelay -= deltaTime;
         if (ctx.timeDelay <= 0) {
             ctx.timeDelay = 0.1f;
 
@@ -532,17 +534,17 @@ class Play {
         int i;
 
         //Bus
-        ctx.bus.xvel += ctx.bus.acc * dt;
-        ctx.bus.x += ctx.bus.xvel * dt;
+        ctx.bus.xvel += ctx.bus.acc * deltaTime;
+        ctx.bus.x += ctx.bus.xvel * deltaTime;
 
         //Thrown peel
         peel = ctx.thrownPeel;
         if (peel.obj != NONE) {
             Obj obj = ctx.objs[peel.obj];
 
-            peel.yvel += peel.grav * dt;
-            peel.x += peel.xvel * dt;
-            peel.y += peel.yvel * dt;
+            peel.yvel += peel.grav * deltaTime;
+            peel.x += peel.xvel * deltaTime;
+            peel.y += peel.yvel * deltaTime;
             if (peel.y >= 256) {
                 //Stop the peel when it hits the floor
                 obj.type = OBJ_BANANA_PEEL;
@@ -560,9 +562,9 @@ class Play {
         if (peel.obj != NONE) {
             Obj obj = ctx.objs[peel.obj];
 
-            peel.yvel += peel.grav * dt;
-            peel.x += peel.xvel * dt;
-            peel.y += peel.yvel * dt;
+            peel.yvel += peel.grav * deltaTime;
+            peel.x += peel.xvel * deltaTime;
+            peel.y += peel.yvel * deltaTime;
             if (peel.y >= 400) {
                 //Deactivate the peel when it goes too far downwards
                 obj.type = NONE;
@@ -584,7 +586,7 @@ class Play {
             //Ignore inexistent gushes
             if (gush.obj == NONE) continue;
 
-            y += yvel * dt;
+            y += yvel * deltaTime;
 
             //If the gush reaches its destination Y position
             if ((yvel < 0 && y <= ydest) || (yvel > 0 && y >= ydest)) {
@@ -609,7 +611,7 @@ class Play {
         if (ctx.grabbedRope.obj != NONE) {
             Obj obj = ctx.objs[ctx.grabbedRope.obj];
 
-            ctx.grabbedRope.x += ctx.grabbedRope.xvel * dt;
+            ctx.grabbedRope.x += ctx.grabbedRope.xvel * deltaTime;
 
             if (ctx.grabbedRope.x >= ctx.grabbedRope.xmax) {
                 ctx.grabbedRope.x = ctx.grabbedRope.xmax;
@@ -629,7 +631,7 @@ class Play {
             if (crate.obj != NONE && crate.pushed) {
                 Solid sol = ctx.solids[crate.solid];
 
-                crate.x += 72 * dt;
+                crate.x += 72 * deltaTime;
                 if (crate.x >= crate.xmax) crate.x = crate.xmax;
 
                 ctx.objs[crate.obj].x = (int)crate.x;
@@ -640,7 +642,7 @@ class Play {
 
         //Passing car
         if (ctx.car.x != NONE) {
-            ctx.car.x += ctx.car.xvel * dt;
+            ctx.car.x += ctx.car.xvel * deltaTime;
 
             if (ctx.car.x >= ctx.cam.x + VSCREEN_MAX_WIDTH + 64) {
                 ctx.car.x = NONE;
@@ -649,8 +651,8 @@ class Play {
 
         //Hen
         if (ctx.hen.x != NONE) {
-            ctx.hen.xvel += ctx.hen.acc * dt;
-            ctx.hen.x += ctx.hen.xvel * dt;
+            ctx.hen.xvel += ctx.hen.acc * deltaTime;
+            ctx.hen.x += ctx.hen.xvel * deltaTime;
 
             if (ctx.hen.x > ctx.cam.x + VSCREEN_MAX_WIDTH + 64) {
                 ctx.hen.x = NONE;
@@ -664,9 +666,9 @@ class Play {
             //Ignore inexistent particles
             if (ptcl.x == NONE) continue;
 
-            ptcl.yvel += ptcl.grav * dt;
-            ptcl.x += ptcl.xvel * dt;
-            ptcl.y += ptcl.yvel * dt;
+            ptcl.yvel += ptcl.grav * deltaTime;
+            ptcl.x += ptcl.xvel * deltaTime;
+            ptcl.y += ptcl.yvel * deltaTime;
 
             if (ptcl.y > 400) {
                 ptcl.x = NONE;
@@ -680,10 +682,10 @@ class Play {
             //Ignore inexistent cutscene objects
             if (cobj.sprite == NONE) continue;
 
-            cobj.xvel += cobj.acc * dt;
-            cobj.yvel += cobj.grav * dt;
-            cobj.x += cobj.xvel * dt;
-            cobj.y += cobj.yvel * dt;
+            cobj.xvel += cobj.acc * deltaTime;
+            cobj.yvel += cobj.grav * deltaTime;
+            cobj.x += cobj.xvel * deltaTime;
+            cobj.y += cobj.yvel * deltaTime;
         }
     }
 
@@ -722,13 +724,13 @@ class Play {
 
         //Deceleration and acceleration
         if (pl.xvel > 0 && pl.acc <= 0) {
-            pl.xvel -= pl.dec * dt;
+            pl.xvel -= pl.dec * deltaTime;
             if (pl.xvel <= 0) pl.xvel = 0;
         } else if (pl.xvel < 0 && pl.acc >= 0) {
-            pl.xvel += pl.dec * dt;
+            pl.xvel += pl.dec * deltaTime;
             if (pl.xvel >= 0) pl.xvel = 0;
         } else {
-            pl.xvel += pl.acc * dt;
+            pl.xvel += pl.acc * deltaTime;
 
             //Limit velocity
             if (pl.xvel < -90) pl.xvel = -90;
@@ -736,12 +738,12 @@ class Play {
         }
 
         //Gravity
-        pl.yvel += pl.grav * dt;
+        pl.yvel += pl.grav * deltaTime;
         if (pl.yvel > 300) pl.yvel = 300; //Limit velocity
 
         //Update position
-        pl.x += pl.xvel * dt;
-        pl.y += pl.yvel * dt;
+        pl.x += pl.xvel * deltaTime;
+        pl.y += pl.yvel * deltaTime;
 
         //Update position relative to the rope if grabbing one
         if (pl.state == PLAYER_STATE_GRABROPE) {
@@ -1203,7 +1205,7 @@ class Play {
             if (y > sol.bottom) continue;
 
             //If we got here, then the player is pushing the crate
-            ctx.cratePushRemaining -= dt;
+            ctx.cratePushRemaining -= deltaTime;
             if (ctx.cratePushRemaining <= 0) {
                 //Finished pushing
                 ctx.cratePushRemaining = 0.75f;
@@ -1321,7 +1323,7 @@ class Play {
 
             pl.visible = !pl.visible;
 
-            pl.flickerDelay -= dt;
+            pl.flickerDelay -= deltaTime;
             if (pl.flickerDelay <= 0) {
                 pl.state = PLAYER_STATE_NORMAL;
             }
@@ -1452,7 +1454,7 @@ class Play {
 
         //Horizontal camera movement
         if (cam.xvel != 0) {
-            cam.x += cam.xvel * dt;
+            cam.x += cam.xvel * deltaTime;
 
             if (cam.xvel > 0 && cam.x >= cam.xdest) {
                 cam.xvel = 0;
@@ -1463,7 +1465,7 @@ class Play {
 
         //Vertical camera movement
         if (cam.yvel != 0) {
-            cam.y += cam.yvel * dt;
+            cam.y += cam.yvel * deltaTime;
             if (cam.yvel < 0 && cam.y <= 0) {
                 cam.y = 0;
                 cam.yvel = 0;
@@ -1555,7 +1557,7 @@ class Play {
 
             if (!anim.running) continue;
 
-            anim.delay -= dt;
+            anim.delay -= deltaTime;
             if (anim.delay > 0) continue;
 
             anim.delay = anim.maxDelay;
@@ -1578,7 +1580,7 @@ class Play {
 
     //Moves the arrows indicating that a crate is pushable
     void movePushArrow() {
-        ctx.pushArrow.xoffs += ctx.pushArrow.xvel * dt;
+        ctx.pushArrow.xoffs += ctx.pushArrow.xvel * deltaTime;
         if (ctx.pushArrow.xoffs >= 8) {
             ctx.pushArrow.xoffs = 8;
             ctx.pushArrow.xvel = -32;
@@ -1588,7 +1590,7 @@ class Play {
             ctx.pushArrow.xvel = 0;
         }
 
-        ctx.pushArrow.delay -= dt;
+        ctx.pushArrow.delay -= deltaTime;
         if (ctx.pushArrow.delay <= 0) {
             ctx.pushArrow.delay = 0;
 
@@ -1647,7 +1649,7 @@ class Play {
         Anim birdAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
         Anim flagmanAnim = ctx.anims[ANIM_CUTSCENE_OBJECTS + 1];
 
-        ctx.sequenceDelay -= dt;
+        ctx.sequenceDelay -= deltaTime;
         if (ctx.sequenceDelay > 0) return;
 
         ctx.sequenceDelay = 0;
