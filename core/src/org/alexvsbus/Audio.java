@@ -39,11 +39,9 @@ class Audio {
 
         SfxThread(Sound sfx[]) {
             super("alexvsbus-sfx");
-            quitted = false;
             enabled = true;
             sfxToPlay = NONE;
             sfxToStop = NONE;
-            shouldStopAllSfx = false;
             this.sfx = sfx;
         }
 
@@ -120,18 +118,12 @@ class Audio {
 
     Audio() {
         sfx = new Sound[NUM_SFX];
-        for (int i = 0; i < NUM_SFX; i++) sfx[i] = null;
 
-        bgm = null;
-
-        quit = false;
         audioEnabled = true;
         musicEnabled = true;
         sfxEnabled = true;
         sfxToPlay = NONE;
         sfxToStop = NONE;
-        shouldStopAllSfx = false;
-        shouldStopBgm = false;
 
         sfxThread = new SfxThread(sfx);
     }

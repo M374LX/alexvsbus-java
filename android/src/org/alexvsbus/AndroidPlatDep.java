@@ -39,7 +39,6 @@ class AndroidPlatDep implements PlatDep {
 
     AndroidPlatDep(SharedPreferences prefs) {
         this.prefs = prefs;
-        editor = null;
         config = new Config();
     }
 

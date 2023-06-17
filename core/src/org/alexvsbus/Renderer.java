@@ -67,9 +67,6 @@ class Renderer {
         playCtx = pctx;
         dialogCtx = dctx;
 
-        saveFailed = false;
-
-        gfx = null;
         textureRegion = new TextureRegion();
         mat = new Matrix4();
         spriteBatch = new SpriteBatch();

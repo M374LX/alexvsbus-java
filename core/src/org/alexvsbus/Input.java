@@ -46,23 +46,10 @@ public class Input extends ControllerAdapter {
     //--------------------------------------------------------------------------
 
     Input(DisplayParams dp, Config cfg) {
-        int i;
-
         config = cfg;
         displayParams = dp;
 
-        pauseTouched = false;
-        leftTouched  = false;
-        rightTouched = false;
-        jumpTouched  = false;
-
-        joyAxisX = 0;
-        joyAxisY = 0;
-
         joyButtonsHeld = new boolean[JOY_NUM_BUTTONS];
-        for (i = 0; i < JOY_NUM_BUTTONS; i++) {
-            joyButtonsHeld[i] = false;
-        }
 
         if (config.useBackKey) {
             Gdx.input.setCatchKey(Keys.BACK, true);

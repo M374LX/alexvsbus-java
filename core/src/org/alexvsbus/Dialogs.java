@@ -55,10 +55,8 @@ class Dialogs {
         audio = a;
 
         difficulty = DIFFICULTY_NORMAL;
-        waitInputUp = false;
         cursorDirection = NONE;
         prevCursorDirection = NONE;
-        cheatPos = 0;
     }
 
     DialogCtx newCtx() {

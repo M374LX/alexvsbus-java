@@ -109,20 +109,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         defHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.currentThread().setDefaultUncaughtExceptionHandler(this);
 
-        oldInputHeld = 0;
-        waitInputUp = false;
-        wasTouching = false;
-        config.showTouchControls = false;
-
         delayedActionType = NONE;
-
-        progressChecked = false;
-        config.progressCheat = false;
-
         wipeCmd = NONE;
-        wipeValue = 0;
-        wipeDelta = 0;
-        wipeDelay = 0;
 
         audio.loadSfx();
         play.clear();

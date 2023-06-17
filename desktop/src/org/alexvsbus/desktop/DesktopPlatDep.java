@@ -189,22 +189,7 @@ class DesktopPlatDep implements PlatDep {
         int argc = args.length;
         int i;
 
-        cliHelp = false;
-        cliVersion = false;
         cliConfig = "";
-        cliResizable = false;
-        cliFullscreen = false;
-        cliWindowed = false;
-        cliFixedWindowMode = false;
-        cliWindowScale = 0;
-        cliVscreenWidth = 0;
-        cliVscreenHeight = 0;
-        cliScanlinesEnabled = 0;
-        cliAudioEnabled = 0;
-        cliMusicEnabled = 0;
-        cliSfxEnabled = 0;
-        cliTouchEnabled = false;
-        cliTouchButtonsEnabled = 0;
 
         for (i = 0; i < argc; i++) {
             String a = args[i];
