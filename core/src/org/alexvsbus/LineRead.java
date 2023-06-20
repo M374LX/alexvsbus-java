@@ -83,7 +83,7 @@ public class LineRead {
 
         //Check if the line contains any invalid character
         for (i = 0; i < len; i++) {
-            char c = line.charAt(0);
+            char c = line.charAt(i);
 
             if (c == ' ' || c == '\t') continue; //Whitespace
             if (c >= '0' && c <=  '9') continue; //Digit

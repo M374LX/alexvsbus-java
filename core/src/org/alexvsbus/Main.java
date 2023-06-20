@@ -22,10 +22,6 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.vscreenWidths;
-import static org.alexvsbus.Data.vscreenHeights;
-import static org.alexvsbus.Data.difficultyNumLevels;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -47,7 +43,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //Configuration
     Config config;
-    Config oldConfig;
 
     //Game progress
     boolean progressChecked;
@@ -96,9 +91,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     @Override
     public void create() {
         displayParams = new DisplayParams();
-        oldConfig = new Config();
         input = new Input(displayParams, config);
-        audio = new Audio();
+        audio = new Audio(config);
         play = new Play(displayParams, audio);
         playCtx = play.newCtx();
         dialogs = new Dialogs(displayParams, config, audio);
@@ -116,19 +110,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         play.clear();
         renderer.load();
 
-        audio.enableAudio(config.audioEnabled);
-        audio.enableMusic(config.musicEnabled);
-        audio.enableSfx(config.sfxEnabled);
+        audio.handleToggling();
         changeWindowMode();
 
         config.fullscreen = Gdx.graphics.isFullscreen();
-
-        oldConfig.fullscreen = config.fullscreen;
-        oldConfig.windowScale = config.windowScale;
-        oldConfig.vscreenAutoSize = config.vscreenAutoSize;
-        oldConfig.audioEnabled = config.audioEnabled;
-        oldConfig.musicEnabled = config.musicEnabled;
-        oldConfig.sfxEnabled = config.sfxEnabled;
+        config.oldWindowScale = config.windowScale;
+        config.oldVscreenAutoSize = config.vscreenAutoSize;
 
         platDep.postInit();
 
@@ -178,48 +165,10 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     @Override
     public void resize(int newWidth, int newHeight) {
-        int minWindowWidth;
-        int minWindowHeight;
-
-        if (config.vscreenAutoSize) {
-            minWindowWidth  = VSCREEN_MIN_WIDTH;
-            minWindowHeight = VSCREEN_MIN_HEIGHT;
-        } else {
-            minWindowWidth  = displayParams.vscreenWidth;
-            minWindowHeight = displayParams.vscreenHeight;
-        }
-
-        platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
-
         displayParams.physWidth  = newWidth;
         displayParams.physHeight = newHeight;
 
-        //Ensure the window is not smaller than the minimum size
-        if (!Gdx.graphics.isFullscreen()) {
-            int width  = Gdx.graphics.getWidth();
-            int height = Gdx.graphics.getHeight();
-
-            if (width  < minWindowWidth)  width  = minWindowWidth;
-            if (height < minWindowHeight) height = minWindowHeight;
-
-            displayParams.physWidth  = width;
-            displayParams.physHeight = height;
-
-            Gdx.graphics.setWindowedMode(width, height);
-        }
-
-        if (config.vscreenAutoSize) {
-            autoSizeVscreen();
-        } else {
-            scaleManualVscreen();
-        }
-
-        if (screenType == SCR_PLAY || screenType == SCR_PLAY_FREEZE) {
-            play.onScreenResize();
-        }
-
-        dialogs.adaptToScreenSize();
-        renderer.onScreenResize();
+        adaptToScreenSize();
     }
 
     @Override
@@ -375,7 +324,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void checkGameProgress() {
-        int numLevels = difficultyNumLevels[playCtx.difficulty];
+        int numLevels = Data.difficultyNumLevels[playCtx.difficulty];
 
         if (progressChecked) return;
         if (!playCtx.goalReached) return;
@@ -400,7 +349,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         //Try to save the configuration, which includes the game progress
         if (!platDep.saveConfig()) {
             //Display a message on the screen if it fails
-            renderer.saveFailed = true;
+            renderer.showSaveError(true);
         }
     }
 
@@ -447,53 +396,39 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
                     Gdx.graphics.setWindowedMode(width, height);
                 } else {
-                    resize(displayParams.physWidth, displayParams.physHeight);
+                    adaptToScreenSize();
                 }
             }
         }
 
         //Virtual screen (vscreen) sizing mode change
-        if (config.vscreenAutoSize != oldConfig.vscreenAutoSize) {
-            resize(displayParams.physWidth, displayParams.physHeight);
-            oldConfig.vscreenAutoSize = config.vscreenAutoSize;
+        if (config.vscreenAutoSize != config.oldVscreenAutoSize) {
+            if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
+                changeWindowMode();
+            }
+
+            adaptToScreenSize();
+            config.oldVscreenAutoSize = config.vscreenAutoSize;
         }
 
         if (!config.fixedWindowMode) {
             //Fullscreen toggle
-            if (config.fullscreen != oldConfig.fullscreen) {
+            if (config.fullscreen != Gdx.graphics.isFullscreen()) {
                 changeWindowMode();
                 config.fullscreen = Gdx.graphics.isFullscreen();
-                oldConfig.fullscreen = config.fullscreen;
             }
 
             //Window scale change
-            if (config.windowScale != oldConfig.windowScale) {
+            if (config.windowScale != config.oldWindowScale) {
                 if (!Gdx.graphics.isFullscreen() && !config.resizableWindow) {
                     changeWindowMode();
                 }
 
-                oldConfig.windowScale = config.windowScale;
+                config.oldWindowScale = config.windowScale;
             }
         }
 
-        //Audio toggle
-        if (config.audioEnabled != oldConfig.audioEnabled) {
-            audio.enableAudio(config.audioEnabled);
-            oldConfig.audioEnabled = config.audioEnabled;
-        }
-
-        //Music toggle
-        if (config.musicEnabled != oldConfig.musicEnabled) {
-            audio.enableMusic(config.musicEnabled);
-            oldConfig.musicEnabled = config.musicEnabled;
-        }
-
-        //Sound effects toggle
-        if (config.sfxEnabled != oldConfig.sfxEnabled) {
-            audio.enableSfx(config.sfxEnabled);
-            oldConfig.sfxEnabled = config.sfxEnabled;
-        }
-
+        audio.handleToggling();
     }
 
     void handleDelayedAction() {
@@ -567,6 +502,48 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
     //--------------------------------------------------------------------------
 
+    public void adaptToScreenSize() {
+        int minWindowWidth;
+        int minWindowHeight;
+
+        if (config.vscreenAutoSize) {
+            minWindowWidth  = VSCREEN_MIN_WIDTH;
+            minWindowHeight = VSCREEN_MIN_HEIGHT;
+        } else {
+            minWindowWidth  = displayParams.vscreenWidth;
+            minWindowHeight = displayParams.vscreenHeight;
+        }
+
+        platDep.setMinWindowSize(minWindowWidth, minWindowHeight);
+
+        //Ensure the window is not smaller than the minimum size
+        if (!Gdx.graphics.isFullscreen()) {
+            int width  = Gdx.graphics.getWidth();
+            int height = Gdx.graphics.getHeight();
+
+            if (width  < minWindowWidth)  width  = minWindowWidth;
+            if (height < minWindowHeight) height = minWindowHeight;
+
+            displayParams.physWidth  = width;
+            displayParams.physHeight = height;
+
+            Gdx.graphics.setWindowedMode(width, height);
+        }
+
+        if (config.vscreenAutoSize) {
+            autoSizeVscreen();
+        } else {
+            scaleManualVscreen();
+        }
+
+        if (screenType == SCR_PLAY || screenType == SCR_PLAY_FREEZE) {
+            play.adaptToScreenSize();
+        }
+
+        dialogs.adaptToScreenSize();
+        renderer.adaptToScreenSize();
+    }
+
     void showTitle() {
         screenType = SCR_BLANK;
 
@@ -605,7 +582,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
             case DIFFICULTY_SUPER:  filename += 's'; break;
         }
 
-        renderer.saveFailed = false;
+        renderer.showSaveError(false);
         play.clear();
 
         err = levelLoad.load(filename);
@@ -640,7 +617,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         playCtx.difficulty = difficulty;
         playCtx.levelNum = levelNum;
-        playCtx.lastLevel = (levelNum == difficultyNumLevels[difficulty]);
+        playCtx.lastLevel = (levelNum == Data.difficultyNumLevels[difficulty]);
         playCtx.sequenceStep = SEQ_INITIAL;
         playCtx.skipInitialSequence = skipInitialSequence;
 
@@ -662,11 +639,11 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         audio.playBgm(playCtx.bgm);
         wipeCmd = WIPECMD_IN;
 
-        play.onScreenResize();
+        play.adaptToScreenSize();
     }
 
     void startEndingSequence() {
-        renderer.saveFailed = false;
+        renderer.showSaveError(false);
         play.clear();
 
         progressChecked = false;
@@ -684,6 +661,8 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         audio.playBgm(playCtx.bgm);
         wipeCmd = WIPECMD_IN;
+
+        play.adaptToScreenSize();
     }
 
     //--------------------------------------------------------------------------
@@ -739,12 +718,12 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
 
         //Determine the size for the virtual screen (vscreen) so that it best
         //fits in the physical screen or window
-        for (i = 0; i < vscreenWidths.length; i++) {
-            for (j = 0; j < vscreenHeights.length; j++) {
+        for (i = 0; Data.vscreenWidths[i] > -1; i++) {
+            for (j = 0; Data.vscreenHeights[j] > -1; j++) {
                 int scaledWidth  = 0;
                 int scaledHeight = 0;
-                int w = vscreenWidths[i];
-                int h = vscreenHeights[j];
+                int w = Data.vscreenWidths[i];
+                int h = Data.vscreenHeights[j];
 
                 if (!smallScreen && w < VSCREEN_AUTO_MIN_WIDTH)  continue;
                 if (!smallScreen && h < VSCREEN_AUTO_MIN_HEIGHT) continue;

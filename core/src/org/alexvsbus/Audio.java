@@ -39,10 +39,9 @@ class Audio {
 
         SfxThread(Sound sfx[]) {
             super("alexvsbus-sfx");
-            enabled = true;
+            this.sfx = sfx;
             sfxToPlay = NONE;
             sfxToStop = NONE;
-            this.sfx = sfx;
         }
 
         synchronized void quit() {
@@ -100,6 +99,8 @@ class Audio {
         }
     }
 
+    Config config;
+
     Sound sfx[];
     Music bgm;
 
@@ -116,16 +117,13 @@ class Audio {
 
     //--------------------------------------------------------------------------
 
-    Audio() {
+    Audio(Config cfg) {
+        config = cfg;
         sfx = new Sound[NUM_SFX];
+        sfxThread = new SfxThread(sfx);
 
-        audioEnabled = true;
-        musicEnabled = true;
-        sfxEnabled = true;
         sfxToPlay = NONE;
         sfxToStop = NONE;
-
-        sfxThread = new SfxThread(sfx);
     }
 
     void stopSfxThread() {
@@ -149,26 +147,38 @@ class Audio {
     }
 
     void loadSfx() {
-        loadSound(SFX_COIN, "coin.wav");
-        loadSound(SFX_CRATE, "crate.wav");
-        loadSound(SFX_DIALOG_SELECT, "dialog-select.wav");
-        loadSound(SFX_ERROR, "error.wav");
-        loadSound(SFX_FALL, "fall.wav");
-        loadSound(SFX_HIT, "hit.wav");
-        loadSound(SFX_HOLE, "hole.wav");
-        loadSound(SFX_RESPAWN, "respawn.wav");
-        loadSound(SFX_SCORE, "score.wav");
-        loadSound(SFX_SLIP, "slip.wav");
-        loadSound(SFX_SPRING, "spring.wav");
-        loadSound(SFX_TIME, "time.wav");
+        int i;
+
+        for (i = 0; i < NUM_SFX; i++) {
+            try {
+                sfx[i] = Gdx.audio.newSound(Gdx.files.internal(Data.sfxFiles[i]));
+            } catch (Exception e) {
+                sfx[i] = null;
+            }
+        }
 
         sfxThread.start();
     }
 
-    void enableAudio(boolean en) {
-        if (audioEnabled != en) {
-            audioEnabled = en;
+    void handleToggling() {
+        boolean audioToggled = false;
+        boolean musicToggled = false;
+        boolean sfxToggled   = false;
 
+        if (audioEnabled != config.audioEnabled) {
+            audioEnabled = config.audioEnabled;
+            audioToggled = true;
+        }
+        if (musicEnabled != config.musicEnabled) {
+            musicEnabled = config.musicEnabled;
+            musicToggled = true;
+        }
+        if (sfxEnabled != config.sfxEnabled) {
+            sfxEnabled = config.sfxEnabled;
+            sfxToggled = true;
+        }
+
+        if (audioToggled || musicToggled) {
             if (bgm != null) {
                 if (audioEnabled && musicEnabled) {
                     bgm.play();
@@ -176,28 +186,8 @@ class Audio {
                     bgm.stop();
                 }
             }
-
-            sfxThread.enable(audioEnabled && sfxEnabled);
         }
-    }
-
-    void enableMusic(boolean en) {
-        if (musicEnabled != en) {
-            musicEnabled = en;
-
-            if (bgm != null) {
-                if (audioEnabled && musicEnabled) {
-                    bgm.play();
-                } else {
-                    bgm.stop();
-                }
-            }
-        }
-    }
-
-    void enableSfx(boolean en) {
-        if (sfxEnabled != en) {
-            sfxEnabled = en;
+        if (audioToggled || sfxToggled) {
             sfxThread.enable(audioEnabled && sfxEnabled);
         }
     }
@@ -215,19 +205,10 @@ class Audio {
     }
 
     void playBgm(int id) {
-        String file;
-        switch (id) {
-            case BGMTITLE: file = "bgmtitle.ogg"; break;
-            case BGM1:     file = "bgm1.ogg";     break;
-            case BGM2:     file = "bgm2.ogg";     break;
-            case BGM3:     file = "bgm3.ogg";     break;
-            default:       return;
-        }
-
         if (bgm != null) bgm.dispose();
 
         try {
-            bgm = Gdx.audio.newMusic(Gdx.files.internal(file));
+            bgm = Gdx.audio.newMusic(Gdx.files.internal(Data.bgmFiles[id]));
             bgm.setLooping(true);
             if (audioEnabled && musicEnabled) bgm.play();
         } catch (Exception e) {
@@ -240,16 +221,6 @@ class Audio {
             bgm.stop();
             bgm.dispose();
             bgm = null;
-        }
-    }
-
-    //--------------------------------------------------------------------------
-
-    void loadSound(int id, String path) {
-        try {
-            sfx[id] = Gdx.audio.newSound(Gdx.files.internal(path));
-        } catch (Exception e) {
-            sfx[id] = null;
         }
     }
 }

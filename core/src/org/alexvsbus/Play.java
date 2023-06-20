@@ -22,8 +22,6 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.gushMovePattern2;
-
 class Play {
     DisplayParams displayParams;
     Audio audio;
@@ -310,7 +308,7 @@ class Play {
 
     //--------------------------------------------------------------------------
 
-    void onScreenResize() {
+    void adaptToScreenSize() {
         Camera cam = ctx.cam;
         int vscreenWidth = displayParams.vscreenWidth;
 
@@ -640,12 +638,14 @@ class Play {
             }
         }
 
-        //Passing car
+        //Passing car and ending sequence traffic jam
         if (ctx.car.x != NONE) {
             ctx.car.x += ctx.car.xvel * deltaTime;
 
             if (ctx.car.x >= ctx.cam.x + VSCREEN_MAX_WIDTH + 64) {
-                ctx.car.x = NONE;
+                if (ctx.car.type != TRAFFIC_JAM) {
+                    ctx.car.x = NONE;
+                }
             }
         }
 
@@ -984,6 +984,7 @@ class Play {
         int i, j;
 
         for (i = 0; i < MAX_OBJS; i++) {
+            CoinSpark spk;
             Obj obj = ctx.objs[i];
             int objLeft, objRight, objTop, objBottom;
 
@@ -1083,18 +1084,17 @@ class Play {
                     ctx.score += (obj.type == OBJ_COIN_GOLD) ? 100 : 50;
 
                     //Add spark
-                    ctx.coinSparks[ctx.nextCoinSpark].x = obj.x;
-                    ctx.coinSparks[ctx.nextCoinSpark].y = obj.y;
-                    ctx.coinSparks[ctx.nextCoinSpark].gold =
-                                                (obj.type == OBJ_COIN_GOLD);
+                    spk = ctx.coinSparks[ctx.nextCoinSpark];
+                    spk.x = obj.x;
+                    spk.y = obj.y;
+                    spk.gold = (obj.type == OBJ_COIN_GOLD);
 
                     startAnimation(ANIM_COIN_SPARKS + ctx.nextCoinSpark);
 
                     ctx.nextCoinSpark++;
-                    if (ctx.nextCoinSpark >= MAX_COIN_SPARKS) {
-                        ctx.nextCoinSpark = 0;
-                    }
+                    ctx.nextCoinSpark %= MAX_COIN_SPARKS;
 
+                    //Remove the coin
                     obj.type = NONE;
 
                     break;
@@ -1110,10 +1110,10 @@ class Play {
                         if (ctx.gushes[j].obj == NONE) {
                             ctx.gushes[j].obj = i;
                             ctx.gushes[j].y = 266;
-                            ctx.gushes[j].movePattern = gushMovePattern2;
+                            ctx.gushes[j].movePattern = Data.gushMovePattern2;
                             ctx.gushes[j].movePatternPos = 0;
                             ctx.gushes[j].yvel = -140;
-                            ctx.gushes[j].ydest = gushMovePattern2[1];
+                            ctx.gushes[j].ydest = Data.gushMovePattern2[1];
 
                             addCrackParticles(obj.x + 6, 276);
 

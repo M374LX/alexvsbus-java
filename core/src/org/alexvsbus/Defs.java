@@ -150,13 +150,13 @@ public class Defs {
     //Sound effects
     static final int SFX_COIN = 0;
     static final int SFX_CRATE = 1;
-    static final int SFX_DIALOG_SELECT = 2;
-    static final int SFX_ERROR = 3;
-    static final int SFX_FALL = 4;
-    static final int SFX_HIT = 5;
-    static final int SFX_HOLE = 6;
-    static final int SFX_RESPAWN = 7;
-    static final int SFX_SCORE = 8;
+    static final int SFX_ERROR = 2;
+    static final int SFX_FALL = 3;
+    static final int SFX_HIT = 4;
+    static final int SFX_HOLE = 5;
+    static final int SFX_RESPAWN = 6;
+    static final int SFX_SCORE = 7;
+    static final int SFX_SELECT = 8;
     static final int SFX_SLIP = 9;
     static final int SFX_SPRING = 10;
     static final int SFX_TIME = 11;
@@ -551,11 +551,11 @@ public class Defs {
         public boolean fullscreen;
         public boolean fixedWindowMode;
         public boolean resizableWindow;
-        public int windowScale;
+        public int windowScale, oldWindowScale;
         public boolean scanlinesEnabled;
 
         //Virtual screen size
-        public boolean vscreenAutoSize;
+        public boolean vscreenAutoSize, oldVscreenAutoSize;
         public int vscreenWidth;
         public int vscreenHeight;
 

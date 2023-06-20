@@ -22,12 +22,7 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.sprites;
-import static org.alexvsbus.Data.playerAnimSprites;
-import static org.alexvsbus.Data.objSprites;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -145,13 +140,17 @@ class Renderer {
         spriteBatch.end();
     }
 
-    void onScreenResize() {
+    void adaptToScreenSize() {
         int x = displayParams.viewportOffsetX;
         int y = displayParams.viewportOffsetY;
         int width = displayParams.viewportWidth;
         int height = displayParams.viewportHeight;
 
         Gdx.gl.glViewport(x, y, width, height);
+    }
+
+    void showSaveError(boolean show) {
+        saveFailed = show;
     }
 
     void dispose() {
@@ -370,7 +369,7 @@ class Renderer {
             if (obj.type == OBJ_BANANA_PEEL_MOVING) continue;
 
             if (obj.type == OBJ_GUSH) {
-                int w = sprites[SPR_GUSH * 4 + 2];
+                int w = Data.sprites[SPR_GUSH * 4 + 2];
                 int h = 265 - obj.y;
                 if (h <= 0) h = 1;
 
@@ -391,13 +390,13 @@ class Renderer {
                     }
                 }
 
-                drawSprite(objSprites[obj.type], obj.x, obj.y, frame);
+                drawSprite(Data.objSprites[obj.type], obj.x, obj.y, frame);
             }
         }
 
         //Player character
         if (ctx.player.visible) {
-            spr = playerAnimSprites[ctx.player.animType];
+            spr = Data.playerAnimSprites[ctx.player.animType];
             x = (int)ctx.player.x;
             y = (int)ctx.player.y;
             frame = ctx.anims[ANIM_PLAYER].frame;
@@ -464,7 +463,7 @@ class Renderer {
             int state = ctx.player.state;
 
             if (state == PLAYER_STATE_SLIP || state == PLAYER_STATE_GETUP) {
-                spr = playerAnimSprites[ctx.player.animType];
+                spr = Data.playerAnimSprites[ctx.player.animType];
                 x = (int)ctx.player.x;
                 y = (int)ctx.player.y;
                 frame = ctx.anims[ANIM_PLAYER].frame;
@@ -489,7 +488,7 @@ class Renderer {
                 continue;
             }
 
-            drawSprite(objSprites[obj.type], obj.x, obj.y, frame);
+            drawSprite(Data.objSprites[obj.type], obj.x, obj.y, frame);
         }
 
         //Pushable crate arrows
@@ -594,6 +593,9 @@ class Renderer {
 
         if (!config.touchButtonsEnabled) return;
 
+        //Make buttons transparent
+        spriteBatch.setColor(1, 1, 1, TOUCH_OPACITY);
+
         //Left
         x = TOUCH_LEFT_X;
         y = displayParams.vscreenHeight - TOUCH_LEFT_OFFSET_Y;
@@ -601,7 +603,7 @@ class Renderer {
         if (!dialogOpen && (inputState & INPUT_LEFT) > 0) {
             spr = SPR_TOUCH_LEFT_HELD;
         }
-        drawSpriteTransparent(spr, x, y, TOUCH_OPACITY);
+        drawSprite(spr, x, y, 0);
 
         //Right
         x = TOUCH_RIGHT_X;
@@ -610,7 +612,7 @@ class Renderer {
         if (!dialogOpen && (inputState & INPUT_RIGHT) > 0) {
             spr = SPR_TOUCH_RIGHT_HELD;
         }
-        drawSpriteTransparent(spr, x, y, TOUCH_OPACITY);
+        drawSprite(spr, x, y, 0);
 
         //Jump
         x = displayParams.vscreenWidth - TOUCH_JUMP_OFFSET_X;
@@ -619,7 +621,10 @@ class Renderer {
         if (!dialogOpen && (inputState & INPUT_JUMP) > 0) {
             spr = SPR_TOUCH_JUMP_HELD;
         }
-        drawSpriteTransparent(spr, x, y, TOUCH_OPACITY);
+        drawSprite(spr, x, y, 0);
+
+        //Reset opacity
+        spriteBatch.setColor(1, 1, 1, 1);
     }
 
     void drawFinalScore() {
@@ -652,15 +657,18 @@ class Renderer {
     }
 
     void drawDialog() {
-        int selectedItem = dialogCtx.stack[dialogCtx.stackSize - 1].selectedItem;
+        DialogCtx ctx = dialogCtx;
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+        int selectedItem  = ctx.stack[ctx.stackSize - 1].selectedItem;
         int i;
 
         //Center of the main area of the dialog in tiles
-        int cx = (displayParams.vscreenWidth / TILE_SIZE) / 2;
+        int cx = (vscreenWidth / TILE_SIZE) / 2;
         int cy = Dialogs.centerTileY();
 
         //Draw dialog frame
-        if (dialogCtx.showFrame) {
+        if (ctx.showFrame) {
             //Frame size and position in tiles
             int tw = 28;
             int th = 18;
@@ -676,10 +684,10 @@ class Renderer {
         }
 
         //Draw logo
-        if (dialogCtx.showLogo) {
+        if (ctx.showLogo) {
             int spr, logoWidth, x, y;
 
-            if (displayParams.vscreenWidth <= 320 || displayParams.vscreenHeight <= 224) {
+            if (vscreenWidth <= 320 || vscreenHeight <= 224) {
                 spr = SPR_LOGO_SMALL;
                 logoWidth = LOGO_WIDTH_SMALL;
             } else {
@@ -687,31 +695,31 @@ class Renderer {
                 logoWidth = LOGO_WIDTH_LARGE;
             }
 
-            x = (displayParams.vscreenWidth - logoWidth) / 2 + 4;
-            y = (displayParams.vscreenHeight <= 192) ? 0 : 16;
+            x = (vscreenWidth - logoWidth) / 2 + 4;
+            y = (vscreenHeight <= 192) ? 0 : 16;
 
             drawSprite(spr, x, y, 0);
         }
 
         //Draw dialog display name
-        if (dialogCtx.displayName.length() > 0 && !dialogCtx.levelSelected) {
+        if (ctx.displayName.length() > 0 && !ctx.levelSelected) {
             //Text position in tiles
             int tx = cx - 10;
-            int ty = (displayParams.vscreenHeight <= 192) ? 2 : 3;
+            int ty = (vscreenHeight <= 192) ? 2 : 3;
 
             int x = tx * TILE_SIZE;
             int y = ty * TILE_SIZE;
             int w = 20;
-            int h = (displayParams.vscreenHeight <= 192) ? 3 : 5;
+            int h = (vscreenHeight <= 192) ? 3 : 5;
 
-            if (displayParams.vscreenWidth <= 256) {
+            if (vscreenWidth <= 256) {
                 boolean centerBar = true;
 
                 //If the virtual screen (vscreen) is 256 pixels wide or less,
                 //center the name bar only if there is no selectable item at
                 //the top-left corner
-                for (i = 0; i < dialogCtx.numItems; i++) {
-                    if (dialogCtx.items[i].align == ALIGN_TOPLEFT) {
+                for (i = 0; i < ctx.numItems; i++) {
+                    if (ctx.items[i].align == ALIGN_TOPLEFT) {
                         centerBar = false;
                     }
                 }
@@ -722,39 +730,39 @@ class Renderer {
             }
 
             drawDialogBorder(x - 16, 8, w + 4, h, false, false);
-            drawText(dialogCtx.displayName, TXTCOL_WHITE, x, y);
+            drawText(ctx.displayName, TXTCOL_WHITE, x, y);
         }
 
         //Draw dialog text
-        if (dialogCtx.text.length() > 0) {
+        if (ctx.text.length() > 0) {
             //Text position in tiles
-            int tx = cx - (dialogCtx.textWidth  / 2) + dialogCtx.textOffsetX;
-            int ty = cy - (dialogCtx.textHeight / 2) + dialogCtx.textOffsetY;
+            int tx = cx - (ctx.textWidth  / 2) + ctx.textOffsetX;
+            int ty = cy - (ctx.textHeight / 2) + ctx.textOffsetY;
 
             int x = tx * TILE_SIZE;
             int y = ty * TILE_SIZE;
-            int w = dialogCtx.textWidth;
-            int h = dialogCtx.textHeight;
+            int w = ctx.textWidth;
+            int h = ctx.textHeight;
 
-            if (dialogCtx.textBorder) {
+            if (ctx.textBorder) {
                 drawDialogBorder(x - 16, y - 16, w + 4, h + 4, false, false);
             }
 
-            drawText(dialogCtx.text, TXTCOL_WHITE, x, y);
+            drawText(ctx.text, TXTCOL_WHITE, x, y);
 
-            if (dialogCtx.stack[dialogCtx.stackSize - 1].type == DLG_ERROR) {
+            if (ctx.stack[ctx.stackSize - 1].type == DLG_ERROR) {
                 drawSprite(SPR_ERROR, x, y, 0);
             }
         }
 
         //Draw dialog items
-        for (i = 0; i < dialogCtx.numItems; i++) {
+        for (i = 0; i < ctx.numItems; i++) {
             if (selectedItem != i) {
-                if (!dialogCtx.levelSelected) {
-                    drawDialogItem(dialogCtx.items[i], false);
+                if (!ctx.levelSelected) {
+                    drawDialogItem(ctx.items[i], false);
                 }
-            } else if (dialogCtx.selectedVisible) {
-                drawDialogItem(dialogCtx.items[i], dialogCtx.useCursor);
+            } else if (ctx.selectedVisible) {
+                drawDialogItem(ctx.items[i], ctx.useCursor);
             }
         }
     }
@@ -887,26 +895,25 @@ class Renderer {
     void drawScanlines() {
         int vscreenWidth  = displayParams.vscreenWidth;
         int vscreenHeight = displayParams.vscreenHeight;
-
-        Color c = spriteBatch.getColor();
+        int scale = displayParams.scale;
         int line;
 
-        if (!config.scanlinesEnabled) return;
-        if (displayParams.scale < 2)  return;
+        if (!config.scanlinesEnabled || scale < 2) return;
 
-        mat.setToOrtho(0, vscreenWidth * 2, vscreenHeight * 2, 0, 0, 1);
+        mat.setToOrtho(0, vscreenWidth * scale, vscreenHeight * scale, 0, 0, 1);
         spriteBatch.setProjectionMatrix(mat);
-        spriteBatch.setColor(c.r, c.g, c.b, 0.5f);
+        spriteBatch.setColor(1, 1, 1, 0.5f);
 
-        for (line = 0; line < vscreenHeight * 2; line += 2) {
+        for (line = 0; line < displayParams.viewportHeight; line += scale) {
+            int dy = line + (scale - 1);
             int dw = displayParams.viewportWidth;
-            int sx = sprites[SPR_SCANLINE * 4 + 0];
-            int sy = sprites[SPR_SCANLINE * 4 + 1];
+            int sx = Data.sprites[SPR_SCANLINE * 4 + 0];
+            int sy = Data.sprites[SPR_SCANLINE * 4 + 1];
 
-            drawRegion(0, line + 1, dw, 1, sx, sy, 8, 1, false, false);
+            drawRegion(0, dy, dw, 1, sx, sy, 8, 1, false, false);
         }
 
-        spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
+        spriteBatch.setColor(1, 1, 1, 1); //Reset opacity
     }
 
     //--------------------------------------------------------------------------
@@ -933,8 +940,8 @@ class Renderer {
 
     void drawSpritePart(int spr, int dx, int dy, int sx, int sy, int sw, int sh) {
 
-        sx += sprites[spr * 4 + 0];
-        sy += sprites[spr * 4 + 1];
+        sx += Data.sprites[spr * 4 + 0];
+        sy += Data.sprites[spr * 4 + 1];
 
         drawRegion(dx, dy, sw, sh, sx, sy, sw, sh, false, false);
     }
@@ -942,10 +949,10 @@ class Renderer {
     void drawSpriteFlip(int spr, int dx, int dy, int frame,
                                                 boolean hflip, boolean vflip) {
 
-        int w  = sprites[spr * 4 + 2];
-        int h  = sprites[spr * 4 + 3];
-        int sx = sprites[spr * 4 + 0] + (frame * w);
-        int sy = sprites[spr * 4 + 1];
+        int w  = Data.sprites[spr * 4 + 2];
+        int h  = Data.sprites[spr * 4 + 3];
+        int sx = Data.sprites[spr * 4 + 0] + (frame * w);
+        int sy = Data.sprites[spr * 4 + 1];
 
         drawRegion(dx, dy, w, h, sx, sy, w, h, hflip, vflip);
     }
@@ -955,8 +962,8 @@ class Renderer {
     }
 
     void drawSpriteRepeat(int spr, int dx, int dy, int xrep, int yrep) {
-        int w = sprites[spr * 4 + 2];
-        int h = sprites[spr * 4 + 3];
+        int w = Data.sprites[spr * 4 + 2];
+        int h = Data.sprites[spr * 4 + 3];
 
         for (int i = 0; i < xrep; i++) {
             for (int j = 0; j < yrep; j++) {
@@ -966,20 +973,12 @@ class Renderer {
     }
 
     void drawSpriteStretch(int spr, int dx, int dy, int w, int h) {
-        int sx = sprites[spr * 4 + 0];
-        int sy = sprites[spr * 4 + 1];
-        int sw = sprites[spr * 4 + 2];
-        int sh = sprites[spr * 4 + 3];
+        int sx = Data.sprites[spr * 4 + 0];
+        int sy = Data.sprites[spr * 4 + 1];
+        int sw = Data.sprites[spr * 4 + 2];
+        int sh = Data.sprites[spr * 4 + 3];
 
         drawRegion(dx, dy, w, h, sx, sy, sw, sh, false, false);
-    }
-
-    void drawSpriteTransparent(int spr, int dx, int dy, float opacity) {
-        Color c = spriteBatch.getColor();
-
-        spriteBatch.setColor(c.r, c.g, c.b, opacity);
-        drawSprite(spr, dx, dy, 0);
-        spriteBatch.setColor(c.r, c.g, c.b, 1); //Reset opacity
     }
 
     void drawDigits(int value, int width, int x, int y) {

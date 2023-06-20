@@ -26,12 +26,12 @@ import static org.alexvsbus.Defs.*;
 public class Data {
     //Supported virtual screen widths
     public static final int[] vscreenWidths = new int[]{
-        480, 432, 416, 320, 256
+        480, 432, 416, 320, 256, -1
     };
 
     //Supported virtual screen heights
     public static final int[] vscreenHeights = new int[]{
-        270, 256, 240, 224, 192
+        270, 256, 240, 224, 192, -1
     };
 
     //Number of levels per difficulty
@@ -180,34 +180,34 @@ public class Data {
 
     //Sprite corresponding to each player character animation type
     static final int[] playerAnimSprites = new int[]{
-        SPR_PLAYER_STAND, //PLAYER_ANIM_STAND
-        SPR_PLAYER_WALK, //PLAYER_ANIM_WALK
-        SPR_PLAYER_WALK, //PLAYER_ANIM_WALKBACK
-        SPR_PLAYER_JUMP, //PLAYER_ANIM_JUMP
-        SPR_PLAYER_SLIP, //PLAYER_ANIM_SLIP
-        SPR_PLAYER_SLIP, //PLAYER_ANIM_SLIPREV
+        SPR_PLAYER_STAND,     //PLAYER_ANIM_STAND
+        SPR_PLAYER_WALK,      //PLAYER_ANIM_WALK
+        SPR_PLAYER_WALK,      //PLAYER_ANIM_WALKBACK
+        SPR_PLAYER_JUMP,      //PLAYER_ANIM_JUMP
+        SPR_PLAYER_SLIP,      //PLAYER_ANIM_SLIP
+        SPR_PLAYER_SLIP,      //PLAYER_ANIM_SLIPREV
         SPR_PLAYER_THROWBACK, //PLAYER_ANIM_THROWBACK
-        SPR_PLAYER_GRABROPE, //PLAYER_ANIM_GRABROPE
+        SPR_PLAYER_GRABROPE,  //PLAYER_ANIM_GRABROPE
     };
 
     //Sprite corresponding to each object type (OBJ_* constants)
     static final int[] objSprites = new int[]{
-        SPR_COIN_SILVER, //OBJ_COIN_SILVER
-        SPR_COIN_GOLD, //OBJ_COIN_GOLD
-        SPR_CRATE, //OBJ_CRATE_PUSHABLE
-        SPR_BANANA_PEEL, //OBJ_BANANA_PEEL
-        SPR_BANANA_PEEL, //OBJ_BANANA_PEEL_MOVING
-        SPR_GUSH, //OBJ_GUSH
-        SPR_GUSH_CRACK, //OBJ_GUSH_CRACK
-        SPR_ROPE_HORIZONTAL, //OBJ_ROPE_HORIZONTAL
-        SPR_ROPE_VERTICAL, //OBJ_ROPE_VERTICAL
-        SPR_SPRING, //OBJ_SPRING
-        SPR_HYDRANT, //OBJ_HYDRANT
-        SPR_OVERHEAD_SIGN, //OBJ_OVERHEAD_SIGN
-        SPR_CAR_BLUE, //OBJ_PARKED_CAR_BLUE
-        SPR_CAR_SILVER, //OBJ_PARKED_CAR_SILVER
-        SPR_CAR_YELLOW, //OBJ_PARKED_CAR_YELLOW
-        SPR_TRUCK, //OBJ_PARKED_TRUCK
+        SPR_COIN_SILVER,      //OBJ_COIN_SILVER
+        SPR_COIN_GOLD,        //OBJ_COIN_GOLD
+        SPR_CRATE,            //OBJ_CRATE_PUSHABLE
+        SPR_BANANA_PEEL,      //OBJ_BANANA_PEEL
+        SPR_BANANA_PEEL,      //OBJ_BANANA_PEEL_MOVING
+        SPR_GUSH,             //OBJ_GUSH
+        SPR_GUSH_CRACK,       //OBJ_GUSH_CRACK
+        SPR_ROPE_HORIZONTAL,  //OBJ_ROPE_HORIZONTAL
+        SPR_ROPE_VERTICAL,    //OBJ_ROPE_VERTICAL
+        SPR_SPRING,           //OBJ_SPRING
+        SPR_HYDRANT,          //OBJ_HYDRANT
+        SPR_OVERHEAD_SIGN,    //OBJ_OVERHEAD_SIGN
+        SPR_CAR_BLUE,         //OBJ_PARKED_CAR_BLUE
+        SPR_CAR_SILVER,       //OBJ_PARKED_CAR_SILVER
+        SPR_CAR_YELLOW,       //OBJ_PARKED_CAR_YELLOW
+        SPR_TRUCK,            //OBJ_PARKED_TRUCK
     };
 
     //Gush movement patterns
@@ -229,6 +229,49 @@ public class Data {
     static final int[] gushMovePattern2 = {
         -64, 216, 64, 224,
         0,
+    };
+
+    static final String[] dialogDisplayNames = {
+        "",                   //DLG_MAIN
+        "DIFFICULTY SELECT",  //DLG_DIFFICULTY
+        "LEVEL SELECT",       //DLG_LEVEL
+        "JUKEBOX",            //DLG_JUKEBOX
+        "SETTINGS",           //DLG_SETTINGS
+        "DISPLAY SETTINGS",   //DLG_DISPLAY_SETTINGS
+        "VSCREEN SIZE",       //DLG_VSCREEN_SIZE
+        "VSCREEN WIDTH",      //DLG_VSCREEN_WIDTH
+        "VSCREEN HEIGHT",     //DLG_VSCREEN_HEIGHT
+        "WINDOW SCALE",       //DLG_WINDOW_SCALE
+        "AUDIO SETTINGS",     //DLG_AUDIO_SETTINGS
+        "ABOUT",              //DLG_ABOUT
+        "CREDITS",            //DLG_CREDITS
+        "",                   //DLG_PAUSE
+        "CONFIRMATION",       //DLG_TRYAGAIN_PAUSE
+        "CONFIRMATION",       //DLG_TRYAGAIN_TIMEUP
+        "CONFIRMATION",       //DLG_QUIT
+        "",                   //DLG_ERROR
+    };
+
+    static final String[] sfxFiles = {
+        "coin.wav",           //SFX_COIN
+        "crate.wav",          //SFX_CRATE
+        "error.wav",          //SFX_ERROR
+        "fall.wav",           //SFX_FALL
+        "hit.wav",            //SFX_HIT
+        "hole.wav",           //SFX_HOLE
+        "respawn.wav",        //SFX_RESPAWN
+        "score.wav",          //SFX_SCORE
+        "select.wav",         //SFX_SELECT
+        "slip.wav",           //SFX_SLIP
+        "spring.wav",         //SFX_SPRING
+        "time.wav",           //SFX_TIME
+    };
+
+    static final String[] bgmFiles = {
+        "bgmtitle.ogg",       //BGMTITLE
+        "bgm1.ogg",           //BGM1
+        "bgm2.ogg",           //BGM2
+        "bgm3.ogg",           //BGM3
     };
 }
 

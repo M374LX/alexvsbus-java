@@ -22,12 +22,9 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.difficultyNumLevels;
-import static org.alexvsbus.Data.vscreenWidths;
-import static org.alexvsbus.Data.vscreenHeights;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import org.alexvsbus.Data;
 import org.alexvsbus.Defs.Config;
 import org.alexvsbus.Defs.PlatDep;
 
@@ -91,16 +88,16 @@ class AndroidPlatDep implements PlatDep {
             int i;
 
             val = getPrefsInt("vscreen-width", 480, 1, 999);
-            for (i = 0; i < vscreenWidths.length; i++) {
-                if (val == vscreenWidths[i]) {
+            for (i = 0; Data.vscreenWidths[i] > -1; i++) {
+                if (val == Data.vscreenWidths[i]) {
                     config.vscreenWidth = val;
                     break;
                 }
             }
 
             val = getPrefsInt("vscreen-height", 270, 1, 999);
-            for (i = 0; i < vscreenHeights.length; i++) {
-                if (val == vscreenHeights[i]) {
+            for (i = 0; Data.vscreenHeights[i] > -1; i++) {
+                if (val == Data.vscreenHeights[i]) {
                     config.vscreenHeight = val;
                     break;
                 }
@@ -111,7 +108,7 @@ class AndroidPlatDep implements PlatDep {
             }
         }
 
-        numLevels = difficultyNumLevels[config.progressDifficulty];
+        numLevels = Data.difficultyNumLevels[config.progressDifficulty];
         if (config.progressLevel > numLevels) {
             config.progressLevel = 1;
         }

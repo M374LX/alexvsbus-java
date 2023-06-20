@@ -22,8 +22,6 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.gushMovePattern1;
-
 import com.badlogic.gdx.Gdx;
 
 class LevelLoad {
@@ -199,10 +197,10 @@ class LevelLoad {
 
                 ctx.gushes[numGushes].obj = numObjs - 1;
                 ctx.gushes[numGushes].y = GUSH_INITIAL_Y;
-                ctx.gushes[numGushes].movePattern = gushMovePattern1;
+                ctx.gushes[numGushes].movePattern = Data.gushMovePattern1;
                 ctx.gushes[numGushes].movePatternPos = 0;
-                ctx.gushes[numGushes].yvel = gushMovePattern1[0];
-                ctx.gushes[numGushes].ydest = gushMovePattern1[1];
+                ctx.gushes[numGushes].yvel = Data.gushMovePattern1[0];
+                ctx.gushes[numGushes].ydest = Data.gushMovePattern1[1];
 
                 numGushes++;
             } else if (tokens[0].equals("gush-crack")) {
@@ -319,29 +317,29 @@ class LevelLoad {
         //Convert positions from level blocks to pixels for deep holes and
         //passageways and adjust solids around them
         for (i = 0; i < numHoles; i++) {
-            int prevObRight, obLeft, obWidth;
+            int prevSolRight, solLeft, solWidth;
             boolean isDeep = (ctx.holes[i].type == HOLE_DEEP);
 
             x = ctx.holes[i].x;
             w = ctx.holes[i].width;
 
-            prevObRight = x * LEVEL_BLOCK_SIZE;
-            obLeft = (x + w) * LEVEL_BLOCK_SIZE;
-            obWidth = ctx.levelSize - obLeft;
+            prevSolRight = x * LEVEL_BLOCK_SIZE;
+            solLeft = (x + w) * LEVEL_BLOCK_SIZE;
+            solWidth = ctx.levelSize - solLeft;
 
             if (isDeep) { //Deep hole
-                prevObRight += 12;
-                obLeft -= 8;
+                prevSolRight += 12;
+                solLeft -= 8;
             } else { //Passageway
-                prevObRight += 6;
+                prevSolRight += 6;
             }
 
             //Adjust the previous floor solid so that it does not cover the
             //hole
-            ctx.solids[i].right = prevObRight;
+            ctx.solids[i].right = prevSolRight;
 
             //Add solid for the floor after the hole
-            addSolid(SOL_FULL, obLeft, FLOOR_Y, obWidth, 80);
+            addSolid(SOL_FULL, solLeft, FLOOR_Y, solWidth, 80);
 
             //Too many solids
             if (invalid) {

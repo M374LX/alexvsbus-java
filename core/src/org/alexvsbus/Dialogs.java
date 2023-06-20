@@ -22,11 +22,6 @@ package org.alexvsbus;
 
 import static org.alexvsbus.Defs.*;
 
-import static org.alexvsbus.Data.vscreenWidths;
-import static org.alexvsbus.Data.vscreenHeights;
-import static org.alexvsbus.Data.difficultyNumLevels;
-import static org.alexvsbus.Data.cheatSequence;
-
 class Dialogs {
     DialogCtx ctx;
     static DisplayParams displayParams;
@@ -271,12 +266,12 @@ class Dialogs {
                 } while (ctx.items[sel].disabled || ctx.items[sel].hidden);
 
                 if (sel != prevSel) {
-                    audio.playSfx(SFX_DIALOG_SELECT);
+                    audio.playSfx(SFX_SELECT);
                 }
             } else {
                 sel = 0;
                 ctx.useCursor = true;
-                audio.playSfx(SFX_DIALOG_SELECT);
+                audio.playSfx(SFX_SELECT);
             }
 
             if (sel >= storeSelMin && sel <= storeSelMax) {
@@ -427,10 +422,10 @@ class Dialogs {
                 }
 
                 if (!config.progressCheat) {
-                    if (item == cheatSequence[cheatPos]) {
+                    if (item == Data.cheatSequence[cheatPos]) {
                         cheatPos++;
 
-                        if (cheatSequence[cheatPos] == -1) {
+                        if (Data.cheatSequence[cheatPos] == -1) {
                             config.progressCheat = true;
                             audio.playSfx(SFX_COIN);
                         }
@@ -532,14 +527,14 @@ class Dialogs {
 
             case DLG_VSCREEN_WIDTH:
                 if (item < 5) {
-                    config.vscreenWidth = vscreenWidths[item];
+                    config.vscreenWidth = Data.vscreenWidths[item];
                 }
                 close();
                 break;
 
             case DLG_VSCREEN_HEIGHT:
                 if (item < 5) {
-                    config.vscreenHeight = vscreenHeights[item];
+                    config.vscreenHeight = Data.vscreenHeights[item];
                 }
                 close();
                 break;
@@ -707,18 +702,20 @@ class Dialogs {
                 int i;
 
                 //Current vscreen width
-                for (i = 0; i < vscreenWidths.length; i++) {
-                    if (vscreenWidths[i] == config.vscreenWidth) {
+                for (i = 0; Data.vscreenWidths[i] > -1; i++) {
+                    if (Data.vscreenWidths[i] == config.vscreenWidth) {
                         sel = i;
+                        break;
                     }
                 }
             } else if (dialogType == DLG_VSCREEN_HEIGHT) {
                 int i;
 
                 //Current vscreen height
-                for (i = 0; i < vscreenHeights.length; i++) {
-                    if (vscreenHeights[i] == config.vscreenHeight) {
+                for (i = 0; Data.vscreenHeights[i] > -1; i++) {
+                    if (Data.vscreenHeights[i] == config.vscreenHeight) {
                         sel = i;
+                        break;
                     }
                 }
             }
@@ -801,32 +798,13 @@ class Dialogs {
 
     //Loads a specific dialog
     void loadDialog(int dialogType) {
-        String displayName = "";
         int i;
 
         ctx.showLogo = (dialogType == DLG_MAIN);
         ctx.fillScreen = (dialogType != DLG_PAUSE);
 
         //Set the name to be displayed at the top of the screen
-        displayName = "";
-        switch (dialogType) {
-            case DLG_DIFFICULTY:       displayName = "DIFFICULTY SELECT"; break;
-            case DLG_LEVEL:            displayName = "LEVEL SELECT";      break;
-            case DLG_JUKEBOX:          displayName = "JUKEBOX";           break;
-            case DLG_SETTINGS:         displayName = "SETTINGS";          break;
-            case DLG_DISPLAY_SETTINGS: displayName = "DISPLAY SETTINGS";  break;
-            case DLG_WINDOW_SCALE:     displayName = "WINDOW SCALE";      break;
-            case DLG_VSCREEN_SIZE:     displayName = "VSCREEN SIZE";      break;
-            case DLG_VSCREEN_WIDTH:    displayName = "VSCREEN WIDTH";     break;
-            case DLG_VSCREEN_HEIGHT:   displayName = "VSCREEN HEIGHT";    break;
-            case DLG_AUDIO_SETTINGS:   displayName = "AUDIO SETTINGS";    break;
-            case DLG_ABOUT:            displayName = "ABOUT";             break;
-            case DLG_CREDITS:          displayName = "CREDITS";           break;
-            case DLG_TRYAGAIN_PAUSE:   displayName = "CONFIRMATION";      break;
-            case DLG_TRYAGAIN_TIMEUP:  displayName = "CONFIRMATION";      break;
-            case DLG_QUIT:             displayName = "CONFIRMATION";      break;
-        }
-        ctx.displayName = displayName;
+        ctx.displayName = Data.dialogDisplayNames[dialogType];
 
         //Set text for confirmation dialogs
         switch (dialogType) {
@@ -981,7 +959,7 @@ class Dialogs {
                 setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the width options here should be the same as in the
-                //vscreenWidths array, found in the Defs class
+                //vscreenWidths array, found in the Data class
                 ctx.items[0].caption = "480";
                 ctx.items[1].caption = "432";
                 ctx.items[2].caption = "416";
@@ -1001,7 +979,7 @@ class Dialogs {
                 setItemPosition(5, ALIGN_TOPLEFT, 1, 1); //Return
 
                 //Note: the height options here should be the same as in the
-                //vscreenHeights array, found in the Defs class
+                //vscreenHeights array, found in the Data class
                 ctx.items[0].caption = "270";
                 ctx.items[1].caption = "256";
                 ctx.items[2].caption = "240";
@@ -1109,7 +1087,7 @@ class Dialogs {
                 //Disable vscreen width values that are too large for the
                 //physical screen (but keep the smallest available value)
                 for (i = 0; i < ctx.numItems - 2; i++) {
-                    if (vscreenWidths[i] > displayParams.physWidth) {
+                    if (Data.vscreenWidths[i] > displayParams.physWidth) {
                         ctx.items[i].disabled = true;
                     }
                 }
@@ -1119,7 +1097,7 @@ class Dialogs {
                 //Disable vscreen height values that are too large for the
                 //physical screen (but keep the smallest available value)
                 for (i = 0; i < ctx.numItems - 2; i++) {
-                    if (vscreenHeights[i] > displayParams.physHeight) {
+                    if (Data.vscreenHeights[i] > displayParams.physHeight) {
                         ctx.items[i].disabled = true;
                     }
                 }
@@ -1136,7 +1114,7 @@ class Dialogs {
                 }
             }
         } else if (dialogType == DLG_LEVEL) {
-            int numLevels = difficultyNumLevels[difficulty];
+            int numLevels = Data.difficultyNumLevels[difficulty];
 
             //Hide levels that do not exist in selected difficulty
             for (i = 0; i < 5; i++) {
