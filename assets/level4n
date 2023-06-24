@@ -89,7 +89,7 @@ passageway 3 20
 banana-peel 2 11
 coin-gold 1 13
 coin-silver 1 7
-hydrant 0
+crates 0 9 1 2
 coin-gold 1 14
 banana-peel 1 11
 coin-gold 0 12
@@ -98,8 +98,8 @@ crates 1 10 1 1
 coin-gold 1 13
 banana-peel 2 11
 coin-gold 0 14
-coin-gold 2 13
-hydrant 0
+crates 2 9 1 2
+coin-gold 0 13
 coin-gold 1 7
 coin-gold 1 14
 banana-peel 1 11

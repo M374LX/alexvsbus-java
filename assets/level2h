@@ -100,8 +100,8 @@ coin-gold 1 13
 coin-gold 1 12
 banana-peel 0 15
 coin-gold 1 13
-coin-gold 1 12
-hydrant 0
+crates 1 10 1 1
+coin-gold 0 12
 coin-silver 2 8
 coin-silver 0 9
 spring 0 14
