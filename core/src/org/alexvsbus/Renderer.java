@@ -78,9 +78,12 @@ class Renderer {
     }
 
     void draw(int screenType, int inputState, int wipeValue) {
-        int vscreenWidth  = displayParams.vscreenWidth;
-        int vscreenHeight = displayParams.vscreenHeight;
-
+        int vpx = displayParams.viewportOffsetX;
+        int vpy = displayParams.viewportOffsetY;
+        int vpw = displayParams.viewportWidth;
+        int vph = displayParams.viewportHeight;
+        int vscreenWidth   = displayParams.vscreenWidth;
+        int vscreenHeight  = displayParams.vscreenHeight;
         boolean dialogOpen = (dialogCtx.stackSize > 0);
 
         //Clear entire physical screen to black
@@ -91,6 +94,8 @@ class Renderer {
             Gdx.gl.glClearColor(0, 0.333f, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
+
+        Gdx.gl.glViewport(vpx, vpy, vpw, vph);
 
         textureRegion.setTexture(gfx);
 
@@ -112,7 +117,6 @@ class Renderer {
                 if (!(dialogOpen && dialogCtx.fillScreen)) {
                     drawPlay();
                     drawHud();
-                    drawTouchButtons(inputState);
                 }
                 break;
 
@@ -137,16 +141,12 @@ class Renderer {
 
         drawScanlines();
 
+        //Finish stuff drawn on the virtual screen
         spriteBatch.end();
-    }
 
-    void adaptToScreenSize() {
-        int x = displayParams.viewportOffsetX;
-        int y = displayParams.viewportOffsetY;
-        int width = displayParams.viewportWidth;
-        int height = displayParams.viewportHeight;
-
-        Gdx.gl.glViewport(x, y, width, height);
+        if (screenType == SCR_PLAY) {
+            drawTouchButtons(inputState);
+        }
     }
 
     void showSaveError(boolean show) {
@@ -576,55 +576,13 @@ class Renderer {
         } else {
             drawDigits(playCtx.time, 2, x + TILE_SIZE, 8);
         }
-    }
 
-    void drawTouchButtons(int inputState) {
-        int x, y, spr;
-        boolean dialogOpen;
-
-        if (!config.showTouchControls) return;
-
-       dialogOpen = (dialogCtx.stackSize > 0);
-
-        //Pause
-        if (playCtx.canPause && !dialogOpen) {
-            drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0, 0);
+        //Touchscreen pause button
+        if (config.showTouchControls && playCtx.canPause) {
+            if (dialogCtx.stackSize == 0) { //No dialog open
+                drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0, 0);
+            }
         }
-
-        if (!config.touchButtonsEnabled) return;
-
-        //Make buttons transparent
-        spriteBatch.setColor(1, 1, 1, TOUCH_OPACITY);
-
-        //Left
-        x = TOUCH_LEFT_X;
-        y = displayParams.vscreenHeight - TOUCH_LEFT_OFFSET_Y;
-        spr = SPR_TOUCH_LEFT;
-        if (!dialogOpen && (inputState & INPUT_LEFT) > 0) {
-            spr = SPR_TOUCH_LEFT_HELD;
-        }
-        drawSprite(spr, x, y, 0);
-
-        //Right
-        x = TOUCH_RIGHT_X;
-        y = displayParams.vscreenHeight - TOUCH_RIGHT_OFFSET_Y;
-        spr = SPR_TOUCH_RIGHT;
-        if (!dialogOpen && (inputState & INPUT_RIGHT) > 0) {
-            spr = SPR_TOUCH_RIGHT_HELD;
-        }
-        drawSprite(spr, x, y, 0);
-
-        //Jump
-        x = displayParams.vscreenWidth - TOUCH_JUMP_OFFSET_X;
-        y = displayParams.vscreenHeight - TOUCH_JUMP_OFFSET_Y;
-        spr = SPR_TOUCH_JUMP;
-        if (!dialogOpen && (inputState & INPUT_JUMP) > 0) {
-            spr = SPR_TOUCH_JUMP_HELD;
-        }
-        drawSprite(spr, x, y, 0);
-
-        //Reset opacity
-        spriteBatch.setColor(1, 1, 1, 1);
     }
 
     void drawFinalScore() {
@@ -914,6 +872,72 @@ class Renderer {
         }
 
         spriteBatch.setColor(1, 1, 1, 1); //Reset opacity
+    }
+
+    //Draws touchscreen left, right, and jump buttons
+    void drawTouchButtons(int inputState) {
+        int spr;
+        int x, y;
+        int sx, sy;
+        int w, h;
+        int spw, sph;
+
+        if (!config.showTouchControls || !config.touchButtonsEnabled) return;
+
+        //Set viewport to use the entire physical screen
+        w = displayParams.physWidth;
+        h = displayParams.physHeight;
+        Gdx.gl.glViewport(0, 0, w, h);
+
+        //Scaled physical screen width and height
+        spw = displayParams.physWidth  / displayParams.scale;
+        sph = displayParams.physHeight / displayParams.scale;
+
+        mat.setToOrtho(0, spw, sph, 0, 0, 1);
+        spriteBatch.setProjectionMatrix(mat);
+        spriteBatch.begin();
+
+        //Make buttons transparent
+        spriteBatch.setColor(1, 1, 1, TOUCH_BUTTON_OPACITY);
+
+        //Size of the buttons
+        w = TOUCH_BUTTON_WIDTH;
+        h = TOUCH_BUTTON_HEIGHT;
+
+        //Draw left button
+        spr = ((inputState & INPUT_LEFT) > 0) ? SPR_TOUCH_LEFT_HELD : SPR_TOUCH_LEFT;
+        sx  = Data.sprites[spr * 4 + 0];
+        sy  = Data.sprites[spr * 4 + 1];
+        x   = TOUCH_LEFT_X;
+        y   = sph - TOUCH_LEFT_OFFSET_Y;
+        textureRegion.setRegion(sx, sy, w, h);
+        textureRegion.flip(false, true);
+        spriteBatch.draw(textureRegion, x, y, w, h);
+
+        //Draw right button
+        spr = ((inputState & INPUT_RIGHT) > 0) ? SPR_TOUCH_RIGHT_HELD : SPR_TOUCH_RIGHT;
+        sx  = Data.sprites[spr * 4 + 0];
+        sy  = Data.sprites[spr * 4 + 1];
+        x   = TOUCH_RIGHT_X;
+        y   = sph - TOUCH_RIGHT_OFFSET_Y;
+        textureRegion.setRegion(sx, sy, w, h);
+        textureRegion.flip(false, true);
+        spriteBatch.draw(textureRegion, x, y, w, h);
+
+        //Draw jump button
+        spr = ((inputState & INPUT_JUMP) > 0) ? SPR_TOUCH_JUMP_HELD : SPR_TOUCH_JUMP;
+        sx  = Data.sprites[spr * 4 + 0];
+        sy  = Data.sprites[spr * 4 + 1];
+        x   = spw - TOUCH_JUMP_OFFSET_X;
+        y   = sph - TOUCH_JUMP_OFFSET_Y;
+        textureRegion.setRegion(sx, sy, w, h);
+        textureRegion.flip(false, true);
+        spriteBatch.draw(textureRegion, x, y, w, h);
+
+        //Reset opacity
+        spriteBatch.setColor(1, 1, 1, 1);
+
+        spriteBatch.end();
     }
 
     //--------------------------------------------------------------------------

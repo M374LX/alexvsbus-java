@@ -73,7 +73,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     int inputHeld;
     int oldInputHeld;
     boolean waitInputUp;
-    boolean wasTouching;
 
     //Screen wiping effects
     int wipeCmd;
@@ -200,44 +199,21 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     }
 
     void handleInput() {
-        config.showTouchControls = false;
-
         if (config.touchEnabled) {
-            boolean touching = false;
-            boolean playing = (screenType == SCR_PLAY);
-            boolean ending = (playing && playCtx.levelNum == LVLNUM_ENDING);
-            boolean dialogOpen = (dialogCtx.stackSize > 0);
-            int i;
-
-            if (!dialogOpen && playing && !ending) {
-                config.showTouchControls = true;
+            //Determine if the touchscreen controls should be shown
+            config.showTouchControls = true;
+            if (dialogCtx.stackSize > 0) { //Dialog open
+                config.showTouchControls = false;
+            }
+            if (screenType != SCR_PLAY) {
+                config.showTouchControls = false;
+            }
+            if (playCtx.levelNum == LVLNUM_ENDING) {
+                config.showTouchControls = false;
             }
 
-            for (i = 0; i < 10; i++) {
-                float x, y;
-
-                if (!Gdx.input.isTouched(i)) continue;
-
-                touching = true;
-
-                //Convert coordinates from physical screen to virtual screen
-                x = Gdx.input.getX(i);
-                x -= displayParams.viewportOffsetX;
-                x /= displayParams.viewportWidth;
-                x *= displayParams.vscreenWidth;
-
-                y = Gdx.input.getY(i);
-                y -= displayParams.viewportOffsetY;
-                y /= displayParams.viewportHeight;
-                y *= displayParams.vscreenHeight;
-
-                input.onTouch(x, y);
-                if (!wasTouching) {
-                    dialogs.onTap((int)x, (int)y);
-                }
-            }
-
-            wasTouching = touching;
+            input.handleTouch();
+            dialogs.handleTap(input.getTapX(), input.getTapY());
         }
 
         inputHeld = input.read();
@@ -541,7 +517,6 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         }
 
         dialogs.adaptToScreenSize();
-        renderer.adaptToScreenSize();
     }
 
     void showTitle() {

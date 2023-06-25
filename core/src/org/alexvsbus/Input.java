@@ -38,14 +38,23 @@ public class Input extends ControllerAdapter {
     boolean joyButtonsHeld[];
 
     //Touchscreen
+    boolean touching;
+    boolean wasTouching;
     boolean pauseTouched;
     boolean leftTouched;
     boolean rightTouched;
     boolean jumpTouched;
 
+    //Touchscreen tap position converted to virtual screen coordinates (both are
+    //set to -1 when the touchscreen is not tapped)
+    int tapX;
+    int tapY;
+
     //--------------------------------------------------------------------------
 
     Input(DisplayParams dp, Config cfg) {
+        int i;
+
         config = cfg;
         displayParams = dp;
 
@@ -54,6 +63,9 @@ public class Input extends ControllerAdapter {
         if (config.useBackKey) {
             Gdx.input.setCatchKey(Keys.BACK, true);
         }
+
+        tapX = -1;
+        tapY = -1;
 
         Controllers.addListener(this);
     }
@@ -90,28 +102,98 @@ public class Input extends ControllerAdapter {
         return actionsHeld;
     }
 
-    void onTouch(float x, float y) {
-        if (!config.touchEnabled || !config.showTouchControls) return;
+    int getTapX() {
+        return tapX;
+    }
 
-        //Ignore touches outside the virtual screen (vscreen)
-        if (x < 0 || x > displayParams.vscreenWidth)  return;
-        if (y < 0 || y > displayParams.vscreenHeight) return;
+    int getTapY() {
+        return tapY;
+    }
 
-        //Pause
-        if (x >= displayParams.vscreenWidth - 32 && y <= 32) {
-            pauseTouched = true;
-            return;
+    void handleTouch() {
+        float x, y;
+        int buttonWidth   = TOUCH_BUTTON_WIDTH;
+        int vscreenWidth  = displayParams.vscreenWidth;
+        int vscreenHeight = displayParams.vscreenHeight;
+        int physWidth     = displayParams.physWidth;
+        int physHeight    = displayParams.physHeight;
+        int scale = displayParams.scale;
+        int i;
+
+        if (!config.touchEnabled) return;
+
+        wasTouching = touching;
+        touching = false;
+
+        //Check if the screen is being touched and handle left, right, and jump
+        //buttons
+        for (i = 0; i < 10; i++) {
+            if (!Gdx.input.isTouched(i)) continue;
+
+            touching = true;
+
+            if (!config.showTouchControls)   break;
+            if (!config.touchButtonsEnabled) break;
+
+            x = Gdx.input.getX(i);
+            y = Gdx.input.getY(i);
+
+            //If the Y position is above all buttons (other than pause),
+            //nothing to do
+            if (y < physHeight - (70 * scale)) continue;
+
+            if (x < buttonWidth * scale) {
+                leftTouched = true;
+            }
+            if (x >= buttonWidth * scale && x < (buttonWidth * 2) * scale) {
+                rightTouched = true;
+            }
+            if (x >= physWidth - (TOUCH_JUMP_OFFSET_X * scale)) {
+                jumpTouched = true;
+            }
         }
 
-        if (!config.touchButtonsEnabled) return;
+        //Reset tap coordinates
+        tapX = -1;
+        tapY = -1;
 
-        //If the Y position is above all buttons (other than pause), nothing
-        //to do
-        if (y < displayParams.vscreenHeight - 70) return;
+        for (i = 0; i < 10; i++) {
+            if (Gdx.input.isTouched(i)) {
+                //Convert X coordinate from physical screen to virtual screen
+                x  = Gdx.input.getX(i);
+                x -= displayParams.viewportOffsetX;
+                x /= displayParams.viewportWidth;
+                x *= vscreenWidth;
 
-        if (x < 64) leftTouched = true;
-        if (x >= 64 && x < 128) rightTouched = true;
-        if (x >= displayParams.vscreenWidth - TOUCH_JUMP_OFFSET_X) jumpTouched = true;
+                //Convert Y coordinate from physical screen to virtual screen
+                y  = Gdx.input.getY(i);
+                y -= displayParams.viewportOffsetY;
+                y /= displayParams.viewportHeight;
+                y *= displayParams.vscreenHeight;
+            } else {
+                //Not touching
+                x = -1;
+                y = -1;
+            }
+
+            //Ignore touches outside the virtual screen
+            if (x < 0 || x > vscreenWidth || y < 0 || y > vscreenHeight) {
+                continue;
+            }
+
+            //Handle pause button
+            if (config.showTouchControls && !wasTouching) {
+                if (x >= vscreenWidth - 32 && y <= 32) {
+                    pauseTouched = true;
+                }
+            }
+
+            //Store tap coordinates
+            if (i == 0 && !wasTouching) {
+                tapX = (int)x;
+                tapY = (int)y;
+            }
+        }
     }
 
     //--------------------------------------------------------------------------

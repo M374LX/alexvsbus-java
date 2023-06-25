@@ -118,13 +118,19 @@ class Dialogs {
         return y * TILE_SIZE;
     }
 
-    //Called when the touchscreen is tapped
-    void onTap(int x, int y) {
+    //Handles a touchscreen tap
+    void handleTap(int x, int y) {
+        boolean changeItem;
+        int dialogType;
+
         //Nothing to do if no dialog is open or a level has been selected
         if (ctx.stackSize <= 0 || ctx.levelSelected) return;
 
-        int dialogType = ctx.stack[ctx.stackSize - 1].type;
-        boolean changeItem = true;
+        //Touchscreen not tapped
+        if (x < 0 || y < 0) return;
+
+        changeItem = true;
+        dialogType = ctx.stack[ctx.stackSize - 1].type;
 
         for (int i = 0; i < ctx.numItems; i++) {
             int ix = itemX(ctx.items[i]);

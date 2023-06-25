@@ -138,8 +138,12 @@ public class Defs {
     static final int TOUCH_JUMP_OFFSET_X = 64; //Offset from right side of screen
     static final int TOUCH_JUMP_OFFSET_Y = 64;
 
+    //Touchscreen button size
+    static final int TOUCH_BUTTON_WIDTH  = 64;
+    static final int TOUCH_BUTTON_HEIGHT = 64;
+
     //Touchscreen button opacity
-    static final float TOUCH_OPACITY = 0.45f;
+    static final float TOUCH_BUTTON_OPACITY = 0.45f;
 
 
 
