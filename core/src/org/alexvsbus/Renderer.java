@@ -84,13 +84,12 @@ class Renderer {
         int vph = displayParams.viewportHeight;
         int vscreenWidth   = displayParams.vscreenWidth;
         int vscreenHeight  = displayParams.vscreenHeight;
-        boolean dialogOpen = (dialogCtx.stackSize > 0);
 
         //Clear entire physical screen to black
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (dialogOpen && dialogCtx.greenBg) {
+        if (Dialogs.isOpen() && dialogCtx.greenBg) {
             Gdx.gl.glClearColor(0, 0.333f, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
@@ -114,7 +113,7 @@ class Renderer {
 
             case SCR_PLAY:
             case SCR_PLAY_FREEZE:
-                if (!(dialogOpen && dialogCtx.fillScreen)) {
+                if (!(Dialogs.isOpen() && dialogCtx.fillScreen)) {
                     drawPlay();
                     drawHud();
                 }
@@ -132,7 +131,7 @@ class Renderer {
             drawText(msg, TXTCOL_WHITE, TILE_SIZE * x, TILE_SIZE * 3);
         }
 
-        if (dialogOpen) {
+        if (Dialogs.isOpen()) {
             drawDialog();
         }
 
@@ -579,7 +578,7 @@ class Renderer {
 
         //Touchscreen pause button
         if (config.showTouchControls && playCtx.canPause) {
-            if (dialogCtx.stackSize == 0) { //No dialog open
+            if (!Dialogs.isOpen()) {
                 drawSprite(SPR_PAUSE, displayParams.vscreenWidth - 24, 0, 0);
             }
         }

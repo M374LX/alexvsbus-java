@@ -23,7 +23,7 @@ package org.alexvsbus;
 import static org.alexvsbus.Defs.*;
 
 class Dialogs {
-    DialogCtx ctx;
+    static DialogCtx ctx;
     static DisplayParams displayParams;
     Config config;
     Audio audio;
@@ -83,6 +83,10 @@ class Dialogs {
         return ctx;
     }
 
+    static boolean isOpen() {
+        return (ctx.stackSize > 0);
+    }
+
     //Returns the Y position in tiles corresponding to the center of the
     //dialog's main area (where most items are placed), which is distinct from
     //the top area (where the display name and often the return item are placed)
@@ -124,7 +128,7 @@ class Dialogs {
         int dialogType;
 
         //Nothing to do if no dialog is open or a level has been selected
-        if (ctx.stackSize <= 0 || ctx.levelSelected) return;
+        if (!isOpen() || ctx.levelSelected) return;
 
         //Touchscreen not tapped
         if (x < 0 || y < 0) return;
@@ -171,7 +175,7 @@ class Dialogs {
     //touches
     void handleKeys(int inputHeld, int inputHit) {
         //Nothing to do if no dialog is open or a level has been selected
-        if (ctx.stackSize <= 0 || ctx.levelSelected) return;
+        if (!isOpen() || ctx.levelSelected) return;
 
         if (waitInputUp) {
             if (inputHeld == 0) waitInputUp = false;
@@ -221,7 +225,7 @@ class Dialogs {
         boolean selectionChanged;
 
         //Nothing to do if no dialog is open
-        if (ctx.stackSize <= 0) return;
+        if (!isOpen()) return;
 
         if (ctx.levelSelected) {
             levelStartDelay -= dt;
@@ -1156,7 +1160,8 @@ class Dialogs {
         int dialogType;
         int i;
 
-        if (ctx.stackSize <= 0) return;
+        //Nothing to do if no dialog is open
+        if (!isOpen()) return;
 
         dialogType = ctx.stack[ctx.stackSize - 1].type;
 

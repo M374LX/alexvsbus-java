@@ -126,13 +126,13 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         getDeltaTime();
         handleInput();
 
-        if (dialogCtx.stackSize > 0) { //If a dialog is open
+        if (Dialogs.isOpen()) {
             dialogs.handleKeys(inputHeld, inputHit);
             dialogs.update(deltaTime);
             handleDialogAction();
 
             //Dialog just closed
-            if (dialogCtx.stackSize == 0) {
+            if (!Dialogs.isOpen()) {
                 waitInputUp = true;
             }
         } else if (screenType == SCR_PLAY) {
@@ -153,11 +153,9 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
     //libGDX when the app loses focus on Android
     @Override
     public void pause() {
-        boolean dialogOpen = dialogCtx.stackSize > 0;
-
         //Show the pause dialog when losing focus while playing the game
         //(Android only, as when pressing the home button)
-        if (screenType == SCR_PLAY && playCtx.canPause && !dialogOpen) {
+        if (screenType == SCR_PLAY && playCtx.canPause && !Dialogs.isOpen()) {
             dialogs.open(DLG_PAUSE);
         }
     }
@@ -202,7 +200,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
         if (config.touchEnabled) {
             //Determine if the touchscreen controls should be shown
             config.showTouchControls = true;
-            if (dialogCtx.stackSize > 0) { //Dialog open
+            if (dialogs.isOpen()) {
                 config.showTouchControls = false;
             }
             if (screenType != SCR_PLAY) {
