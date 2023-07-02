@@ -612,7 +612,7 @@ class Dialogs {
             case DLG_TRYAGAIN_PAUSE:
                 switch (item){
                     case 0:
-                        ctx.action = DLGACT_TRYAGAIN_WIPE;
+                        ctx.action = DLGACT_TRYAGAIN;
                         break;
 
                     case 1:
@@ -628,7 +628,7 @@ class Dialogs {
             case DLG_TRYAGAIN_TIMEUP:
                 switch (item){
                     case 0:
-                        ctx.action = DLGACT_TRYAGAIN_IMMEDIATE;
+                        ctx.action = DLGACT_TRYAGAIN;
                         break;
 
                     case 1:

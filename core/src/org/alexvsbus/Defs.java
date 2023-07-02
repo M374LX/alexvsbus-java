@@ -351,8 +351,7 @@ public class Defs {
     static final int DLGACT_QUIT = 0;
     static final int DLGACT_TITLE = 1; //Go to title screen
     static final int DLGACT_PLAY = 2;
-    static final int DLGACT_TRYAGAIN_WIPE = 3;
-    static final int DLGACT_TRYAGAIN_IMMEDIATE = 4;
+    static final int DLGACT_TRYAGAIN = 3;
 
 
 

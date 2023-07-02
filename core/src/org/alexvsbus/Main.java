@@ -264,16 +264,7 @@ public class Main extends ApplicationAdapter implements Thread.UncaughtException
                 startLevel(levelNum, difficulty, false);
                 break;
 
-            case DLGACT_TRYAGAIN_WIPE:
-                dialogs.closeAll();
-                playCtx.canPause = false;
-                screenType = SCR_PLAY_FREEZE;
-                wipeCmd = WIPECMD_OUT;
-                delayedActionType = DELACT_TRY_AGAIN;
-                actionDelay = 1.0f;
-                break;
-
-            case DLGACT_TRYAGAIN_IMMEDIATE:
+            case DLGACT_TRYAGAIN:
                 dialogs.closeAll();
                 delayedActionType = DELACT_TRY_AGAIN;
                 actionDelay = 0;
