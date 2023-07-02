@@ -424,6 +424,11 @@ public class Defs {
     static final int OBJ_PARKED_CAR_YELLOW = 14;
     static final int OBJ_PARKED_TRUCK = 15;
 
+    //Even if the player presses the jump button before the character hits the
+    //floor, a timer is started and a jump is triggered if the character hits
+    //the floor before this amount of time passes
+    static final float JUMP_TIMEOUT = 0.2f;
+
     //Player character's bounding box and height
     static final int PLAYER_BOX_OFFSET_X = 8;
     static final int PLAYER_BOX_WIDTH = 12;

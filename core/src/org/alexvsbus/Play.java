@@ -33,7 +33,7 @@ class Play {
     boolean inputLeft,  oldInputLeft;
     boolean inputRight, oldInputRight;
     boolean inputJump,  oldInputJump;
-    int jumpPressY;
+    float jumpTimeout;
 
     //--------------------------------------------------------------------------
 
@@ -129,7 +129,7 @@ class Play {
         inputLeft = false;
         inputRight = false;
         inputJump = false;
-        jumpPressY = -9999;
+        jumpTimeout = 0;
 
         ctx.canPause = false;
         ctx.time = 90;
@@ -274,7 +274,7 @@ class Play {
         inputJump  = (inputState & INPUT_JUMP)  > 0;
 
         if (inputJump && !oldInputJump) {
-            jumpPressY = (int)ctx.player.y;
+            jumpTimeout = JUMP_TIMEOUT;
         }
     }
 
@@ -480,6 +480,14 @@ class Play {
         pl.oldState = pl.state;
         pl.oldAnimType = pl.animType;
         pl.onFloor = false;
+
+        if (jumpTimeout > 0) {
+            jumpTimeout -= deltaTime;
+
+            if (jumpTimeout < 0) {
+                jumpTimeout = 0;
+            }
+        }
     }
 
     //Updates the remaining time and acts if the time has run out
@@ -1261,14 +1269,9 @@ class Play {
             }
 
             //Jump
-            //By comparing the current Y position to the one when the jump
-            //button was just pressed, the character can jump even if the
-            //button is pressed moments before hitting the floor
-            if (inputJump && pl.onFloor) {
-                if (jumpPressY >= pl.y - 6) {
-                    pl.yvel = -154;
-                    jumpPressY = -99999;
-                }
+            if (pl.onFloor && jumpTimeout > 0) {
+                pl.yvel = -154;
+                jumpTimeout = 0;
             }
 
             //Decide animation type
@@ -1299,7 +1302,7 @@ class Play {
         } else if (pl.state == PLAYER_STATE_GETUP) {
             //Prevent jump if the button is held until the character finishes
             //getting up
-            jumpPressY = -99999;
+            jumpTimeout = 0;
 
             if (pl.yvel >= 0) {
                 pl.height = PLAYER_HEIGHT_NORMAL;
@@ -1319,7 +1322,7 @@ class Play {
             }
         } else if (pl.state == PLAYER_STATE_FLICKER) {
             //Prevent jump if the button is held until the flicker finishes
-            jumpPressY = -99999;
+            jumpTimeout = 0;
 
             pl.visible = !pl.visible;
 
@@ -1681,7 +1684,7 @@ class Play {
                     inputLeft = false;
                     inputRight = false;
                     inputJump = false;
-                    jumpPressY = 9999;
+                    jumpTimeout = 0;
 
                     if (ctx.timeUp) {
                         ctx.sequenceDelay = 1;
@@ -1866,7 +1869,7 @@ class Play {
                     //Player character jumps into the bus
                     pl.x = bus.x + 342;
                     pl.xvel = 0;
-                    inputJump = true;
+                    jumpTimeout = JUMP_TIMEOUT; //Trigger a jump
                     ctx.sequenceStep++;
                 }
                 break;
@@ -2032,8 +2035,7 @@ class Play {
                     pl.x = bus.x + 342;
                     pl.xvel = 0;
                     inputRight = false;
-                    inputJump = true;
-                    jumpPressY = 9999;
+                    jumpTimeout = JUMP_TIMEOUT; //Trigger a jump
                     ctx.sequenceStep++;
                 }
                 break;
@@ -2113,7 +2115,7 @@ class Play {
 
             case 404:
                 //Player character jumps into the bus
-                inputJump = true;
+                jumpTimeout = JUMP_TIMEOUT; //Trigger a jump
                 ctx.sequenceStep++;
                 break;
 
