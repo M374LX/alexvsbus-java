@@ -325,6 +325,7 @@ public class Input extends ControllerAdapter {
         }
         if (up || w) {
             actionsHeld |= INPUT_UP;
+            actionsHeld |= INPUT_JUMP;
         }
         if (down || s) {
             actionsHeld |= INPUT_DOWN;

@@ -41,6 +41,8 @@ When using a keyboard, the controls are:
 
 **Arrow keys/WASD:** Move character; select dialog item
 
+**Up arrow/W:** Jump
+
 **Ctrl/Spacebar:** Jump; confirm selected dialog item
 
 **Enter (aka Return):** Confirm selected dialog item
