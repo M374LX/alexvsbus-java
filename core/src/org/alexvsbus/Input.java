@@ -25,10 +25,10 @@ import static org.alexvsbus.Defs.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 
-public class Input extends ControllerAdapter {
+public class Input implements ControllerListener {
     DisplayParams displayParams;
     Config config;
 
@@ -198,17 +198,14 @@ public class Input extends ControllerAdapter {
 
     //--------------------------------------------------------------------------
 
-    @Override
     public void connected(Controller controller) {
 
     }
 
-    @Override
     public void disconnected(Controller controller) {
 
     }
 
-    @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
         int i;
 
@@ -243,7 +240,6 @@ public class Input extends ControllerAdapter {
         return false;
     }
 
-    @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
         int i;
 
@@ -278,7 +274,6 @@ public class Input extends ControllerAdapter {
         return false;
     }
 
-    @Override
     public boolean axisMoved(Controller c, int axisCode, float value) {
         if (axisCode == 0) {
             joyAxisX = value;
@@ -307,10 +302,9 @@ public class Input extends ControllerAdapter {
         boolean s         = Gdx.input.isKeyPressed(Keys.S);
         boolean a         = Gdx.input.isKeyPressed(Keys.A);
         boolean d         = Gdx.input.isKeyPressed(Keys.D);
-
-        boolean cfgFullscreenToggle = Gdx.input.isKeyPressed(Keys.F5);
-        boolean cfgAudioToggle      = Gdx.input.isKeyPressed(Keys.F6);
-        boolean cfgScanlinesToggle  = Gdx.input.isKeyPressed(Keys.F7);
+        boolean f5        = Gdx.input.isKeyPressed(Keys.F5);
+        boolean f6        = Gdx.input.isKeyPressed(Keys.F6);
+        boolean f7        = Gdx.input.isKeyPressed(Keys.F7);
 
         if (ctrlLeft || ctrlRight || space) {
             actionsHeld |= INPUT_JUMP;
@@ -336,14 +330,13 @@ public class Input extends ControllerAdapter {
         if (right || d) {
             actionsHeld |= INPUT_RIGHT;
         }
-
-        if (cfgFullscreenToggle) {
+        if (f5) {
             actionsHeld |= INPUT_CFG_FULLSCREEN_TOGGLE;
         }
-        if (cfgAudioToggle) {
+        if (f6) {
             actionsHeld |= INPUT_CFG_AUDIO_TOGGLE;
         }
-        if (cfgScanlinesToggle) {
+        if (f7) {
             actionsHeld |= INPUT_CFG_SCANLINES_TOGGLE;
         }
 
@@ -351,9 +344,9 @@ public class Input extends ControllerAdapter {
     }
 
     int readTouch() {
-        if (!config.touchEnabled || !config.showTouchControls) return 0;
-
         int actionsHeld = 0;
+
+        if (!config.touchEnabled || !config.showTouchControls) return 0;
 
         if (pauseTouched) {
             actionsHeld |= INPUT_PAUSE_TOUCH;
