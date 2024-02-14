@@ -11,9 +11,6 @@ and we cannot ensure it is identical to the official build and up to date. At
 present, the game is officially distributed only through GitHub, where it is
 free of charge.
 
-As it is currently a pre-release, not all planned features are present yet, but
-it is already fully playable and has all planned levels.
-
 The graphical and sound style is mostly inspired by the 8-bit era, although the
 game is not faithful to all of the technical limitations of the period.
 
@@ -221,18 +218,4 @@ be used on Unix systems (including Linux):
 ```
 
 On Windows, replace "./gradlew" with "gradlew.bat".
-
-
-## Project status and plans
-
-While it is quite close to becoming a finished game, there are still plans to
-offer the user more settings and improve the documentation, as well as more
-testing.
-
-There are also plans to port the game from Java/libGDX to C/SDL. This is why
-the GitHub repository contains "java" in its name and also why many Java
-features are avoided, including inheritance and generics. The new port will not
-be a replacement for this one. Instead, there will be two editions of the game:
-the Java/libGDX edition will be focused on Android and the C/SDL version will
-be focused on PC while not requiring the JRE.
 
